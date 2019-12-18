@@ -1,0 +1,380 @@
+
+################################################################################
+################################################################################
+## Action Primivitive Discovery in Robotic Agents through Action Segmentation ##
+## -- a proof of concept model for knowledge aquisition in intelligent agents ##
+## -- Evana Gizzi, Mateo Guaman Castro, Jivko Sinapov, 2018                   ##
+################################################################################
+################################################################################
+
+ ... Setting up services
+ ... Cleaning up data from last run
+ ... Setting up initial data
+
+Agent has the following goal: 
+['(obtained block)']
+
+Agent will attempt to accomplish this goal. If attempt fails, agent will try
+to find new actions and replan with those actions. Process repeats until the 
+agent is able to accomplish its goal....
+
+***************************   ATTEMPT #1   ***************************
+Setting up domain and problem for attempt #1
+ -- Domain setup complete
+ -- Problem setup complete
+
+Triggering plan generation and execution for attempt #1
+ -- Plan generation complete
+ -- Plan execution failed
+ -- generation complete, 5 total combos found
+
+Finding segmentation possibilities (across all combos generated) for attempt #1
+
+ -- Combo # 0: ['press_button', 'left_gripper', 'left_button', None]
+ ---- 12 total change points found
+Trying partial plan execution on segmentations
+ -- iteration 0 successful!
+ -- iteration 1 successful!
+ -- iteration 2 successful!
+ -- iteration 3 successful!
+ -- iteration 4 successful!
+ -- iteration 5 successful!
+ -- iteration 6 successful!
+ -- iteration 7 successful!
+ -- iteration 8 successful!
+ -- iteration 9 successful!
+ ---- Segmentation VIABLE! Adding to knowledge base
+ -- iteration 10 successful!
+
+ -- Combo # 1: ['press_button', 'left_gripper', 'right_button', None]
+ ---- 9 total change points found
+Trying partial plan execution on segmentations
+ -- iteration 0 successful!
+ -- iteration 1 successful!
+ -- iteration 2 successful!
+ -- iteration 3 successful!
+ -- iteration 4 successful!
+ -- iteration 5 successful!
+ -- iteration 6 successful!
+ ---- Segmentation VIABLE! Adding to knowledge base
+ -- iteration 7 successful!
+
+ -- Combo # 2: ['obtain_object', 'left_gripper', 'wall', None]
+ ---- 12 total change points found
+Trying partial plan execution on segmentations
+ -- iteration 0 successful!
+ -- iteration 1 successful!
+ -- iteration 2 successful!
+ -- iteration 3 successful!
+ -- iteration 4 successful!
+ -- iteration 5 successful!
+ -- iteration 6 successful!
+ -- iteration 7 successful!
+ -- iteration 8 successful!
+ -- iteration 9 successful!
+ -- iteration 10 successful!
+
+ -- Combo # 3: ['obtain_object', 'left_gripper', 'table', None]
+ ---- 12 total change points found
+Trying partial plan execution on segmentations
+ -- iteration 0 successful!
+ -- iteration 1 successful!
+ -- iteration 2 successful!
+ -- iteration 3 successful!
+ -- iteration 4 successful!
+ -- iteration 5 successful!
+ -- iteration 6 successful!
+ -- iteration 7 successful!
+ -- iteration 8 successful!
+ -- iteration 9 successful!
+ -- iteration 10 successful!
+
+ -- Combo # 4: ['obtain_object', 'left_gripper', 'block', None]
+ ---- 12 total change points found
+Trying partial plan execution on segmentations
+ -- iteration 0 successful!
+ -- iteration 1 successful!
+ -- iteration 2 successful!
+ -- iteration 3 successful!
+ -- iteration 4 successful!
+ -- iteration 5 successful!
+ -- iteration 6 successful!
+ -- iteration 7 successful!
+ -- iteration 8 successful!
+ -- iteration 9 successful!
+ -- iteration 10 successful!
+
+***************************   ATTEMPT #2   ***************************
+Setting up domain and problem for attempt #2
+ -- Domain setup complete
+ -- Problem setup complete
+
+Triggering plan generation and execution for attempt #2
+ -- Plan generation complete
+ -- Plan execution failed
+Executing a Primitive
+
+***************************   ATTEMPT #3   ***************************
+Setting up domain and problem for attempt #3
+ -- Domain setup complete
+ -- Problem setup complete
+
+Triggering plan generation and execution for attempt #3
+ -- Plan generation complete
+ -- Plan execution failed
+
+***************************   ATTEMPT #4   ***************************
+Setting up domain and problem for attempt #4
+ -- Domain setup complete
+ -- Problem setup complete
+
+Triggering plan generation and execution for attempt #4
+ -- Plan generation complete
+ -- Plan execution failed
+
+***************************   ATTEMPT #5   ***************************
+Setting up domain and problem for attempt #5
+ -- Domain setup complete
+ -- Problem setup complete
+
+Triggering plan generation and execution for attempt #5
+ -- Plan generation complete
+ -- Plan execution failed
+
+***************************   ATTEMPT #6   ***************************
+Setting up domain and problem for attempt #6
+ -- Domain setup complete
+ -- Problem setup complete
+
+Triggering plan generation and execution for attempt #6
+ -- Plan generation complete
+ -- Plan execution failed
+Executing a Primitive
+
+***************************   ATTEMPT #7   ***************************
+Setting up domain and problem for attempt #7
+ -- Domain setup complete
+ -- Problem setup complete
+
+Triggering plan generation and execution for attempt #7
+ -- Plan generation complete
+ -- Plan execution failed
+No Prims to Execute
+
+***************************   ATTEMPT #8   ***************************
+Setting up domain and problem for attempt #8
+ -- Domain setup complete
+ -- Problem setup complete
+
+Triggering plan generation and execution for attempt #8
+ -- Plan generation complete
+ -- Plan execution failed
+ -- generation complete, 5 total combos found
+
+Finding segmentation possibilities (across all combos generated) for attempt #8
+
+ -- Combo # 0: ['obtain_object', 'left_gripper', 'wall', None]
+ ---- 6 total change points found
+Trying partial plan execution on segmentations
+ -- iteration 0 successful!
+ ---- Segmentation VIABLE! Adding to knowledge base
+ -- iteration 1 successful!
+ -- iteration 2 successful!
+ -- iteration 3 successful!
+ -- iteration 4 successful!
+
+ -- Combo # 1: ['obtain_object', 'left_gripper', 'block', None]
+ ---- 6 total change points found
+Trying partial plan execution on segmentations
+ -- iteration 0 successful!
+ -- iteration 1 successful!
+ -- iteration 2 successful!
+ -- iteration 3 successful!
+ -- iteration 4 successful!
+
+ -- Combo # 2: ['obtain_object', 'left_gripper', 'table', None]
+ ---- 12 total change points found
+Trying partial plan execution on segmentations
+ -- iteration 0 successful!
+ -- iteration 1 successful!
+ -- iteration 2 successful!
+ -- iteration 3 successful!
+ -- iteration 4 successful!
+ -- iteration 5 successful!
+ -- iteration 6 successful!
+ -- iteration 7 successful!
+ -- iteration 8 successful!
+ -- iteration 9 successful!
+ -- iteration 10 successful!
+
+ -- Combo # 3: ['press_button', 'left_gripper', 'right_button', None]
+ ---- 9 total change points found
+Trying partial plan execution on segmentations
+ -- iteration 0 successful!
+ -- iteration 1 successful!
+ -- iteration 2 successful!
+ -- iteration 3 successful!
+ -- iteration 4 successful!
+ -- iteration 5 successful!
+ -- iteration 6 successful!
+ ---- Segmentation VIABLE! Adding to knowledge base
+ -- iteration 7 successful!
+
+ -- Combo # 4: ['press_button', 'left_gripper', 'left_button', None]
+ ---- 9 total change points found
+Trying partial plan execution on segmentations
+ -- iteration 0 successful!
+ -- iteration 1 successful!
+ -- iteration 2 successful!
+ -- iteration 3 successful!
+ -- iteration 4 successful!
+ -- iteration 5 successful!
+ -- iteration 6 successful!
+ ---- Segmentation VIABLE! Adding to knowledge base
+ -- iteration 7 successful!
+
+***************************   ATTEMPT #9   ***************************
+Setting up domain and problem for attempt #9
+ -- Domain setup complete
+ -- Problem setup complete
+
+Triggering plan generation and execution for attempt #9
+ -- Plan generation complete
+ -- Plan execution failed
+Executing a Primitive
+
+***************************   ATTEMPT #10   ***************************
+Setting up domain and problem for attempt #10
+ -- Domain setup complete
+ -- Problem setup complete
+
+Triggering plan generation and execution for attempt #10
+ -- Plan generation complete
+ -- Plan execution failed
+Executing a Primitive
+
+***************************   ATTEMPT #11   ***************************
+Setting up domain and problem for attempt #11
+ -- Domain setup complete
+ -- Problem setup complete
+
+Triggering plan generation and execution for attempt #11
+ -- Plan generation complete
+ -- Plan execution failed
+
+***************************   ATTEMPT #12   ***************************
+Setting up domain and problem for attempt #12
+ -- Domain setup complete
+ -- Problem setup complete
+
+Triggering plan generation and execution for attempt #12
+ -- Plan generation complete
+ -- Plan execution failed
+
+***************************   ATTEMPT #13   ***************************
+Setting up domain and problem for attempt #13
+ -- Domain setup complete
+ -- Problem setup complete
+
+Triggering plan generation and execution for attempt #13
+ -- Plan generation complete
+ -- Plan execution failed
+
+***************************   ATTEMPT #14   ***************************
+Setting up domain and problem for attempt #14
+ -- Domain setup complete
+ -- Problem setup complete
+
+Triggering plan generation and execution for attempt #14
+ -- Plan generation complete
+ -- Plan execution failed
+Executing a Primitive
+
+***************************   ATTEMPT #15   ***************************
+Setting up domain and problem for attempt #15
+ -- Domain setup complete
+ -- Problem setup complete
+
+Triggering plan generation and execution for attempt #15
+ -- Plan generation complete
+ -- Plan execution failed
+No Prims to Execute
+
+***************************   ATTEMPT #16   ***************************
+Setting up domain and problem for attempt #16
+ -- Domain setup complete
+ -- Problem setup complete
+
+Triggering plan generation and execution for attempt #16
+ -- Plan generation complete
+ -- Plan execution failed
+ -- generation complete, 5 total combos found
+
+Finding segmentation possibilities (across all combos generated) for attempt #16
+
+ -- Combo # 0: ['obtain_object', 'left_gripper', 'wall', None]
+ ---- 6 total change points found
+Trying partial plan execution on segmentations
+ -- iteration 0 successful!
+ ---- Segmentation VIABLE! Adding to knowledge base
+ -- iteration 1 successful!
+ -- iteration 2 successful!
+ -- iteration 3 successful!
+ -- iteration 4 successful!
+
+ -- Combo # 1: ['press_button', 'left_gripper', 'left_button', None]
+ ---- 12 total change points found
+Trying partial plan execution on segmentations
+ -- iteration 0 successful!
+ -- iteration 1 successful!
+ -- iteration 2 successful!
+ -- iteration 3 successful!
+ -- iteration 4 successful!
+ -- iteration 5 successful!
+ -- iteration 6 successful!
+ ---- Segmentation VIABLE! Adding to knowledge base
+ -- iteration 7 successful!
+ -- iteration 8 successful!
+ -- iteration 9 successful!
+ -- iteration 10 successful!
+
+ -- Combo # 2: ['obtain_object', 'left_gripper', 'table', None]
+ ---- 12 total change points found
+Trying partial plan execution on segmentations
+ -- iteration 0 successful!
+ -- iteration 1 successful!
+ -- iteration 2 successful!
+ -- iteration 3 successful!
+ -- iteration 4 successful!
+ -- iteration 5 successful!
+ -- iteration 6 successful!
+ -- iteration 7 successful!
+ -- iteration 8 successful!
+ -- iteration 9 successful!
+ -- iteration 10 successful!
+
+ -- Combo # 3: ['press_button', 'left_gripper', 'right_button', None]
+ ---- 9 total change points found
+Trying partial plan execution on segmentations
+ -- iteration 0 successful!
+ -- iteration 1 successful!
+ -- iteration 2 successful!
+ ---- Segmentation VIABLE! Adding to knowledge base
+ -- iteration 3 successful!
+ -- iteration 4 successful!
+ -- iteration 5 successful!
+ -- iteration 6 successful!
+ ---- Segmentation VIABLE! Adding to knowledge base
+ -- iteration 7 successful!
+
+ -- Combo # 4: ['obtain_object', 'left_gripper', 'block', None]
+ ---- 12 total change points found
+Trying partial plan execution on segmentations
+ -- iteration 0 successful!
+ -- iteration 1 successful!
+ -- iteration 2 successful!
+ -- iteration 3 successful!
+ -- iteration 4 successful!
+ -- iteration 5 successful!
+ -- iteration 6 successful!
+Service call failed: service [/partial_plan_executor_srv] returned no response

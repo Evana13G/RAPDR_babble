@@ -1,0 +1,3 @@
+string operator
+string object
+geometry_msgs/PoseStamped locationInformation

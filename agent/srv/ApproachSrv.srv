@@ -1,0 +1,4 @@
+string gripperName
+geometry_msgs/PoseStamped pose
+---
+int64 success_bool

@@ -1,0 +1,8 @@
+string actionName
+string gripper
+string obj
+string button 
+int64 clusterThreshold
+int64 minClusterSize
+---
+geometry_msgs/PoseStamped[] endEffectorInfo

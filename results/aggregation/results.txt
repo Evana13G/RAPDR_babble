@@ -1,0 +1,342 @@
+TOTALS
+
+**************** A_1 **************** 
+Goal accomplished!
+
+Times for each trial (in s): 
+[805.4092779159546, 93.49982500076294, 6.860627889633179, 80.79222989082336, 51.85300898551941]
+Total time elapsed: 1038.41499901
+
+**************** A_2 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[746.3942649364471, 97.60717415809631, 53.69904088973999]
+Total time elapsed: 897.70050621
+
+**************** A_3 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[951.2945990562439, 84.80762696266174, 48.21464991569519]
+Total time elapsed: 1084.31689906
+
+**************** A_4 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[798.3053729534149, 84.49671006202698, 6.694143056869507, 80.45389103889465, 28.19940495491028]
+Total time elapsed: 998.149688959
+
+**************** A_5 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[840.1474170684814, 49.50185799598694]
+Total time elapsed: 889.649286985
+
+**************** A_6 ****************
+Triggering plan generation and execution for attempt #8
+ -- Plan generation complete
+ -- Plan execution failed
+[INFO] [1549755831.592750, 1741.965000]: Robot Enabled
+[INFO] [1549755832.779280, 1743.033000]: Robot Enabled
+Executing a Primitive
+Service call failed: service [/partial_plan_executor_srv] responded with an error: error processing request: [Errno 110] Failed to get state from robot/end_effector/left_gripper/state
+
+**************** A_7 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[881.0754020214081, 84.24698781967163, 48.054779052734375]
+Total time elapsed: 1013.37718797
+
+**************** A_8 ****************
+Triggering plan generation and execution for attempt #9
+ -- Plan generation complete
+ -- Plan execution failed
+[INFO] [1549763589.259619, 1828.248000]: Robot Enabled
+[INFO] [1549763590.396325, 1829.287000]: Robot Enabled
+Executing a Primitive
+Service call failed: service [/partial_plan_executor_srv] responded with an error: error processing request: [Errno 110] Failed to get state from robot/end_effector/left_gripper/state
+
+**************** A_9 ****************
+Triggering plan generation and execution for attempt #6
+ -- Plan generation complete
+ -- Plan execution failed
+[INFO] [1549765666.789926, 1626.348000]: Robot Enabled
+[INFO] [1549765667.955957, 1627.394000]: Robot Enabled
+Executing a Primitive
+Service call failed: service [/partial_plan_executor_srv] responded with an error: error processing request: [Errno 110] Failed to get state from robot/end_effector/left_gripper/state
+
+**************** A_10 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[712.2610218524933, 85.27823805809021, 49.06836795806885]
+Total time elapsed: 846.607649088
+
+**************** A_11 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[761.5939290523529, 89.50084686279297, 51.55155897140503]
+Total time elapsed: 902.64635396
+
+**************** A_12 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[778.2689070701599, 85.82361793518066, 7.125207901000977, 755.7121789455414, 89.3718810081482, 7.844382047653198, 83.98201704025269, 28.73949909210205]
+Total time elapsed: 1836.86773491
+
+**************** A_13 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[764.7214441299438, 84.75513005256653, 39.674922943115234]
+Total time elapsed: 889.151516199
+
+**************** A_14 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[943.8409390449524, 85.03823709487915, 48.42660999298096]
+Total time elapsed: 1077.30580497
+
+**************** A_15 ****************
+Triggering plan generation and execution for attempt #13
+ -- Plan generation complete
+ -- Plan execution failed
+[INFO] [1549776737.788054, 1781.767000]: Robot Enabled
+[INFO] [1549776738.991466, 1782.849000]: Robot Enabled
+Executing a Primitive
+Service call failed: service [/partial_plan_executor_srv] responded with an error: error processing request: [Errno 110] Failed to get state from robot/end_effector/left_gripper/state
+
+**************** A_16 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[784.1327891349792, 89.9929141998291, 7.084074020385742, 2.4435110092163086, 85.4134669303894, 7.511059999465942, 518.5504009723663]
+Total time elapsed: 1495.12825418
+
+**************** A_17 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[912.0753710269928, 85.66341495513916, 7.67514181137085, 80.58107399940491, 6.828567028045654, 2.353908061981201, 2.363790988922119, 82.2246789932251, 28.12896490097046]
+Total time elapsed: 1207.89496303
+
+**************** A_18 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[770.2583408355713, 85.0948691368103, 48.41438603401184]
+Total time elapsed: 903.767616987
+
+**************** A_19 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[767.994567155838, 87.35131502151489, 49.233736991882324]
+Total time elapsed: 904.579639912
+
+**************** A_20 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[842.8718960285187, 85.29553890228271, 48.653791189193726]
+Total time elapsed: 976.821244955
+
+**************** A_21 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[870.6989300251007, 85.33733296394348, 6.746969938278198, 81.56160593032837, 49.975651025772095]
+Total time elapsed: 1094.32051802
+
+
+*****************************************************************************************
+
+**************** B_1 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[239.93172788619995, 94.88836002349854, 53.35485291481018]
+Total time elapsed: 388.174962997
+
+**************** B_2 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[172.97610592842102, 180.93040800094604, 218.17874908447266, 92.05745506286621, 84.05092883110046]
+Total time elapsed: 748.193674803
+
+**************** B_3 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[154.96608090400696, 91.70261287689209, 90.21672010421753]
+Total time elapsed: 336.885432959
+
+**************** B_4 ****************
+Triggering plan generation and execution for attempt #22
+ -- Plan generation complete
+ -- Plan execution failed
+[INFO] [1550057859.746635, 2295.729000]: Robot Enabled
+[INFO] [1550057866.333649, 2301.384000]: Robot Enabled
+Executing a Primitive
+Service call failed: service [/partial_plan_executor_srv] responded with an error: error processing request: [Errno 110] Failed to get state from robot/end_effector/left_gripper/state
+
+**************** B_5 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[149.52540111541748, 223.2512650489807, 196.4001910686493, 237.54716110229492, 232.97321486473083, 90.11393809318542, 7.5931408405303955, 88.85832595825195, 126.64326190948486, 234.82356309890747, 245.40476894378662, 7.500699043273926, 84.01222705841064, 7.5176239013671875, 2.426456928253174, 84.2256269454956, 85.5004529953003]
+Total time elapsed: 2104.31755185
+
+**************** B_6 ****************
+ -- Combo # 0: ['obtain_object', 'left_gripper', 'wall', None]
+Service call failed: service [/APV_srv] responded with an error: error processing request: The number of observations cannot be determined on an empty distance matrix.
+
+***************************   ATTEMPT #27   ***************************
+Setting up domain and problem for attempt #27
+ -- Domain setup complete
+ -- Problem setup complete
+Triggering plan generation and execution for attempt #27
+ -- Plan generation complete
+ -- Plan execution failed
+[INFO] [1550108411.676604, 1290.378000]: Robot Enabled
+[INFO] [1550108417.790784, 1296.003000]: Robot Enabled
+Generating all possible action/arg combinations (to send to APV) for attempt #27
+ -- generation complete, 5 total combos found
+Finding segmentation possibilities (across all combos generated) for attempt #27
+ -- Combo # 0: ['press_button', 'left_gripper', 'left_button', None]
+ ---- 6 total change points found
+Trying partial plan execution on segmentations
+
+**************** B_7 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[196.69339108467102, 156.7575168609619, 48.18757104873657]
+Total time elapsed: 401.638498068
+
+**************** B_8 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[176.3056778907776, 189.36028599739075, 166.4011790752411, 94.7702648639679, 197.2321560382843]
+Total time elapsed: 824.0695889
+
+**************** B_9 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[255.22947192192078, 176.35307383537292, 250.23693203926086, 174.85349988937378, 166.16778111457825, 48.62704086303711]
+Total time elapsed: 1071.46783519
+
+**************** B_10 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[160.85803699493408, 171.0644178390503, 83.77172303199768, 165.84763884544373, 13.391877889633179, 217.7247200012207, 156.11659789085388, 85.97280311584473, 197.42331099510193, 150.64707899093628, 6.955801010131836, 2.395430088043213, 2.3951239585876465, 2.394845962524414, 83.84940814971924, 80.62550401687622]
+Total time elapsed: 1581.43439221
+
+**************** B_11 ****************
+***************************   ATTEMPT #28   ***************************
+Setting up domain and problem for attempt #28
+ -- Domain setup complete
+ -- Problem setup complete
+Triggering plan generation and execution for attempt #28
+ -- Plan generation complete
+ -- Plan execution failed
+[INFO] [1550126747.682925, 1695.719000]: Robot Enabled
+[INFO] [1550126755.290712, 1702.372000]: Robot Enabled
+Generating all possible action/arg combinations (to send to APV) for attempt #28
+ -- generation complete, 5 total combos found
+Finding segmentation possibilities (across all combos generated) for attempt #28
+ -- Combo # 0: ['press_button', 'left_gripper', 'left_button', None]
+ ---- 9 total change points found
+Trying partial plan execution on segmentations
+[INFO] [1550126796.557752, 1737.332000]: Robot Enabled
+
+**************** B_12 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[160.2102792263031, 227.45437908172607, 166.8251829147339, 49.33636808395386]
+Total time elapsed: 603.826233864
+
+**************** B_13 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[155.94280290603638, 167.13997101783752, 49.633445024490356]
+Total time elapsed: 372.716237068
+
+**************** B_14 ****************
+***************************   ATTEMPT #25   ***************************
+Setting up domain and problem for attempt #25
+ -- Domain setup complete
+ -- Problem setup complete
+Triggering plan generation and execution for attempt #25
+ -- Plan generation complete
+ -- Plan execution failed
+
+**************** B_15 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[146.77025198936462, 201.833988904953, 84.79832601547241, 92.22300910949707]
+Total time elapsed: 525.625602961
+
+*****************************************************************************************
+
+**************** A_1_cluster1 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[911.0363419055939]
+Total time elapsed: 911.036352158
+
+**************** A_2_cluster1 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[963.290519952774, 74.40997290611267, 7.371514081954956, 82.7107789516449, 7.003691911697388, 2.404684066772461, 83.50376892089844, 7.060260057449341, 2.42456316947937, 84.49589896202087, 29.462363958358765]
+Total time elapsed: 1344.13807201
+
+**************** A_3_cluster1 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[684.7387020587921]
+Total time elapsed: 684.738714933
+
+**************** A_4_cluster1 ****************
+***************************   ATTEMPT #12   ***************************
+Setting up domain and problem for attempt #12
+ -- Domain setup complete
+ -- Problem setup complete
+Triggering plan generation and execution for attempt #12
+ -- Plan generation complete
+ -- Plan execution failed
+[INFO] [1549847251.115699, 1958.993000]: Robot Enabled
+[INFO] [1549847257.436863, 1964.499000]: Robot Enabled
+Executing a Primitive
+Service call failed: service [/partial_plan_executor_srv] responded with an error: error processing request: [Errno 110] Failed to get state from robot/end_effector/left_gripper/state
+
+**************** A_5_cluster1 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[1009.3909060955048, 78.18714213371277, 50.495530128479004]
+Total time elapsed: 1138.07359695
+
+**************** A_6_cluster1 ****************
+Goal accomplished!
+
+Times for each trial (in s): 
+[979.4812190532684, 86.08505892753601, 6.877895832061768, 81.87110185623169, 49.94103002548218]
+Total time elapsed: 1204.25633788

@@ -1,0 +1,5 @@
+---
+string[] predicates
+string[] objects
+string[] init
+PredicateList predicateList
