@@ -1,3 +1,6 @@
+# RAPDR_param
+Research in Action Primitive Discovery in Robotics through Parameter Variation
+
 #### Setup Instructions
 Setup each of the following, in order:
 
@@ -7,24 +10,21 @@ Setup each of the following, in order:
 
 3. Gazebo 7 (Installs with ROS installation) 
 
-4. Baxter Gazebo Simulation (http://sdk.rethinkrobotics.com/wiki/Simulator_Installation)
-    a. Note, we are not using the `baxter.sh sim` script
+4. MoveIt! (http://docs.ros.org/kinetic/api/moveit_tutorials/html/doc/getting_started/getting_started.html?fbclid=IwAR0RQ0jpDFDdohrVlnNNGAaPGvqAPEDsAIXnmBv2ROWGV8wfIdpRrIF9W-8)
 
-5. PyperPlan (https://bitbucket.org/malte/pyperplan)
+5. UR5 (https://github.com/gtatiya/Hacking-SotA-UR5.git)
+
+6. PyperPlan (https://bitbucket.org/malte/pyperplan)
    a. Manually download the code to the src directory and rename it 'pyperplan'
 
-6. cpDetect (https://github.com/choderalab/cpdetect.git)
-
-7. Clone the RAPDR project
+7. Clone the RAPDR_param project
 
 ** At this point, the file heirarchy should take the following form:
 
-        catkin_ws/
-        catkin_ws/src/
-        catkin_ws/src/RAPDR/
-        catkin_ws/src/*all baxter gazebo packages*
+        catkin_ws/src/Hacking-SotA-UR5/
+        catkin_ws/src/moveit_robots
         catkin_ws/src/pyperplan/
-        catkin_ws/src/cpdetect/
+        catkin_ws/src/RAPDR_param/
 
 8. Build:
 
@@ -35,65 +35,29 @@ Setup each of the following, in order:
 #### Run instructions
 Each of the following should be run in a separate terminal window:
 
-1. Launch baxter sim. 
+1. Launch UR5 sim. 
 
-        roslaunch baxter_gazebo baxter_world.launch
+        roslaunch agent UR5.launch
 
-2. Spawn the environment elements (table, buttons, object)
+2. Spawn the physical agent executor node, responsible for advertising UR5 action services. 
+
+        rosrun agent physical_agent_executor.py
+        
+3. Spawn the environment elements (cup and cover)
 
         rosrun environment initialize_environment.py
 
-3. Spawn the robot action server nodes (each in a seperate terminal window):
+4. Spawn data push_object action service node 
 
-    1. Service for obtaining object
+        rosrun agent push_object.py
 
-            rosrun agent obtain_object.py
+5. Spawn data grasp_object action service node 
 
-    2. Service for pressing button
-
-            rosrun agent press_button.py
-
-4. Spawn data conversion node (converts raw data into predicate form)
-
-        rosrun environment scenario_data.py
-
-5. Spawn the PDDL nodes (each in a seperate terminal window):
-
-    1. Service for generating pddl plans
-
-            rosrun pddl plan_generator.py
-
-    2. Service for executing pddl plans
-
-            rosrun pddl plan_executor.py
-
-
-6. Spawn partial plan execution node (for executing segmentations)
-
-        rosrun agent partial_plan_executor.py
-
-7. Spawn action primitive variation node
-
-        rosrun action_primitive_variation APV_server.py
-
-
-8. Run the agent brain (creepy). All configs are set here.
-
-        rosrun agent brain.py
-
+        rosrun agent grasp_object.py
 
 #### Other Info
-The URDF models are inside the baxter_simulation package in a folder that I believe is called baxter_sim_examples/models. The URDF model for the table and the wall is called cafe_table. 
 
-1. For proof of concept scenario #1, we assume the following protocol:
-
-"left_gripper" - left gripper \n
-"right_gripper" - right gripper \n
-"block" - object to obtain \n
-"left_button" - left button \n
-"right_button" - right button \n
-
-2. Many of the .py files might not be runnable. Navigate to their directories and run:
+1. Many of the .py files might not be runnable. Navigate to their directories and run:
 
         chmod +x [filename]
         

@@ -58,35 +58,21 @@ from util.image_converter import ImageConverter
 from util.data_conversion import *
 from util.wall_controller import *
 
-LeftButtonPose = None
-RightButtonPose = None
-BlockPose = None
+CupPose = None
+CoverPose = None
 LeftGripperPose = None
 RightGripperPose = None
 TablePose = None
-WallPose = None
-
-WallState = "UP"
 
 predicatesPublisher = None 
 imageConverter = None 
 
 predicates_list = []
 
-def setPoseButtonLeft(data):
-    global LeftButtonPose
-    LeftButtonPose = data
-    updatePredicates("at", "left_button", data)
-
-def setPoseButtonRight(data):
-    global RightButtonPose
-    RightButtonPose = data
-    updatePredicates("at", "right_button", data)
-
-def setPoseBlock(data):
-    global BlockPose
-    BlockPose = data
-    updatePredicates("at", "block", data)
+def setPoseCup(data):
+    global CupPose
+    CupPose = data
+    updatePredicates("at", "cup", data)
 
 def setPoseGripperLeft(data):
     global LeftGripperPose
@@ -103,32 +89,10 @@ def setPoseTable(data):
     TablePose = data
     updatePredicates("at", "table", data)
 
-def setPoseWall(data):
-    global WallPose
-    WallPose = data
-    updatePredicates("at", "wall", data)
-
-def checkElements(prevWallState):
-    global WallState
-    if 'pressed(left_button)' in pddlStringFormat(predicates_list):
-        WallState = "DOWN"
-    else:
-        WallState = "UP"
-    if WallState is not prevWallState:
-        toggleWallState()
-
-def toggleWallState():
-    if WallState == "DOWN":
-        dropWall()
-    else:
-        raiseWall()
-
 def updatePredicates(oprtr, obj, locInf):
-    currWallState = copy.deepcopy(WallState)
     updateLocationPredicates(oprtr, obj, locInf)
     updateVisionBasedPredicates()
     updatePhysicalStateBasedPredicates()
-    checkElements(currWallState)
     predicatesPublisher.publish(predicates_list)
 
 def updateLocationPredicates(oprtr, obj, locInf):
@@ -183,13 +147,11 @@ def main():
     predicatesPublisher = rospy.Publisher('predicate_values', PredicateList, queue_size = 10)
     imageConverter = ImageConverter()
 
-    rospy.Subscriber("block_pose", PoseStamped, setPoseBlock)
+    rospy.Subscriber("cup_pose", PoseStamped, setPoseCup)
+    rospy.Subscriber("cover_pose", PoseStamped, setPoseCover)
     rospy.Subscriber("left_gripper_pose", PoseStamped, setPoseGripperLeft)
     rospy.Subscriber("right_gripper_pose", PoseStamped, setPoseGripperRight)
-    rospy.Subscriber("left_button_pose", PoseStamped, setPoseButtonLeft)
-    rospy.Subscriber("right_button_pose", PoseStamped, setPoseButtonRight)
     rospy.Subscriber("cafe_table_pose", PoseStamped, setPoseTable)
-    rospy.Subscriber("grey_wall_pose", PoseStamped, setPoseWall)
 
     rospy.sleep(1)
     s = rospy.Service("scenario_data_srv", ScenarioDataSrv, getPredicates)

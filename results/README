@@ -1,5 +1,0 @@
-A_{number}: Trial #{number} run on brain A, run with clusterChangePoint values 'threshold=100', 'minGroup = 10', and including min/max/mean for cps 
-B_{number}: Trial #{number} run on brain B, run with clusterChangePoint values 'threshold=100', 'minGroup = 10', and including min/max/mean for cps 
-
-cluster1: Run with clusterChangePoint values 'threshold=40', 'minGroup = 3', and including min/max for cps 
-cluster2: Run with clusterChangePoint values 'threshold=100', 'minGroup = 10', and including min/max for cps 

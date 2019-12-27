@@ -1,0 +1,5 @@
+string objectName
+int64 twistRange
+int64 speed
+---
+int64 success_bool

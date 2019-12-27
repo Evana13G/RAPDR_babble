@@ -24,41 +24,101 @@ from std_msgs.msg import (
     Empty,
 )
 
-from baxter_core_msgs.srv import (
-    SolvePositionIK,
-    SolvePositionIKRequest,
-)
-
 from tf.transformations import *
-
-import baxter_interface
 
 from agent.srv import *
 from util.physical_agent import PhysicalAgent
 
 pa = None
 
-def move_to_start(req):
-    return MoveToStartSrvResponse(pa._move_to_start(req.limb))
+CupPose = None
+CoverPose = None
 
-def toggle_gripper_state(req):
-    if req.desiredState == 'open':
-        return ToggleGripperStateSrvResponse(pa._gripper_open(req.gripperName))
+def setPoseCup(data):
+    global CupPose
+    CupPose = data
+    
+def setPoseCover(data):
+    global CoverPose
+    CoverPose = data
+
+################################################################################
+def getObjectPose(obj, offset=True):
+    if obj == 'cup': 
+        poseTo = CupPose.pose
+    elif obj == 'cover':
+        poseTo = CoverPose.pose
     else:
-        return ToggleGripperStateSrvResponse(pa._gripper_close(req.gripperName))
+        poseTo = CoverPose.pose
+
+    adjustedPose = copy.deepcopy(poseTo)
+    if offset == True:
+        adjustedPose.position.x = poseTo.position.x - 0.15
+    return adjustedPose
+
+################################################################################
+def move_to_start(req):
+    return MoveToStartSrvResponse(pa.move_to_start())
+
+def open_gripper(req):
+    return OpenGripperSrvResponse(pa.gripper_open(req.position))
+    
+def close_gripper(req):
+    return CloseGripperSrvResponse(pa.gripper_close(req.position))
 
 def approach(req):
-    return ApproachSrvResponse(pa._approach(req.gripperName, req.pose))
+    return ApproachSrvResponse(pa.approach(req.pose))
 
+################################################################################
+
+def push(req):
+    objPose = getObjectPose(req.objectName)
+    start_offset = req.startOffset
+    ending_offset = req.endOffset
+    return PushSrvResponse(pa.push(objPose, start_offset, ending_offset))
+
+def grasp(req):
+    objPose = getObjectPose(req.objectName)
+    return GraspSrvResponse(pa.grasp(objPose))
+
+def shake(req):
+    objPose = getObjectPose(req.objectName)
+    twist_range = req.twistRange
+    speed = req.speed
+    return ShakeSrvResponse(pa.shake(req.shakePose, twist_range, speed))
+
+def press(req):
+    objPose = getObjectPose(req.objectName)
+    hover_distance = req.hoverDistance
+    press_amount = req.pressAmount
+    return PressSrvResponse(pa.press(objPose, hover_distance, press_amount))
+
+def drop(req):
+    objPose = getObjectPose(req.objectName)
+    drop_height = req.dropHeight
+    return DropSrvResponse(pa.drop(objPose, drop_height))
 
 def main():
     rospy.init_node("physical_agent_node")
-    rospy.wait_for_message("/robot/sim/started", Empty)
+
     global pa
     pa = PhysicalAgent()
+
+    rospy.Subscriber("cover_pose", PoseStamped, setPoseCover)
+    rospy.Subscriber("cup_pose", PoseStamped, setPoseCup)
+
+
     s_1 = rospy.Service("move_to_start_srv", MoveToStartSrv, move_to_start)
-    s_2 = rospy.Service("toggle_gripper_state_srv", ToggleGripperStateSrv, toggle_gripper_state)
+    s_2 = rospy.Service("open_gripper_srv", OpenGripperSrv, open_gripper)
+    s_2 = rospy.Service("close_gripper_srv", CloseGripperSrv, close_gripper)
     s_3 = rospy.Service("approach_srv", ApproachSrv, approach)
+
+    # Action Primitives
+    s_4 = rospy.Service("push_srv", PushSrv, push)
+    s_5 = rospy.Service("grasp_srv", GraspSrv, grasp)
+    s_6 = rospy.Service("shake_srv", ShakeSrv, shake)
+    s_7 = rospy.Service("press_srv", PressSrv, press)
+    s_8 = rospy.Service("drop_srv", DropSrv, drop)
 
     rospy.spin()
 

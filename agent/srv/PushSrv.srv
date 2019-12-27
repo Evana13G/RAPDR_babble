@@ -1,0 +1,5 @@
+string objectName 
+int64 startOffset
+int64 endOffset
+---
+int64 success_bool

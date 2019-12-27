@@ -16,7 +16,6 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_message_files(
 FILES
-  Num.msg
   At.msg
   State.msg
   Predicate.msg

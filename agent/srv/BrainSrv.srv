@@ -1,6 +1,4 @@
 string runName
-int64 clusterThreshold
-int64 minClusterSize
 ---
 int64[] timePerAttempt
 int64 totalTime

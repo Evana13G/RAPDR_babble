@@ -10,24 +10,29 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
-add_message_files(
-  FILES
-)
+#add_message_files(
+#  FILES
+#)
 
 add_service_files(
 FILES 
-MoveToStartSrv.srv
 ApproachSrv.srv
-ToggleGripperStateSrv.srv
-OpenGripperSrv.srv 
-BrainSrv.srv
+MoveToStartSrv.srv
+GraspObjectSrv.srv
+GraspSrv.srv
 CloseGripperSrv.srv 
+OpenGripperSrv.srv 
 MoveToObject.srv 
-MoveToButton.srv 
-PressButtonSrv.srv 
-ObtainObjectSrv.srv 
+BrainSrv.srv
+PushSrv.srv 
+PushObjectSrv.srv 
 PartialPlanExecutorSrv.srv
-test.srv
+ShakeObjectSrv.srv
+ShakeSrv.srv
+PressObjectSrv.srv
+PressSrv.srv
+DropObjectSrv.srv
+DropSrv.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)

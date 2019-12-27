@@ -1,0 +1,5 @@
+geometry_msgs/Pose objectPose
+int64 hoverDistance
+int64 pressAmount
+---
+int64 success_bool

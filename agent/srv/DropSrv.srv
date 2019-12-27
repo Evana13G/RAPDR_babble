@@ -1,0 +1,4 @@
+string objectName
+int64 dropHeight
+---
+int64 success_bool
