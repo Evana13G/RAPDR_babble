@@ -56,7 +56,6 @@ from environment.srv import *
 from environment.msg import *
 from util.image_converter import ImageConverter
 from util.data_conversion import *
-from util.wall_controller import *
 
 CupPose = None
 CoverPose = None
@@ -69,10 +68,17 @@ imageConverter = None
 
 predicates_list = []
 
+
+########################################################
 def setPoseCup(data):
     global CupPose
     CupPose = data
     updatePredicates("at", "cup", data)
+
+def setPoseCover(data):
+    global CoverPose
+    CoverPose = data
+    updatePredicates("at", "cover", data)
 
 def setPoseGripperLeft(data):
     global LeftGripperPose
@@ -88,7 +94,10 @@ def setPoseTable(data):
     global TablePose
     TablePose = data
     updatePredicates("at", "table", data)
+########################################################
 
+
+# Jumping off point for updates. "Master" list 
 def updatePredicates(oprtr, obj, locInf):
     updateLocationPredicates(oprtr, obj, locInf)
     updateVisionBasedPredicates()
@@ -111,24 +120,32 @@ def updateVisionBasedPredicates():
         if not (pred.operator == "is_visible"):
             new_predicates.append(pred)
 
-    # Just do block here 
+    # Need to update the image converter to deal with more objects and to be more sophisticated. 
+    # For the image recognition part, every object MUST have a different color to identify it  
     if (imageConverter.getBlockPixelCount() > 0):
-        new_predicates.append(Predicate(operator="is_visible", object="block", locationInformation=None)) 
+        new_predicates.append(Predicate(operator="is_visible", object="cup", locationInformation=None)) 
+        new_predicates.append(Predicate(operator="is_visible", object="cover", locationInformation=None)) 
     predicates_list = new_predicates
 
 def updatePhysicalStateBasedPredicates():
+
+    # Physical state choices: touching table, to start 
+
     global predicates_list
     new_predicates = []
     for pred in predicates_list:
         if ((not (pred.operator == "pressed")) and (not (pred.operator == "obtained"))):
             new_predicates.append(pred)
-    if is_touching(LeftGripperPose, LeftButtonPose) or is_touching(RightGripperPose, LeftButtonPose):
-        new_predicates.append(Predicate(operator="pressed", object="left_button", locationInformation=None)) 
-    if is_touching(LeftGripperPose, RightButtonPose) or is_touching(RightGripperPose, RightButtonPose):
-        new_predicates.append(Predicate(operator="pressed", object="right_button", locationInformation=None)) 
-    if is_obtained(BlockPose, WallPose):
-        new_predicates.append(Predicate(operator="obtained", object="block", locationInformation=None))
-    
+
+    if is_touching(LeftGripperPose, TablePose):
+        new_predicates.append(Predicate(operator="touching_table", object="left_gripper", locationInformation=None)) 
+    if is_touching(RightGripperPose, TablePose):
+        new_predicates.append(Predicate(operator="touching_table", object="right_gripper", locationInformation=None)) 
+    if is_touching(CupPose, TablePose):
+        new_predicates.append(Predicate(operator="touching_table", object="cup", locationInformation=None)) 
+    if is_touching(CoverPose, TablePose):
+        new_predicates.append(Predicate(operator="touching_table", object="cover", locationInformation=None)) 
+
     predicates_list = new_predicates
 
 def getPredicates(data):
