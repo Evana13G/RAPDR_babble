@@ -44,14 +44,13 @@ pub_cup_pose = rospy.Publisher('cup_pose', PoseStamped, queue_size = 10)
 pub_cover_pose = rospy.Publisher('cover_pose', PoseStamped, queue_size = 10)
 
 #SPAWN WALL AT 1.1525 z to be above table or 0.3755 to be below
-def load_gazebo_models(table_pose=Pose(position=Point(x=0.82, y=0.0, z=0.0)),
-                       table_reference_frame="world",
+def load_gazebo_models(table_pose=Pose(position=Point(x=0.78, y=0.0, z=0.0)),
                        block_pose=Pose(position=Point(x=0.8, y=0.0185, z=0.8)),
                        right_button_pose=Pose(position=Point(x=0.525, y=-0.2715, z=0.8)),
                        left_button_pose=Pose(position=Point(x=0.525, y=0.1515, z=0.8)),
                        block_reference_frame="world", 
-                       cup_pose=Pose(position=Point(x=0.0, y=0.0, z=0.6)),
-                       cover_pose=Pose(position=Point(x=0.0, y=0.0, z=0.6)),
+                       cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9)),
+                       cover_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9)),
                        reference_frame="world"):
 
     # Get Models' Path
@@ -74,15 +73,17 @@ def load_gazebo_models(table_pose=Pose(position=Point(x=0.82, y=0.0, z=0.0)),
     try:
         spawn_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
         resp_sdf = spawn_sdf("cafe_table", table_xml, "/",
-                             table_pose, table_reference_frame)
+                             table_pose, reference_frame)
     except rospy.ServiceException, e:
         rospy.logerr("Spawn SDF service call failed: {0}".format(e))
+
     try:
         spawn_urdf = rospy.ServiceProxy('/gazebo/spawn_urdf_model', SpawnModel)
         resp_urdf = spawn_urdf("cup", cup_xml, "/",
                                cup_pose, reference_frame)
     except rospy.ServiceException, e:
         rospy.logerr("Spawn URDF service call failed: {0}".format(e))
+        
     try:
         spawn_urdf = rospy.ServiceProxy('/gazebo/spawn_urdf_model', SpawnModel)
         resp_urdf = spawn_urdf("cover", cover_xml, "/",
@@ -95,12 +96,15 @@ def delete_gazebo_models():
     # Do not wait for the Gazebo Delete Model service, since
     # Gazebo should already be running. If the service is not
     # available since Gazebo has been killed, it is fine to error out
+    global pub
     try:
+        pub = False
         delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
         resp_delete = delete_model("cafe_table")
         resp_delete = delete_model("cup")
         resp_delete = delete_model("cover")
     except rospy.ServiceException, e:
+        pub = True
         rospy.loginfo("Delete Model service call failed: {0}".format(e))
         
 def poseFromPoint(poseVar):
@@ -131,6 +135,7 @@ def init():
 
     SRVPROXY_move_to_start = rospy.ServiceProxy('move_to_start_srv', MoveToStartSrv)
     SRVPROXY_move_to_start()
+
     load_gazebo_models()
     rospy.sleep(3)
 
@@ -138,7 +143,7 @@ def init():
 
     rospy.wait_for_service('/gazebo/get_model_state')
     rospy.wait_for_service('/gazebo/get_link_state')
-    
+
     while pub == True:
         
         rate = rospy.Rate(10) # 10hz
@@ -178,6 +183,9 @@ def init():
         except rospy.ServiceException, e:
             rospy.logerr("get_model_state for block service call failed: {0}".format(e))
 
+ 
+     ######################################################################################
+     ####### START: Gripper pose processing
 
         pose_lglf = None
         pose_lgrf = None
@@ -236,14 +244,16 @@ def init():
         poseStamped_right_gripper = PoseStamped(header=hdr, pose=rightGripperPose)
         pub_right_gripper_pose.publish(blockPoseToGripper(poseStamped_right_gripper))
 
+     ####### END: Gripper pose processing
+     ######################################################################################
 
 def handle_environment_request(req):
     global pub 
+
     if req.action == "init":
         pub = True
         try:
             load_gazebo_models()
-            raiseWall()
             return HandleEnvironmentSrvResponse(1)
         except rospy.ServiceException, e:
             rospy.logerr("Init environment call failed: {0}".format(e))
@@ -265,15 +275,12 @@ def handle_environment_request(req):
             rospy.sleep(3)
             pub = True 
             load_gazebo_models()
-            raiseWall()
             rospy.sleep(6)
             return HandleEnvironmentSrvResponse(1)
 
         except rospy.ServiceException, e:
             rospy.logerr("Destroy environment call failed: {0}".format(e))
             return HandleEnvironmentSrvResponse(0)
-
-
     else:
         print('No Action')
 
@@ -282,7 +289,6 @@ def main():
 
     rospy.init_node("initialize_environment_node")
     rospy.on_shutdown(delete_gazebo_models)
-    # rospy.wait_for_message("/robot/sim/started", Empty) 
     rospy.wait_for_service('move_to_start_srv', timeout=60)
     
     s = rospy.Service("init_environment", HandleEnvironmentSrv, handle_environment_request)
