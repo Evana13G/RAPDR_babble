@@ -1,0 +1,135 @@
+<?xml version="1.0" ?>
+<robot name="cafe_table">
+ 
+  <link name="world"/>
+
+  <link name="base_link">   
+    <visual>
+      <origin xyz="0.05 0 0.02" rpy="0 0 0" />
+      <geometry>
+        <box size="0.56 0.56 0.04" />
+      </geometry>
+    </visual>
+    <inertial>
+      <origin xyz="0.05 0 0.02" rpy="0 0 0" />
+      <mass value="100"/>
+      <inertia
+        ixx="2.627" ixy="0.0" ixz="0.0"
+        iyy="5.227" iyz="0.0"
+        izz="2.627"/>
+    </inertial>
+    <collision>
+      <origin xyz="0.05 0 0.02" rpy="0 0 0" />
+      <geometry>
+        <box size="0.56 0.56 0.04" />
+      </geometry>
+    </collision> 
+  </link>
+ 
+  <joint name="fixed" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint>
+ 
+  <link name="column">   
+    <visual>
+      <origin xyz="0 0 0.37" rpy="0 0 0" />
+      <geometry>
+        <box size="0.08 0.08 0.74" />
+      </geometry>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0.37" rpy="0 0 0" />
+      <mass value="10"/>
+      <inertia
+        ixx="0.5" ixy="0.0" ixz="0.0"
+        iyy="0.01" iyz="0.0"
+        izz="0.5"/>
+    </inertial>
+    <collision>
+      <origin xyz="0 0 0.37" rpy="0 0 0" />
+      <geometry>
+        <box size="0.08 0.08 0.74" />
+      </geometry>
+    </collision>
+  </link>
+ 
+  <joint name="base_to_column" type="fixed">
+    <parent link="base_link"/>
+    <child link="column"/>
+  </joint>
+ 
+  <link name="surface1">
+    <visual>
+      <origin xyz="0.23 0 0.755" rpy="0 0 0" />
+      <geometry>
+        <box size="0.913 2 0.04" />
+      </geometry>
+    </visual>
+    <inertial>
+      <origin xyz="0.23 0 0.755" rpy="0 0 0" />
+      <mass value="1"/>
+      <inertia
+        ixx="0.07" ixy="0.0" ixz="0.0"
+        iyy="0.40" iyz="0.0"
+        izz="0.33"/>
+    </inertial>
+    <collision>
+      <origin xyz="0.23 0 0.755" rpy="0 0 0" />
+      <geometry>
+        <box size="0.913 2 0.04" />
+      </geometry>
+    </collision>
+  </link>
+ 
+  <joint name="column_to_surface1" type="fixed">
+    <parent link="column"/>
+    <child link="surface1"/>
+  </joint>
+
+ 
+  <gazebo>
+    <gravity>0</gravity>
+  </gazebo>
+
+  <gazebo reference="base_link">
+    <material>Gazebo/Wood</material>
+    <gravity>0</gravity>
+    <mu1>1000</mu1>
+    <mu2>1000</mu2>
+  </gazebo>
+ 
+  <gazebo reference="column">
+    <material>Gazebo/Wood</material>
+    <mu1>1000</mu1>
+    <mu2>1000</mu2>
+  </gazebo>
+ 
+  <gazebo reference="surface1">
+    <material>Gazebo/Wood</material>
+    <mu1>1000</mu1>
+    <mu2>1000</mu2>
+  </gazebo>
+ 
+  <gazebo reference="surface3">
+    <material>Gazebo/Wood</material>
+    <mu1>1000</mu1>
+    <mu2>1000</mu2>
+  </gazebo>
+ 
+  <gazebo reference="surface4">
+    <material>Gazebo/Wood</material>
+    <mu1>1000</mu1>
+    <mu2>1000</mu2>
+  </gazebo>
+ 
+  <gazebo reference="surface2">
+    <material>Gazebo/Wood</material>
+    <mu1>1000</mu1>
+    <mu2>1000</mu2>
+  </gazebo>
+ 
+
+ 
+</robot>
+

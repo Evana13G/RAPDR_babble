@@ -58,7 +58,7 @@ def getObjectPose(obj, offset=True):
 
 ################################################################################
 def move_to_start(req):
-    return MoveToStartSrvResponse(pa.move_to_start())
+    return MoveToStartSrvResponse(pa._move_to_start(req.limb))
 
 def open_gripper(req):
     return OpenGripperSrvResponse(pa.gripper_open(req.position))
