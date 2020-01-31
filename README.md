@@ -1,4 +1,4 @@
-# RAPDR_param
+# RAPDR_babble
 Research in Action Primitive Discovery in Robotics through Parameter Variation
 
 #### Setup Instructions
@@ -63,7 +63,7 @@ Each of the following should be run in a separate terminal window:
 
 6. Run the agent brain (creepy). All configs are set here.
 
-        rosrun agent brain_A.py
+        rosrun agent brain.py
 
 
 #### Other Info
