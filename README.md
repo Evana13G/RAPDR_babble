@@ -39,19 +39,13 @@ Each of the following should be run in a separate terminal window:
 
         roslaunch baxter_gazebo baxter_world.launch
 
-2. Spawn the environment elements (table, buttons, object)
+2. Spawn the agent
+
+        rosrun agent physical_agent_executor.py
+        
+3. Spawn the environment elements (table, buttons, object)
 
         rosrun environment initialize_environment.py
-
-3. Spawn the robot action server nodes (each in a seperate terminal window):
-
-    1. Service for obtaining object
-
-            rosrun agent obtain_object.py
-
-    2. Service for pressing button
-
-            rosrun agent press_button.py
 
 4. Spawn data conversion node (converts raw data into predicate form)
 
@@ -67,19 +61,9 @@ Each of the following should be run in a separate terminal window:
 
             rosrun pddl plan_executor.py
 
+6. Run the agent brain (creepy). All configs are set here.
 
-6. Spawn partial plan execution node (for executing segmentations)
-
-        rosrun agent partial_plan_executor.py
-
-7. Spawn action primitive variation node
-
-        rosrun action_primitive_variation APV_server.py
-
-
-8. Run the agent brain (creepy). All configs are set here.
-
-        rosrun agent brain.py
+        rosrun agent brain_A.py
 
 
 #### Other Info
