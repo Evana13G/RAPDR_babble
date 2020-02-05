@@ -61,10 +61,10 @@ class PhysicalAgent(object):
 ############## Higher Level Action Primitives 
 
     def push(self, startPose, endPose):
-        # self._set_constraints(['base'])
-        # self.move_to_pose(startPose)
-        # self.gripper_close()
-        # self.move_to_pose(endPose)
+        print("ENTER: Push in PA")
+        self._gripper_close("left")
+        self._approach("left", startPose)
+        self._approach("left", endPose)
         return 1
 
     def grasp(self, pose):
@@ -149,13 +149,13 @@ class PhysicalAgent(object):
             rospy.logerr("Service call failed: %s" % (e,))
             return 0
 
-    def move_to_pose(self, pose):
-        self._arm_group.set_pose_target(pose)
-        self._arm_group.go(wait=True)
+    # def move_to_pose(self, pose):
+    #     self._arm_group.set_pose_target(pose)
+    #     self._arm_group.go(wait=True)
 
     def _approach(self, gripperName, pose):
         appr = copy.deepcopy(pose)
-        appr.pose.position.z = appr.pose.position.z + self._hover_distance
+        appr.position.z = appr.position.z + self._hover_distance
         joint_angles = self.ik_request(gripperName, appr)
         self._guarded_move_to_joint_position(gripperName, joint_angles)
 

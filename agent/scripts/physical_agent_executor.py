@@ -72,10 +72,18 @@ def approach(req):
 ################################################################################
 
 def push(req):
+    print("ENTER: Push Srv in PAE")
     objPose = getObjectPose(req.objectName)
     start_offset = req.startOffset
     ending_offset = req.endOffset
-    return PushSrvResponse(pa.push(objPose, start_offset, ending_offset))
+
+    startPose = copy.deepcopy(objPose)
+    endPose = copy.deepcopy(objPose)
+
+    startPose.position.y = startPose.position.y - start_offset
+    endPose.position.y = endPose.position.y + ending_offset
+
+    return PushSrvResponse(pa.push(startPose, endPose))
 
 def grasp(req):
     objPose = getObjectPose(req.objectName)
@@ -119,6 +127,8 @@ def main():
     s_6 = rospy.Service("shake_srv", ShakeSrv, shake)
     s_7 = rospy.Service("press_srv", PressSrv, press)
     s_8 = rospy.Service("drop_srv", DropSrv, drop)
+
+    # s_9 = rospy.Service("push_object_srv")
 
     rospy.spin()
 
