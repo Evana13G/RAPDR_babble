@@ -29,7 +29,7 @@ def handle_trial(req):
 
 
     pushProxy = rospy.ServiceProxy('push_srv', PushSrv)
-    pushProxy('cup', 0.05, 0.3)
+    pushProxy('cup', 0.05, 0.03)
 
 
     print("\n#####################################################################################")

@@ -42,18 +42,36 @@ def setPoseCover(data):
     global CoverPose
     CoverPose = data
 
-################################################################################
-def getObjectPose(obj, offset=True):
-    if obj == 'cup': 
-        poseTo = CupPose.pose
-    elif obj == 'cover':
-        poseTo = CoverPose.pose
-    else:
-        poseTo = CoverPose.pose
+def setLeftGripperPose(data):
+    global LeftGripper
+    LeftGripper = data
 
-    adjustedPose = copy.deepcopy(poseTo)
-    if offset == True:
-        adjustedPose.position.x = poseTo.position.x - 0.15
+################################################################################
+def getObjectPose(obj, poseStamped=True, offset=True):
+    if poseStamped == True:
+        if obj == 'cup': 
+            poseTo = CupPose
+        elif obj == 'cover':
+            poseTo = CoverPose
+        else:
+            poseTo = LeftGripper
+
+        adjustedPose = copy.deepcopy(poseTo)
+        if offset == True:
+            adjustedPose.pose.position.x = poseTo.pose.position.x - 0.15
+
+    else:
+        if obj == 'cup': 
+            poseTo = CupPose.pose
+        elif obj == 'cover':
+            poseTo = CoverPose.pose
+        else:
+            poseTo = LeftGripper.pose
+
+        adjustedPose = copy.deepcopy(poseTo)
+        if offset == True:
+            adjustedPose.position.x = poseTo.position.x - 0.15
+
     return adjustedPose
 
 ################################################################################
@@ -73,17 +91,28 @@ def approach(req):
 
 def push(req):
     print("ENTER: Push Srv in PAE")
+
     objPose = getObjectPose(req.objectName)
-    start_offset = req.startOffset
-    ending_offset = req.endOffset
+    gripperPose = getObjectPose('left_gripper')
+
+    start_offset = req.startOffset #FLOAT
+    ending_offset = req.endOffset #FLOAT
 
     startPose = copy.deepcopy(objPose)
     endPose = copy.deepcopy(objPose)
 
-    startPose.position.y = startPose.position.y - start_offset
-    endPose.position.y = endPose.position.y + ending_offset
+    startPose.pose.position.y = objPose.pose.position.y - start_offset
+    endPose.pose.position.y = objPose.pose.position.y + ending_offset
 
-    return PushSrvResponse(pa.push(startPose, endPose))
+    print("start pose")
+    print(startPose)
+    print("end pose")
+    print(endPose)
+    print("gripper pose")
+    print(gripperPose)
+
+
+    return PushSrvResponse(pa.push(startPose, endPose, gripperPose))
 
 def grasp(req):
     objPose = getObjectPose(req.objectName)
@@ -114,7 +143,7 @@ def main():
 
     rospy.Subscriber("cover_pose", PoseStamped, setPoseCover)
     rospy.Subscriber("cup_pose", PoseStamped, setPoseCup)
-
+    rospy.Subscriber("left_gripper_pose", PoseStamped, setLeftGripperPose)
 
     s_1 = rospy.Service("move_to_start_srv", MoveToStartSrv, move_to_start)
     s_2 = rospy.Service("open_gripper_srv", OpenGripperSrv, open_gripper)
