@@ -33,6 +33,7 @@ PressObjectSrv.srv
 PressSrv.srv
 DropObjectSrv.srv
 DropSrv.srv
+JointVelocitySrv.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)

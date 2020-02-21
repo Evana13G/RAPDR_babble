@@ -108,6 +108,56 @@ class PhysicalAgent(object):
             rospy.logerr("Service call failed: %s" % (e,))
             return 0
 
+    ####### ADDED by Amel 
+    def _set_joint_velocity(self, start_angles=None, limb='both'):
+        velocities_l = {'l_gripper_l_finger_joint' : 1.5129108885951033e-070, 
+                        'l_gripper_r_finger_joint' : 2.169911245541326e-070,
+                        'left_e0' : -1.7125872625407934e-060, 
+                        'left_e1' : -7.172398941331635e-070,
+                        'left_s0' : 1.2769639268640998e-070, 
+                        'left_s1' : -1.9826054609577262e-080,
+                        'left_w0' :  4.067311133343405e-050,
+                        'left_w1' : 1.6401705346185865e-080,
+                        'left_w2' : 5.840094167063631e-060}
+        velocities_r = {'r_gripper_l_finger_joint' : 1.5129108885951033e-02, 
+                'r_gripper_r_finger_joint' : 2.169911245541326e-02,
+                'right_e0' : -1.7125872625407934e-02, 
+                'right_e1' : -7.172398941331635e-02,
+                'right_s0' : 1.2769639268640998e-02, 
+                'right_s1' : -1.9826054609577262e-02,
+                'right_w0' :  4.067311133343405e-02,
+                'right_w1' : 1.6401705346185865e-02,
+                'right_w2' : 5.840094167063631e-02}
+        try:                
+            if limb == 'left_gripper':
+                if self._verbose:
+                    print("Changing the left arm velocity ...")
+                _limb = self.translateLimb(limb)
+                _limb.set_joint_velocities(velocities_l)
+            elif limb == 'right_gripper':
+                if self._verbose:
+                    print("Changing the right arm velocity ...")
+                _limb = self.translateLimb(limb)
+                _limb.set_joint_velocities(velocities_r)
+            else:
+                if self._verbose:
+                    print("Changing the left arm velocity ...")
+                _limb = self.translateLimb('left_gripper')
+                _limb.set_joint_velocities(velocities_l)
+                if self._verbose:
+                    print("Changing the right arm velocity ...")
+                _limb = self.translateLimb('right_gripper')
+                _limb.set_joint_velocities(velocities_r)
+
+            rospy.sleep(1.0)
+            if self._verbose:
+                print("Set joint velocities")
+            return 1
+        except (rospy.ServiceException, rospy.ROSException), e:
+            rospy.logerr("Service call failed: %s" % (e,))
+            return 0
+    ####################################################
+
     def _move_to_start(self, start_angles=None, limb='both'):
   
         starting_joint_angles_l = {'left_w0': 0.6699952259595108,

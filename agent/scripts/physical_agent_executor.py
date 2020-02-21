@@ -60,6 +60,10 @@ def getObjectPose(obj, offset=True):
 def move_to_start(req):
     return MoveToStartSrvResponse(pa._move_to_start(req.limb))
 
+def set_velocity(req):
+    print("Success")
+    return (pa._set_joint_velocity(req.limb))
+
 def open_gripper(req):
     return OpenGripperSrvResponse(pa.gripper_open(req.position))
     
@@ -73,8 +77,11 @@ def approach(req):
 
 def push(req):
     objPose = getObjectPose(req.objectName)
+    print(req.objectName)
     start_offset = req.startOffset
+    print(req.startOffset)
     ending_offset = req.endOffset
+    print(req.endOffset)
     return PushSrvResponse(pa.push(objPose, start_offset, ending_offset))
 
 def grasp(req):
@@ -98,6 +105,7 @@ def drop(req):
     drop_height = req.dropHeight
     return DropSrvResponse(pa.drop(objPose, drop_height))
 
+
 def main():
     rospy.init_node("physical_agent_node")
 
@@ -119,6 +127,7 @@ def main():
     s_6 = rospy.Service("shake_srv", ShakeSrv, shake)
     s_7 = rospy.Service("press_srv", PressSrv, press)
     s_8 = rospy.Service("drop_srv", DropSrv, drop)
+    s_9 = rospy.Service("set_joint_velocity_srv", JointVelocitySrv, set_velocity)
 
     rospy.spin()
 
