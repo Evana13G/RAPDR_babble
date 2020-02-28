@@ -9,6 +9,8 @@ import numpy as np
 import rospy
 import rospkg
 
+import time
+
 from gazebo_msgs.srv import (
     SpawnModel,
     DeleteModel,
@@ -77,7 +79,40 @@ class PhysicalAgent(object):
         # self.move_to_start()
         return 1
 
-    def shake(self, shakePose, twist_range, speed):
+    def shake(self, objPose="cup", twist_range=1, speed=0.1):
+        # For now, assume left gripper is moving (change to an argument)
+        # Number of times to shake can be adjusted by the for loop 
+
+        # twist_range tells you how much to move in each direction (delta)
+        # speed has to do with the duration of the sleep between the two positions (frequency)
+
+
+        lj = self._left_limb.joint_names()
+        gripper_name = "left"
+
+        joint_name= lj[6] # gripper twist, left_w2
+
+        # GRIP OBJECT 
+        self._gripper_open(gripper_name)
+        # self._approach(gripper_name, objPose)
+        # self.move_to_pose(objPose)
+        # self._gripper_close(gripper_name)
+
+        begin_position = self._left_limb.joint_angle(joint_name) # pose robot will move to at the end
+
+        # Gripper moves in between two positions
+        for i in range(100):
+            current_position = self._left_limb.joint_angle(joint_name)
+            joint_command = {joint_name: current_position + twist_range}
+            self._left_limb.set_joint_positions(joint_command)
+            time.sleep(speed)
+            current_position = self._left_limb.joint_angle(joint_name)
+            joint_command = {joint_name: current_position - twist_range}
+            self._left_limb.set_joint_positions(joint_command)
+            time.sleep(speed)
+            
+        joint_command = {joint_name: begin_position}
+        self._left_limb.set_joint_positions(joint_command)
         return 1
 
     def press(self, objPose, hover_distance, press_amount):
@@ -110,25 +145,46 @@ class PhysicalAgent(object):
 
     ####### ADDED by Amel 
     def _set_joint_velocity(self, start_angles=None, limb='both'):
+        # velocities_l = {'l_gripper_l_finger_joint' : 1.5129108885951033e-070, 
+        #                 'l_gripper_r_finger_joint' : 2.169911245541326e-070,
+        #                 'left_e0' : -1.7125872625407934e-060, 
+        #                 'left_e1' : -7.172398941331635e-070,
+        #                 'left_s0' : 1.2769639268640998e-070, 
+        #                 'left_s1' : -1.9826054609577262e-080,
+        #                 'left_w0' :  4.067311133343405e-050,
+        #                 'left_w1' : 1.6401705346185865e-080,
+        #                 'left_w2' : 5.840094167063631e-060}
+        # velocities_r = {'r_gripper_l_finger_joint' : 1.5129108885951033e-02, 
+        #         'r_gripper_r_finger_joint' : 2.169911245541326e-02,
+        #         'right_e0' : -1.7125872625407934e-02, 
+        #         'right_e1' : -7.172398941331635e-02,
+        #         'right_s0' : 1.2769639268640998e-02, 
+        #         'right_s1' : -1.9826054609577262e-02,
+        #         'right_w0' :  4.067311133343405e-02,
+        #         'right_w1' : 1.6401705346185865e-02,
+        #         'right_w2' : 5.840094167063631e-02}
+
+
         velocities_l = {'l_gripper_l_finger_joint' : 1.5129108885951033e-070, 
-                        'l_gripper_r_finger_joint' : 2.169911245541326e-070,
-                        'left_e0' : -1.7125872625407934e-060, 
-                        'left_e1' : -7.172398941331635e-070,
-                        'left_s0' : 1.2769639268640998e-070, 
-                        'left_s1' : -1.9826054609577262e-080,
-                        'left_w0' :  4.067311133343405e-050,
-                        'left_w1' : 1.6401705346185865e-080,
-                        'left_w2' : 5.840094167063631e-060}
-        velocities_r = {'r_gripper_l_finger_joint' : 1.5129108885951033e-02, 
-                'r_gripper_r_finger_joint' : 2.169911245541326e-02,
-                'right_e0' : -1.7125872625407934e-02, 
-                'right_e1' : -7.172398941331635e-02,
-                'right_s0' : 1.2769639268640998e-02, 
-                'right_s1' : -1.9826054609577262e-02,
-                'right_w0' :  4.067311133343405e-02,
-                'right_w1' : 1.6401705346185865e-02,
-                'right_w2' : 5.840094167063631e-02}
-        try:                
+                'l_gripper_r_finger_joint' : 2.169911245541326e-070,
+                'left_e0' : -1.7125872625407934e-060, 
+                'left_e1' : -7.172398941331635e-070,
+                'left_s0' : 1.2769639268640998e-070, 
+                'left_s1' : -1.9826054609577262e-080,
+                'left_w0' :  4.067311133343405e-050,
+                'left_w1' : 1.6401705346185865e-080,
+                'left_w2' : 5.840094167063631e-060}
+        velocities_r = {'r_gripper_l_finger_joint' : 2, 
+                'r_gripper_r_finger_joint' : 2,
+                'right_e0' : 12, 
+                'right_e1' : 12,
+                'right_s0' : 12, 
+                'right_s1' : 12,
+                'right_w0' : 12,
+                'right_w1' : 12,
+                'right_w2' : 12} 
+
+        try:
             if limb == 'left_gripper':
                 if self._verbose:
                     print("Changing the left arm velocity ...")
@@ -206,6 +262,12 @@ class PhysicalAgent(object):
     def _approach(self, gripperName, pose):
         appr = copy.deepcopy(pose)
         appr.pose.position.z = appr.pose.position.z + self._hover_distance
+        joint_angles = self.ik_request(gripperName, appr)
+        self._guarded_move_to_joint_position(gripperName, joint_angles)
+
+    def _approach2(self, gripperName, pose):
+        appr = copy.deepcopy(pose)
+        appr.position.z = appr.position.z + self._hover_distance
         joint_angles = self.ik_request(gripperName, appr)
         self._guarded_move_to_joint_position(gripperName, joint_angles)
 
