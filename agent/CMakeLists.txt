@@ -18,20 +18,15 @@ add_service_files(
 FILES 
 ApproachSrv.srv
 MoveToStartSrv.srv
-GraspObjectSrv.srv
 GraspSrv.srv
 CloseGripperSrv.srv 
 OpenGripperSrv.srv 
-MoveToObject.srv 
 BrainSrv.srv
 PushSrv.srv 
 PushObjectSrv.srv 
 PartialPlanExecutorSrv.srv
-ShakeObjectSrv.srv
 ShakeSrv.srv
-PressObjectSrv.srv
 PressSrv.srv
-DropObjectSrv.srv
 DropSrv.srv
 )
 

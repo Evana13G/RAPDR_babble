@@ -43,10 +43,13 @@ class PhysicalAgent(object):
         self._right_limb = baxter_interface.Limb('right')
         self._left_gripper = baxter_interface.Gripper('left')
         self._right_gripper = baxter_interface.Gripper('right')
+        
         ns_left = "ExternalTools/left/PositionKinematicsNode/IKService"
         ns_right = "ExternalTools/right/PositionKinematicsNode/IKService"
+
         self._iksvc_left = rospy.ServiceProxy(ns_left, SolvePositionIK)
         self._iksvc_right = rospy.ServiceProxy(ns_right, SolvePositionIK)
+        self._joint_effort_svc = rospy.ServiceProxy('/gazebo/apply_joint_effort')
         rospy.wait_for_service(ns_left, 5.0)
         rospy.wait_for_service(ns_right, 5.0)
         if self._verbose:
@@ -61,49 +64,38 @@ class PhysicalAgent(object):
 ############## Higher Level Action Primitives 
 
     def push(self, startPose, endPose, objPose):
-        print("ENTER: Push in PA")
-        
-        hoverPose = copy.deepcopy(startPose)
-        hoverPose.pose.position.z = startPose.pose.position.z + 0.1
-        # hoverPose.pose.orientation = gripperPose.pose.orientation
-
-
-        print("************ obj pose")
-        print(objPose)
-        print("************ start pose")
-        print(startPose)
-        print("************ end pose")
-        print(endPose)
-        print("************ gripper pose")
-        print(objPose)
-
         self._gripper_close("left")
-        print("--------- GRIPPER CLOSED")
-        self._approach("left", hoverPose)
-        print("--------- AT HOVER POSE")
+        self._hover_approach("left", startPose)
         self._approach("left", startPose)
-        print("--------- AT START POSE")
         self._approach("left", endPose)
-        print("--------- AT END POSE")
         return 1
 
     def grasp(self, pose):
-        # self._set_constraints(['base'])
-        # self.gripper_open()
-        # self.move_to_pose(pose)
-        # rospy.sleep(2)
-        # self.gripper_close(0.365) # Depends on the object 
-        # rospy.sleep(2)
-        # self.move_to_start()
+        self._gripper_open("left")
+        self._hover_approach("left", pose)
+        self._approach("left", pose)
         return 1
 
-    def shake(self, shakePose, twist_range, speed):
+    def shake(self, objPose, twist_range, speed):
+        self._gripper_open("left")
+        self._hover_approach("left", objPose)
+        self._approach("left", objPose)
+        self._gripper_closed("left")
         return 1
 
-    def press(self, objPose, hover_distance, press_amount):
+    def press(self, objPose, hover_distance, press_amount): #TODO
+        self._gripper_close("left")
+        self._hover_approach("left", objPose)
+        self._approach("left", objPose)
         return 1
 
     def drop(self, objPose, drop_height):
+        self._gripper_open("left")
+        self._hover_approach("left", objPose)
+        self._approach("left", objPose)
+        self._gripper_closed("left")
+        self._hover_approach("left", objPose)
+        self._gripper_open("left")
         return 1
 
 
@@ -186,6 +178,11 @@ class PhysicalAgent(object):
 
 #####################################################################################################
 ######################### Internal Functions
+
+    def _apply_torque_effort(self, joint_name, effort):
+        # start_time = 
+        print("NEEDS TOP BE IMPLEMENTED")
+        # self._joint_effort_svc(joint_name, effort)
 
     def _guarded_move_to_joint_position(self, limbName, joint_angles):
         if joint_angles:

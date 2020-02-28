@@ -29,8 +29,13 @@ def handle_trial(req):
 
 
     pushProxy = rospy.ServiceProxy('push_srv', PushSrv)
-    pushProxy('cover', 0.1, 0.1)
+    graspProxy = rospy.ServiceProxy('grasp_srv', PushSrv)
+    shakeProxy = rospy.ServiceProxy('shake_srv', PushSrv)
+    pressProxy = rospy.ServiceProxy('press_srv', PushSrv)
+    dropProxy = rospy.ServiceProxy('drop_srv', PushSrv)
 
+    pushProxy('cover', 0.1, 0.1)
+    graspProxy('cup')
 
     print("\n#####################################################################################")
     print("#######################################################################################")
