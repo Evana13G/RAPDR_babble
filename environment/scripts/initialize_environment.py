@@ -61,7 +61,7 @@ def load_gazebo_models(table_pose=Pose(position=Point(x=0.78, y=0.0, z=0.0)),
     with open (model_path + "cafe_table/model.sdf", "r") as table_file:
         table_xml=table_file.read().replace('\n', '')
     cup_xml = ''
-    with open (model_path + "cup_with_cover/cup_model.urdf", "r") as cup_file:
+    with open (model_path + "cup_with_cover/cup_model.sdf", "r") as cup_file:
         cup_xml=cup_file.read().replace('\n', '')
     cover_xml = ''
     with open (model_path + "cup_with_cover/cover_model.urdf", "r") as cover_file:
@@ -80,7 +80,7 @@ def load_gazebo_models(table_pose=Pose(position=Point(x=0.78, y=0.0, z=0.0)),
 
     try:
         spawn_urdf = rospy.ServiceProxy('/gazebo/spawn_urdf_model', SpawnModel)
-        resp_urdf = spawn_urdf("cup", cup_xml, "/",
+        resp_urdf = spawn_sdf("cup", cup_xml, "/",
                                cup_pose, reference_frame)
     except rospy.ServiceException, e:
         rospy.logerr("Spawn URDF service call failed: {0}".format(e))

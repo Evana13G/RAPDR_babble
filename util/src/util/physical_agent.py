@@ -99,7 +99,7 @@ class PhysicalAgent(object):
         # self.move_to_start()
         return 1
 
-    def shake(self, objPose="cup", twist_range=1, speed=0.1):
+    def shake(self, objPose, twist_range=1, speed=0.1):
         # For now, assume left gripper is moving (change to an argument)
         # Number of times to shake can be adjusted by the for loop 
 
@@ -114,9 +114,9 @@ class PhysicalAgent(object):
 
         # GRIP OBJECT 
         self._gripper_open(gripper_name)
-        # self._approach(gripper_name, objPose)
-        # self.move_to_pose(objPose)
-        # self._gripper_close(gripper_name)
+        self._hover_approach(gripper_name, objPose)
+        self._approach(gripper_name, objPose)
+        self._gripper_close(gripper_name)
 
         begin_position = self._left_limb.joint_angle(joint_name) # pose robot will move to at the end
 
