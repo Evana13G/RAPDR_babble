@@ -24,7 +24,6 @@ OpenGripperSrv.srv
 BrainSrv.srv
 PushSrv.srv 
 PushObjectSrv.srv 
-PartialPlanExecutorSrv.srv
 ShakeSrv.srv
 PressSrv.srv
 DropSrv.srv
