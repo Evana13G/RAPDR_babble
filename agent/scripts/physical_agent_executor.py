@@ -33,6 +33,7 @@ pa = None
 
 CupPose = None
 CoverPose = None
+LeftGripper = None
 
 def setPoseCup(data):
     global CupPose
@@ -42,19 +43,54 @@ def setPoseCover(data):
     global CoverPose
     CoverPose = data
 
-################################################################################
-def getObjectPose(obj, offset=True):
-    if obj == 'cup': 
-        poseTo = CupPose.pose
-    elif obj == 'cover':
-        poseTo = CoverPose.pose
-    else:
-        poseTo = CoverPose.pose
+def setLeftGripperPose(data):
+    global LeftGripper
+    LeftGripper = data
 
-    adjustedPose = copy.deepcopy(poseTo)
-    if offset == True:
-        adjustedPose.position.x = poseTo.position.x - 0.15
-    return adjustedPose
+################################################################################
+# def getObjectPose(obj, poseStamped=True, offset=True):
+#     if poseStamped == True:
+#         if obj == 'cup': 
+#             poseTo = CupPose
+#         elif obj == 'cover':
+#             poseTo = CoverPose
+#         else:
+#             poseTo = LeftGripper
+
+#         adjustedPose = copy.deepcopy(poseTo)
+#         if offset == True:
+#             adjustedPose.pose.position.x = poseTo.pose.position.x - 0.15
+
+#     else:
+#         if obj == 'cup': 
+#             poseTo = CupPose.pose
+#         elif obj == 'cover':
+#             poseTo = CoverPose.pose
+#         else:
+#             poseTo = LeftGripper.pose
+
+#         adjustedPose = copy.deepcopy(poseTo)
+#         if offset == True:
+#             adjustedPose.position.x = poseTo.position.x - 0.15
+
+#     return adjustedPose
+
+def getObjectPose(obj, poseStamped=True):
+    if poseStamped == True:
+        if obj == 'cup': 
+            poseTo = CupPose
+        elif obj == 'cover':
+            poseTo = CoverPose
+        else:
+            poseTo = LeftGripper
+    else:
+        if obj == 'cup': 
+            poseTo = CupPose.pose
+        elif obj == 'cover':
+            poseTo = CoverPose.pose
+        else:
+            poseTo = LeftGripper.pose
+    return poseTo
 
 ################################################################################
 def move_to_start(req):
@@ -76,13 +112,25 @@ def approach(req):
 ################################################################################
 
 def push(req):
+    print("ENTER: Push Srv in PAE")
     objPose = getObjectPose(req.objectName)
-    print(req.objectName)
-    start_offset = req.startOffset
-    print(req.startOffset)
-    ending_offset = req.endOffset
-    print(req.endOffset)
-    return PushSrvResponse(pa.push(objPose, start_offset, ending_offset))
+    # gripperPose = getObjectPose('left_gripper')
+    start_offset = req.startOffset #FLOAT
+    ending_offset = req.endOffset #FLOAT
+    obj_y_val = copy.deepcopy(objPose.pose.position.y)
+    print("Y Val: " + str(obj_y_val))
+    print("s_offset: " + str(start_offset))
+    print("e_offset: " + str(ending_offset))
+    print("Y Val start offset: " + str(obj_y_val - start_offset))
+    print("Y Val end offset: " + str(obj_y_val + ending_offset))
+    startPose = copy.deepcopy(objPose)
+    endPose = copy.deepcopy(objPose)
+
+    startPose.pose.position.y = (obj_y_val - start_offset)
+    endPose.pose.position.y = (obj_y_val + ending_offset)
+
+    return PushSrvResponse(pa.push(startPose, endPose, objPose))
+
 
 def grasp(req):
     objPose = getObjectPose(req.objectName)
@@ -114,7 +162,7 @@ def main():
 
     rospy.Subscriber("cover_pose", PoseStamped, setPoseCover)
     rospy.Subscriber("cup_pose", PoseStamped, setPoseCup)
-
+    rospy.Subscriber("left_gripper_pose", PoseStamped, setLeftGripperPose)
 
     s_1 = rospy.Service("move_to_start_srv", MoveToStartSrv, move_to_start)
     s_2 = rospy.Service("open_gripper_srv", OpenGripperSrv, open_gripper)
@@ -128,6 +176,8 @@ def main():
     s_7 = rospy.Service("press_srv", PressSrv, press)
     s_8 = rospy.Service("drop_srv", DropSrv, drop)
     s_9 = rospy.Service("set_joint_velocity_srv", JointVelocitySrv, set_velocity)
+
+    # s_9 = rospy.Service("push_object_srv")
 
     rospy.spin()
 
