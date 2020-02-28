@@ -1,5 +1,5 @@
 string objectName
-int64 twistRange
-int64 speed
+float64 twistRange
+float64 speed
 ---
 int64 success_bool

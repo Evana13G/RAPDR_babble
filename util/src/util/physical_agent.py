@@ -60,11 +60,31 @@ class PhysicalAgent(object):
 ####################################################################################################
 ############## Higher Level Action Primitives 
 
-    def push(self, startPose, endPose):
+    def push(self, startPose, endPose, objPose):
         print("ENTER: Push in PA")
+        
+        hoverPose = copy.deepcopy(startPose)
+        hoverPose.pose.position.z = startPose.pose.position.z + 0.1
+        # hoverPose.pose.orientation = gripperPose.pose.orientation
+
+
+        print("************ obj pose")
+        print(objPose)
+        print("************ start pose")
+        print(startPose)
+        print("************ end pose")
+        print(endPose)
+        print("************ gripper pose")
+        print(objPose)
+
         self._gripper_close("left")
+        print("--------- GRIPPER CLOSED")
+        self._approach("left", hoverPose)
+        print("--------- AT HOVER POSE")
         self._approach("left", startPose)
+        print("--------- AT START POSE")
         self._approach("left", endPose)
+        print("--------- AT END POSE")
         return 1
 
     def grasp(self, pose):
@@ -155,10 +175,14 @@ class PhysicalAgent(object):
 
     def _approach(self, gripperName, pose):
         appr = copy.deepcopy(pose)
-        appr.position.z = appr.position.z + self._hover_distance
         joint_angles = self.ik_request(gripperName, appr)
         self._guarded_move_to_joint_position(gripperName, joint_angles)
 
+    def _hover_approach(self, gripperName, pose):
+        appr = copy.deepcopy(pose)
+        appr.pose.position.z = appr.pose.position.z + self._hover_distance
+        joint_angles = self.ik_request(gripperName, appr)
+        self._guarded_move_to_joint_position(gripperName, joint_angles)
 
 #####################################################################################################
 ######################### Internal Functions
