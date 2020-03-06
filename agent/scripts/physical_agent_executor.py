@@ -47,34 +47,6 @@ def setLeftGripperPose(data):
     global LeftGripper
     LeftGripper = data
 
-################################################################################
-# def getObjectPose(obj, poseStamped=True, offset=True):
-#     if poseStamped == True:
-#         if obj == 'cup': 
-#             poseTo = CupPose
-#         elif obj == 'cover':
-#             poseTo = CoverPose
-#         else:
-#             poseTo = LeftGripper
-
-#         adjustedPose = copy.deepcopy(poseTo)
-#         if offset == True:
-#             adjustedPose.pose.position.x = poseTo.pose.position.x - 0.15
-
-#     else:
-#         if obj == 'cup': 
-#             poseTo = CupPose.pose
-#         elif obj == 'cover':
-#             poseTo = CoverPose.pose
-#         else:
-#             poseTo = LeftGripper.pose
-
-#         adjustedPose = copy.deepcopy(poseTo)
-#         if offset == True:
-#             adjustedPose.position.x = poseTo.position.x - 0.15
-
-#     return adjustedPose
-
 def getObjectPose(obj, poseStamped=True):
     if poseStamped == True:
         if obj == 'cup': 
