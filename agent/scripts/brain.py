@@ -30,11 +30,12 @@ KB = KnowledgeBase()
 envProxy = rospy.ServiceProxy('init_environment', HandleEnvironmentSrv)
 
 def handle_trial(req):
-
+  
     # brainFilePath = os.path.dirname(os.path.realpath(__file__))
     # resultsDir = generateResultsDir(brainFilePath, req.runName)
     # logFilePath = resultsDir + 'output.txt'
     # logData =[]
+
 
     print("\n#####################################################################################")
     print("#######################################################################################")
