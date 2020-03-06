@@ -70,6 +70,7 @@ class PhysicalAgent(object):
         self._hover_approach("left", startPose)
         self._approach("left", startPose)
         self._approach("left", endPose)
+        self._retract("left_gripper")
         return 1
 
     def grasp(self, pose):
@@ -223,7 +224,7 @@ class PhysicalAgent(object):
             return 0
     ####################################################
 
-    def _move_to_start(self, start_angles=None, limb='both'):
+    def _move_to_start(self, limb='both'):
   
         starting_joint_angles_l = {'left_w0': 0.6699952259595108,
                                    'left_w1': 1.030009435085784,
@@ -267,6 +268,9 @@ class PhysicalAgent(object):
     # def move_to_pose(self, pose):
     #     self._arm_group.set_pose_target(pose)
     #     self._arm_group.go(wait=True)
+
+    def _retract(self, gripperName):
+        self._move_to_start(gripperName)
 
     def _approach(self, gripperName, pose):
         appr = copy.deepcopy(pose)

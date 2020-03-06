@@ -45,14 +45,16 @@ pub_cup_pose = rospy.Publisher('cup_pose', PoseStamped, queue_size = 10)
 pub_cover_pose = rospy.Publisher('cover_pose', PoseStamped, queue_size = 10)
 
 #SPAWN WALL AT 1.1525 z to be above table or 0.3755 to be below
-def load_gazebo_models(table_pose=Pose(position=Point(x=0.78, y=0.0, z=0.0)),
-                       block_pose=Pose(position=Point(x=0.8, y=0.0185, z=0.8)),
-                       right_button_pose=Pose(position=Point(x=0.525, y=-0.2715, z=0.8)),
-                       left_button_pose=Pose(position=Point(x=0.525, y=0.1515, z=0.8)),
-                       block_reference_frame="world", 
-                       cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9)),
-                       cover_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9)),
-                       reference_frame="world"):
+def load_gazebo_models():
+
+    table_pose=Pose(position=Point(x=0.78, y=0.0, z=0.0)),
+    block_pose=Pose(position=Point(x=0.8, y=0.0185, z=0.8)),
+    right_button_pose=Pose(position=Point(x=0.525, y=-0.2715, z=0.8)),
+    left_button_pose=Pose(position=Point(x=0.525, y=0.1515, z=0.8)),
+    block_reference_frame="world", 
+    cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9)),
+    cover_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9)),
+    reference_frame="world"
 
     # Get Models' Path
     model_path = rospkg.RosPack().get_path('environment')+"/models/"
@@ -77,20 +79,6 @@ def load_gazebo_models(table_pose=Pose(position=Point(x=0.78, y=0.0, z=0.0)),
                              table_pose, reference_frame)
     except rospy.ServiceException, e:
         rospy.logerr("Spawn SDF service call failed: {0}".format(e))
-
-    try:
-        spawn_urdf = rospy.ServiceProxy('/gazebo/spawn_urdf_model', SpawnModel)
-        resp_urdf = spawn_sdf("cup", cup_xml, "/",
-                               cup_pose, reference_frame)
-    except rospy.ServiceException, e:
-        rospy.logerr("Spawn URDF service call failed: {0}".format(e))
-        
-    try:
-        spawn_urdf = rospy.ServiceProxy('/gazebo/spawn_urdf_model', SpawnModel)
-        resp_urdf = spawn_urdf("cover", cover_xml, "/",
-                               cover_pose, reference_frame)
-    except rospy.ServiceException, e:
-        rospy.logerr("Spawn URDF service call failed: {0}".format(e))
 
 def delete_gazebo_models():
     # This will be called on ROS Exit, deleting Gazebo models

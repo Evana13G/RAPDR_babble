@@ -84,17 +84,10 @@ def approach(req):
 ################################################################################
 
 def push(req):
-    print("ENTER: Push Srv in PAE")
     objPose = getObjectPose(req.objectName)
-    # gripperPose = getObjectPose('left_gripper')
     start_offset = req.startOffset #FLOAT
     ending_offset = req.endOffset #FLOAT
     obj_y_val = copy.deepcopy(objPose.pose.position.y)
-    print("Y Val: " + str(obj_y_val))
-    print("s_offset: " + str(start_offset))
-    print("e_offset: " + str(ending_offset))
-    print("Y Val start offset: " + str(obj_y_val - start_offset))
-    print("Y Val end offset: " + str(obj_y_val + ending_offset))
     startPose = copy.deepcopy(objPose)
     endPose = copy.deepcopy(objPose)
 
