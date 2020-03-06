@@ -156,7 +156,7 @@ def getPredicates(data):
 
 def main():
     rospy.init_node("scenario_data_node")
-    rospy.wait_for_message("/robot/sim/started", Empty)
+    # rospy.wait_for_message("/robot/sim/started", Empty)
    
     global predicatesPublisher 
     global imageConverter 
@@ -170,7 +170,7 @@ def main():
     rospy.Subscriber("right_gripper_pose", PoseStamped, setPoseGripperRight)
     rospy.Subscriber("cafe_table_pose", PoseStamped, setPoseTable)
 
-    rospy.sleep(1)
+    # rospy.sleep(1)
     s = rospy.Service("scenario_data_srv", ScenarioDataSrv, getPredicates)
 
     rospy.spin()

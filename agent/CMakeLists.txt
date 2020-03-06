@@ -27,6 +27,7 @@ PushObjectSrv.srv
 ShakeSrv.srv
 PressSrv.srv
 DropSrv.srv
+JointVelocitySrv.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
