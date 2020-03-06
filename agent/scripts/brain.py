@@ -34,8 +34,8 @@ def handle_trial(req):
     pressProxy = rospy.ServiceProxy('press_srv', PushSrv)
     dropProxy = rospy.ServiceProxy('drop_srv', PushSrv)
 
-    pushProxy('cover', 0.1, 0.1)
-    graspProxy('cup')
+    pushProxy('cup', 0.1, 0.1)
+    # graspProxy('cup')
 
     print("\n#####################################################################################")
     print("#######################################################################################")
@@ -273,7 +273,7 @@ def main():
 
     # rospy.wait_for_service('APV_srv', timeout=60)
     # rospy.wait_for_service('partial_plan_executor_srv', timeout=60)
-    rospy.wait_for_service('scenario_data_srv', timeout=60)
+    # rospy.wait_for_service('scenario_data_srv', timeout=60)
     # rospy.wait_for_service('plan_generator_srv', timeout=60)
     # rospy.wait_for_service('plan_executor_srv', timeout=60)
     # rospy.wait_for_service('press_button_srv', timeout=60)
