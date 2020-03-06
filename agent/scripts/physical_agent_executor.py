@@ -90,12 +90,9 @@ def push(req):
     obj_y_val = copy.deepcopy(objPose.pose.position.y)
     startPose = copy.deepcopy(objPose)
     endPose = copy.deepcopy(objPose)
-
     startPose.pose.position.y = (obj_y_val - start_offset)
     endPose.pose.position.y = (obj_y_val + ending_offset)
-
     return PushSrvResponse(pa.push(startPose, endPose, objPose))
-
 
 def grasp(req):
     objPose = getObjectPose(req.objectName)

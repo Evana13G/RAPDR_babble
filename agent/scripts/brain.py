@@ -27,7 +27,7 @@ pressProxy = rospy.ServiceProxy('press_srv', PushSrv)
 dropProxy = rospy.ServiceProxy('drop_srv', PushSrv)
 
 KB = KnowledgeBase()
-envProxy = rospy.ServiceProxy('init_environment', HandleEnvironmentSrv)
+envProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
 
 def handle_trial(req):
   
@@ -48,13 +48,13 @@ def handle_trial(req):
     print("---------------------------------------------------------------------------------------")
     print("---------------------------------   TESTING ACTIONS   ---------------------------------")
     print('----------- [PUSH CUP], env 1 ')
-    pushProxy('cup', 0.1, 0.2)
+    pushProxy('cup', 0.1, 0.18)
 
     print('----------- [setting up ENV 2] ')
     envProxy('restart', 'heavy')
   
     print('----------- [PUSH CUP], env 2 ')
-    pushProxy('cup', 0.1, 0.2)
+    pushProxy('cup', 0.1, 0.18)
 
 
     print("---------------------------------------------------------------------------------------")
