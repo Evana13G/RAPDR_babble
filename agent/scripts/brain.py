@@ -50,6 +50,8 @@ def handle_trial(req):
     pushProxy('cup', 0.1, 0.2)
 
     print('----------- [setting up ENV 2] ')
+    envProxy('restart', 'heavy')
+  
     print('----------- [PUSH CUP], env 2 ')
     pushProxy('cup', 0.1, 0.2)
 
@@ -62,7 +64,7 @@ def handle_trial(req):
     # attemptsTime = []
     # totalTimeStart = 0
 
-    # try:
+    try:
     #     # Services
     #     print('\n ... Setting up services')
         
@@ -286,7 +288,7 @@ def main():
 
     # rospy.wait_for_service('APV_srv', timeout=60)
     # rospy.wait_for_service('partial_plan_executor_srv', timeout=60)
-    rospy.wait_for_service('scenario_data_srv', timeout=60)
+    # rospy.wait_for_service('scenario_data_srv', timeout=60)
     # rospy.wait_for_service('plan_generator_srv', timeout=60)
     # rospy.wait_for_service('plan_executor_srv', timeout=60)
 
