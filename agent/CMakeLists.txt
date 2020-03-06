@@ -23,7 +23,6 @@ CloseGripperSrv.srv
 OpenGripperSrv.srv 
 BrainSrv.srv
 PushSrv.srv 
-PushObjectSrv.srv 
 ShakeSrv.srv
 PressSrv.srv
 DropSrv.srv
