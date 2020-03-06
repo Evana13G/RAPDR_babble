@@ -49,7 +49,7 @@ class PhysicalAgent(object):
 
         self._iksvc_left = rospy.ServiceProxy(ns_left, SolvePositionIK)
         self._iksvc_right = rospy.ServiceProxy(ns_right, SolvePositionIK)
-        self._joint_effort_svc = rospy.ServiceProxy('/gazebo/apply_joint_effort')
+        # self._joint_effort_svc = rospy.ServiceProxy('/gazebo/apply_joint_effort')
         rospy.wait_for_service(ns_left, 5.0)
         rospy.wait_for_service(ns_right, 5.0)
         if self._verbose:
