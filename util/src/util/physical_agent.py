@@ -14,7 +14,9 @@ import time
 from gazebo_msgs.srv import (
     SpawnModel,
     DeleteModel,
+    ApplyJointEffort,
 )
+
 from geometry_msgs.msg import (
     PoseStamped,
     Pose,
@@ -24,6 +26,8 @@ from geometry_msgs.msg import (
 from std_msgs.msg import (
     Header,
     Empty,
+    Time, 
+    Duration,
 )
 
 from baxter_core_msgs.srv import (
@@ -51,9 +55,12 @@ class PhysicalAgent(object):
 
         self._iksvc_left = rospy.ServiceProxy(ns_left, SolvePositionIK)
         self._iksvc_right = rospy.ServiceProxy(ns_right, SolvePositionIK)
-        # self._joint_effort_svc = rospy.ServiceProxy('/gazebo/apply_joint_effort')
+
+        self._joint_effort_svc = rospy.ServiceProxy('/gazebo/apply_joint_effort', ApplyJointEffort)
+        
         rospy.wait_for_service(ns_left, 5.0)
         rospy.wait_for_service(ns_right, 5.0)
+
         if self._verbose:
             print("Getting robot state... ")
         self._rs = baxter_interface.RobotEnable(baxter_interface.CHECK_VERSION)
@@ -71,6 +78,14 @@ class PhysicalAgent(object):
         self._approach("left", startPose)
         self._approach("left", endPose)
         self._retract("left_gripper")
+        return 1
+        
+    def push_effort(self, startPose, effort):
+        self._gripper_close("left")
+        self._hover_approach("left", startPose)
+        self._approach("left", startPose)
+        self._apply_effort("left_s1", effort)
+        # self._retract("left_gripper")
         return 1
 
     def grasp(self, pose):
@@ -286,8 +301,15 @@ class PhysicalAgent(object):
 #####################################################################################################
 ######################### Internal Functions
 
-    def _apply_torque_effort(self, joint_name, effort):
-        # start_time = 
+    def _apply_effort(self, joint_name, effort):
+        print("START EFFORT")
+        start_time = rospy.Time(0.0)
+        # start_time = rospy.Time.now()
+        duration = rospy.Duration(5000.0)
+        self._joint_effort_svc(joint_name, effort, start_time, duration)
+        rospy.sleep(5)
+        print("END EFFORT")
+
         print("NEEDS TOP BE IMPLEMENTED")
         # self._joint_effort_svc(joint_name, effort)
 
@@ -322,6 +344,7 @@ class PhysicalAgent(object):
         try:
             iksvc = self.translateIksvc(limbName)
             resp = iksvc(ikreq)
+            print(resp)
         except (rospy.ServiceException, rospy.ROSException), e:
             rospy.logerr("Service call failed: %s" % (e,))
             return 0

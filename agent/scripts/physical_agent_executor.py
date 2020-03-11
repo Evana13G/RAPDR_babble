@@ -87,12 +87,17 @@ def push(req):
     objPose = getObjectPose(req.objectName)
     start_offset = req.startOffset #FLOAT
     ending_offset = req.endOffset #FLOAT
-    obj_y_val = copy.deepcopy(objPose.pose.position.y)
+
+    obj_y_val = copy.deepcopy(objPose.pose.position.y)  
     startPose = copy.deepcopy(objPose)
     endPose = copy.deepcopy(objPose)
     startPose.pose.position.y = (obj_y_val - start_offset)
     endPose.pose.position.y = (obj_y_val + ending_offset)
-    return PushSrvResponse(pa.push(startPose, endPose, objPose))
+    
+    effort = 80
+    # return PushSrvResponse(pa.push(startPose, endPose, objPose))
+    return PushSrvResponse(pa.push_effort(startPose, effort))
+
 
 def grasp(req):
     objPose = getObjectPose(req.objectName)
