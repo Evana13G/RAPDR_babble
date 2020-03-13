@@ -55,6 +55,9 @@ from tf.transformations import *
 import baxter_interface
 from environment.srv import *
 
+# List of objects and their color 
+  # Cup, white 
+  # Cover, green 
 
 class ImageConverter:
     def __init__(self):
@@ -64,6 +67,7 @@ class ImageConverter:
         self.savedFramesStr = ""
         self.image_sub = rospy.Subscriber("/cameras/head_camera/image", Image, self.callbackImage)
         self.block_pixels = 0
+        self.cup_pixels = 0
 
     def callbackImage(self, data):
         try:
@@ -71,36 +75,42 @@ class ImageConverter:
         except CvBridgeError as e:
             print(e)
         frame = cv_image
-        #cv2.imshow('frame', frame)
-#        frame = cv2.resize(frame,None,fx=0.25, fy=0.25, interpolation = cv2.INTER_CUBIC)
-#        frameCopy = frame.copy()
-#        # Convert BGR to HSV
+
+        # Convert BGR to HSV
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        lower_green = np.array([40,40,40])
-        upper_green = np.array([200,255,255])
-#        lower_red = np.array([0,0,255])
-#        upper_red = np.array([150,150, 255])
-#
-#        # Threshold the HSV image to get only blue colors
-        mask = cv2.inRange(hsv, lower_green, upper_green)
 
-        self.block_pixels = np.count_nonzero(mask)
+        ######### Pixels for cover #################
+        # Threshold the HSV image to get only green colors 
+        green = np.uint8([[[0, 255, 0]]]) # insert the bgr values which you want to convert to hsv
+        hsvGreen = cv2.cvtColor(green, cv2.COLOR_BGR2HSV)
+        #print(hsvGreen)
+
+        lower_green = hsvGreen[0][0][0] - 10, 100, 100
+        upper_green = hsvGreen[0][0][0] + 10, 255, 255
+
+        green_mask = cv2.inRange(hsv, lower_green, upper_green)
+        self.cover_pixels = np.count_nonzero(green_mask)
+        # previous values ...
+        # lower_green = np.array([40,40,40])
+        # upper_green = np.array([200,255,255])
+        
+        ######### Pixels for cup #################
+        # Threshold the HSV image to get only white colors 
+        white = np.uint8([[[255, 255, 255]]]) # insert the bgr values which you want to convert to hsv
+        hsvWhite = cv2.cvtColor(white, cv2.COLOR_BGR2HSV)
+        lower_white = hsvWhite[0][0][0] - 10, 100, 100
+        upper_whiteS = hsvWhite[0][0][0] + 10, 255, 255
+        white_mask = cv2.inRange(hsv, lower_green, upper_green)
+        self.cup_pixels = np.count_nonzero(white_mask)
 
 
+        # lower_red = np.array([0,0,255])
+        # upper_red = np.array([150,150, 255])
 
-       # contours,_ = cv2.findContours(mask,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-       # for cnt in contours:
-       #     approx = cv2.approxPolyDP(cnt,0.01*cv2.arcLength(cnt,True),True)
-       #     #print(len(approx))
-       #     if len(approx)==4:
-       #         print("square")
-       #         cv2.drawContours(frameCopy,[cnt],0,(0,0,255),-1)
-       # maskRect = cv2.inRange(frameCopy, lower_red, upper_red)
-
-       # kernel = np.ones((5,5), np.uint8)
-       # erosion = cv2.erode(maskRect, kernel, iterations = 1)
-       # erosionArray = np.asarray(erosion)
-       # areaErosion = np.count_nonzero(erosionArray)
-
-    def getBlockPixelCount(self):
-        return self.block_pixels
+    def getObjectPixelCount(self, object):
+      if (object == 'cover'):
+        return self.cover_pixels
+      elif (object == 'cup'):
+        return self.cup_pixels
+      else:
+        return 0

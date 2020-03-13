@@ -79,14 +79,14 @@ def load_gazebo_models(table_pose=Pose(position=Point(x=0.78, y=0.0, z=0.0)),
         rospy.logerr("Spawn SDF service call failed: {0}".format(e))
 
     try:
-        spawn_urdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
+        spawn_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
         resp_sdf = spawn_sdf("cup", cup_xml, "/",
                                cup_pose, reference_frame)
     except rospy.ServiceException, e:
         rospy.logerr("Spawn URDF service call failed: {0}".format(e))
         
     try:
-        spawn_urdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
+        spawn_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
         resp_sdf = spawn_sdf("cover", cover_xml, "/",
                                cover_pose, reference_frame)
     except rospy.ServiceException, e:
