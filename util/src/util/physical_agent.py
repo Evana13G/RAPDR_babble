@@ -15,6 +15,7 @@ from gazebo_msgs.srv import (
     SpawnModel,
     DeleteModel,
     ApplyJointEffort,
+    ApplyBodyWrench,
 )
 
 from geometry_msgs.msg import (
@@ -22,6 +23,8 @@ from geometry_msgs.msg import (
     Pose,
     Point,
     Quaternion,
+    Wrench,
+    Vector3,
 )
 from std_msgs.msg import (
     Header,
@@ -57,7 +60,8 @@ class PhysicalAgent(object):
         self._iksvc_right = rospy.ServiceProxy(ns_right, SolvePositionIK)
 
         self._joint_effort_svc = rospy.ServiceProxy('/gazebo/apply_joint_effort', ApplyJointEffort)
-        
+        self._body_wrench_svc = rospy.ServiceProxy('/gazebo/apply_body_wrench', ApplyBodyWrench)
+
         rospy.wait_for_service(ns_left, 5.0)
         rospy.wait_for_service(ns_right, 5.0)
 
@@ -77,6 +81,8 @@ class PhysicalAgent(object):
         self._hover_approach("left", startPose)
         self._approach("left", startPose)
         self._approach("left", endPose)
+        # efforts =  [0.0, -0.035200525640670714, -0.25935460745992633, 47.77774881151675, 23.51433066190589, 11.794216672654034, 23.60884891094095, -10.76398527560869, 15.0, -0.8971144799225961, 0.0, 0.0, -0.05173647335432463, -0.10614423477850465, 0.00023955770158679002, -0.23776845263334678, -0.009212185201725731, 0.020528554873848748, 0.0008220324551100333]
+        self._approach('left', efforts)
         self._retract("left_gripper")
         return 1
         
@@ -84,8 +90,30 @@ class PhysicalAgent(object):
         self._gripper_close("left")
         self._hover_approach("left", startPose)
         self._approach("left", startPose)
-        self._apply_effort("left_s1", effort)
+        # self._apply_effort("left_s1", effort)
+        
+        body_name = 'left_wrist'
+        ref_frame = ''
+        ref_point = startPose.pose.position
+        
+        wrench = Wrench()
+        force = Vector3()
+        force.x = 0.0
+        force.y = 0.0
+        force.z = 0.0
+        torque = Vector3()
+        torque.x = 20.0
+        torque.y = 0.0
+        torque.z = 0.0
+        wrench.force = force 
+        wrench.torque = torque 
+
+        start_time = rospy.Time(0.0) # start_time = rospy.Time.now()
+        duration = rospy.Duration(5000.0)
+
+        self._body_wrench_svc(body_name, ref_frame, ref_point, wrench, start_time, duration)
         # self._retract("left_gripper")
+        rospy.sleep(5)
         return 1
 
     def grasp(self, pose):
@@ -280,10 +308,6 @@ class PhysicalAgent(object):
             rospy.logerr("Service call failed: %s" % (e,))
             return 0
 
-    # def move_to_pose(self, pose):
-    #     self._arm_group.set_pose_target(pose)
-    #     self._arm_group.go(wait=True)
-
     def _retract(self, gripperName):
         self._move_to_start(gripperName)
 
@@ -301,17 +325,18 @@ class PhysicalAgent(object):
 #####################################################################################################
 ######################### Internal Functions
 
-    def _apply_effort(self, joint_name, effort):
-        print("START EFFORT")
-        start_time = rospy.Time(0.0)
+    # def _apply_effort(self, joint_name, effort):
+    def _apply_effort(self, pose):
+        efforts = []
+        # self._approach(efforts)
+        # print("START EFFORT")
+        # start_time = rospy.Time(0.0)
         # start_time = rospy.Time.now()
-        duration = rospy.Duration(5000.0)
-        self._joint_effort_svc(joint_name, effort, start_time, duration)
-        rospy.sleep(5)
-        print("END EFFORT")
-
-        print("NEEDS TOP BE IMPLEMENTED")
+        # duration = rospy.Duration(5000.0)
+        # self._joint_effort_svc(joint_name, effort, start_time, duration)
+        # rospy.sleep(5)
         # self._joint_effort_svc(joint_name, effort)
+        print("END EFFORT")
 
     def _guarded_move_to_joint_position(self, limbName, joint_angles):
         if joint_angles:
@@ -344,7 +369,7 @@ class PhysicalAgent(object):
         try:
             iksvc = self.translateIksvc(limbName)
             resp = iksvc(ikreq)
-            print(resp)
+            # print(resp)
         except (rospy.ServiceException, rospy.ROSException), e:
             rospy.logerr("Service call failed: %s" % (e,))
             return 0
