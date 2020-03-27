@@ -34,6 +34,7 @@ pa = None
 CupPose = None
 CoverPose = None
 LeftGripper = None
+RightGripper = None
 
 def setPoseCup(data):
     global CupPose
@@ -46,6 +47,10 @@ def setPoseCover(data):
 def setLeftGripperPose(data):
     global LeftGripper
     LeftGripper = data
+
+def setRightGripperPose(data):
+    global RightGripper
+    RightGripper = data
 
 def getObjectPose(obj, poseStamped=True):
     if poseStamped == True:
@@ -94,9 +99,9 @@ def push(req):
     startPose.pose.position.y = (obj_y_val - start_offset)
     endPose.pose.position.y = (obj_y_val + ending_offset)
     
-    effort = 80
-    # return PushSrvResponse(pa.push(startPose, endPose, objPose))
-    return PushSrvResponse(pa.push_effort(startPose, effort))
+    effort = 80.0
+    return PushSrvResponse(pa.push(startPose, endPose, objPose))
+    # return PushSrvResponse(pa.push_effort(startPose, effort)) 
 
 
 def grasp(req):
@@ -130,6 +135,7 @@ def main():
     rospy.Subscriber("cover_pose", PoseStamped, setPoseCover)
     rospy.Subscriber("cup_pose", PoseStamped, setPoseCup)
     rospy.Subscriber("left_gripper_pose", PoseStamped, setLeftGripperPose)
+    rospy.Subscriber("right_gripper_pose", PoseStamped, setRightGripperPose)
 
     s_1 = rospy.Service("move_to_start_srv", MoveToStartSrv, move_to_start)
     s_2 = rospy.Service("open_gripper_srv", OpenGripperSrv, open_gripper)

@@ -77,15 +77,17 @@ class PhysicalAgent(object):
 ############## Higher Level Action Primitives 
 
     def push(self, startPose, endPose, objPose):
-        self._gripper_close("left")
-        self._hover_approach("left", startPose)
-        self._approach("left", startPose)
-        self._approach("left", endPose)
-        # efforts =  [0.0, -0.035200525640670714, -0.25935460745992633, 47.77774881151675, 23.51433066190589, 11.794216672654034, 23.60884891094095, -10.76398527560869, 15.0, -0.8971144799225961, 0.0, 0.0, -0.05173647335432463, -0.10614423477850465, 0.00023955770158679002, -0.23776845263334678, -0.009212185201725731, 0.020528554873848748, 0.0008220324551100333]
-        self._approach('left', efforts)
-        self._retract("left_gripper")
+        # self._gripper_close("left")
+        # self._hover_approach("left", startPose)
+        # self._approach("left", startPose)
+        # # limb = self.translateLimb("left")
+        # # limb.set_joint_position_speed(0.9) # 0.0 to 1.0, defaults to 0.3
+        # self._approach("left", endPose)
+        # self._retract("left_gripper")
+        # return 1
+        self._set_joint_efforts()
         return 1
-        
+
     def push_effort(self, startPose, effort):
         self._gripper_close("left")
         self._hover_approach("left", startPose)
@@ -197,74 +199,72 @@ class PhysicalAgent(object):
             return 0
 
     ####### ADDED by Amel 
-    def _set_joint_velocity(self, start_angles=None, limb='both'):
-        # velocities_l = {'l_gripper_l_finger_joint' : 1.5129108885951033e-070, 
-        #                 'l_gripper_r_finger_joint' : 2.169911245541326e-070,
-        #                 'left_e0' : -1.7125872625407934e-060, 
-        #                 'left_e1' : -7.172398941331635e-070,
-        #                 'left_s0' : 1.2769639268640998e-070, 
-        #                 'left_s1' : -1.9826054609577262e-080,
-        #                 'left_w0' :  4.067311133343405e-050,
-        #                 'left_w1' : 1.6401705346185865e-080,
-        #                 'left_w2' : 5.840094167063631e-060}
-        # velocities_r = {'r_gripper_l_finger_joint' : 1.5129108885951033e-02, 
-        #         'r_gripper_r_finger_joint' : 2.169911245541326e-02,
-        #         'right_e0' : -1.7125872625407934e-02, 
-        #         'right_e1' : -7.172398941331635e-02,
-        #         'right_s0' : 1.2769639268640998e-02, 
-        #         'right_s1' : -1.9826054609577262e-02,
-        #         'right_w0' :  4.067311133343405e-02,
-        #         'right_w1' : 1.6401705346185865e-02,
-        #         'right_w2' : 5.840094167063631e-02}
-
-
-        velocities_l = {'l_gripper_l_finger_joint' : 1.5129108885951033e-070, 
-                'l_gripper_r_finger_joint' : 2.169911245541326e-070,
-                'left_e0' : -1.7125872625407934e-060, 
-                'left_e1' : -7.172398941331635e-070,
-                'left_s0' : 1.2769639268640998e-070, 
-                'left_s1' : -1.9826054609577262e-080,
-                'left_w0' :  4.067311133343405e-050,
+    def _set_joint_velocity(self, limb='both'):
+        velocities_l = {'left_w0' :  4.067311133343405e-050,
                 'left_w1' : 1.6401705346185865e-080,
                 'left_w2' : 5.840094167063631e-060}
-        velocities_r = {'r_gripper_l_finger_joint' : 2, 
-                'r_gripper_r_finger_joint' : 2,
-                'right_e0' : 12, 
-                'right_e1' : 12,
-                'right_s0' : 12, 
-                'right_s1' : 12,
-                'right_w0' : 12,
-                'right_w1' : 12,
-                'right_w2' : 12} 
+        velocities_r = {'right_w0' : 100.0}
 
         try:
             if limb == 'left_gripper':
-                if self._verbose:
-                    print("Changing the left arm velocity ...")
                 _limb = self.translateLimb(limb)
                 _limb.set_joint_velocities(velocities_l)
             elif limb == 'right_gripper':
-                if self._verbose:
-                    print("Changing the right arm velocity ...")
                 _limb = self.translateLimb(limb)
                 _limb.set_joint_velocities(velocities_r)
             else:
-                if self._verbose:
-                    print("Changing the left arm velocity ...")
                 _limb = self.translateLimb('left_gripper')
                 _limb.set_joint_velocities(velocities_l)
-                if self._verbose:
-                    print("Changing the right arm velocity ...")
                 _limb = self.translateLimb('right_gripper')
                 _limb.set_joint_velocities(velocities_r)
 
-            rospy.sleep(1.0)
-            if self._verbose:
-                print("Set joint velocities")
+            rospy.sleep(2.0)
+
             return 1
         except (rospy.ServiceException, rospy.ROSException), e:
             rospy.logerr("Service call failed: %s" % (e,))
             return 0
+
+    def _set_joint_efforts(self):
+
+        # print(self._left_limb.endpoint_effort())
+        # efforts = []
+        # start_time = rospy.Time(0.0)
+        # start_time = rospy.Time.now()
+        # duration = rospy.Duration(5000.0)
+        # torques = {'head_pan' : 0.0, 
+        #            'l_gripper_l_finger_joint' : -0.035200525640670714,
+        #            'l_gripper_r_finger_joint' : -0.25935460745992633, 
+        #            'left_e0' : 47.77774881151675, 
+        #            'left_e1' : 23.51433066190589, 
+        #            'left_s0' : 11.794216672654034, 
+        #            'left_s1' : 23.60884891094095, 
+        #            'left_w0' : -10.76398527560869, 
+        #            'left_w1' : 15.0, 
+        #            'left_w2' : -0.8971144799225961, 
+        #            'r_gripper_l_finger_joint' : 0.0, 
+        #            'r_gripper_r_finger_joint' : 0.0, 
+        #            'right_e0' : -0.05173647335432463, 
+        #            'right_e1' : -0.10614423477850465, 
+        #            'right_s0' : 0.00023955770158679002, 
+        #            'right_s1' : -0.23776845263334678, 
+        #            'right_w0' : -0.009212185201725731, 
+        #            'right_w1' : 0.020528554873848748, 
+        #            'right_w2' : 0.0008220324551100333}
+        # l_torques = {'left_w0' : -10.76398527560869, 
+        #              'left_w1' : 15.0, 
+        #              'left_w2' : -0.8971144799225961}
+
+        # self._left_limb.set_joint_torques(l_torques)
+
+
+        self._left_limb._cartesian_effort= {
+            'force': Point(0.0,0.0,0.0),
+            'torque': Point(10.0, 0.0, 0.0),
+        }
+
+        rospy.sleep(2.0)
+        print("END EFFORT")
     ####################################################
 
     def _move_to_start(self, limb='both'):
@@ -324,19 +324,6 @@ class PhysicalAgent(object):
 
 #####################################################################################################
 ######################### Internal Functions
-
-    # def _apply_effort(self, joint_name, effort):
-    def _apply_effort(self, pose):
-        efforts = []
-        # self._approach(efforts)
-        # print("START EFFORT")
-        # start_time = rospy.Time(0.0)
-        # start_time = rospy.Time.now()
-        # duration = rospy.Duration(5000.0)
-        # self._joint_effort_svc(joint_name, effort, start_time, duration)
-        # rospy.sleep(5)
-        # self._joint_effort_svc(joint_name, effort)
-        print("END EFFORT")
 
     def _guarded_move_to_joint_position(self, limbName, joint_angles):
         if joint_angles:

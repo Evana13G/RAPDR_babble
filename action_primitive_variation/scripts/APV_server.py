@@ -212,11 +212,9 @@ def execute_action(actionName, params):
 
 def main():
     rospy.init_node("APV_node")
-    rospy.wait_for_message("/robot/sim/started", Empty)
 
-    rospy.Subscriber("left_button_pose", PoseStamped, handle_buttonLeft)
-    rospy.Subscriber("right_button_pose", PoseStamped, handle_buttonRight)    
-    rospy.Subscriber("block_pose", PoseStamped, handle_block)
+    rospy.Subscriber("cover_pose", PoseStamped, setPoseCover)
+    rospy.Subscriber("cup_pose", PoseStamped, setPoseCup)
     rospy.Subscriber("left_gripper_pose", PoseStamped, handle_gripperLeft)
     rospy.Subscriber("right_gripper_pose", PoseStamped, handle_gripperRight)
     rospy.Subscriber("robot/joint_states", JointState, handle_jointStates)
