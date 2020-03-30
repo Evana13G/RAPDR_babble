@@ -106,6 +106,8 @@ def action_executor(req):
     request = ActionRequest(actionName, argNames, args, paramNames, paramSettings)
 
     a(request)
+    return ActionExecutorSrvResponse(1)
+
 
 class ActionRequest:
     def __init__(self, _actionName, args, argVals, params, paramVals):

@@ -65,3 +65,15 @@ def generateEndptImage(visData, visTitle):
     # plt.close(fig)
 
     plt.show()
+
+def generateJointImage(visData, visLabels, visTitle):
+
+    colrs = ['m', 'c', 'y', '#a3c2c2', '#ff9933', '#aa80ff']
+
+    fig = plt.figure()
+    for i in range(len(visData)):
+        clr = colrs[i % (len(colrs)-1)]
+        plt.plot(visData[i], clr, label=visLabels[i])
+    plt.legend()
+    plt.title(visTitle)
+    plt.show()

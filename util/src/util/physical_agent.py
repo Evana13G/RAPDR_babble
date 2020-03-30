@@ -87,7 +87,7 @@ class PhysicalAgent(object):
         self._retract("left_gripper")
         # return 1
         # self._set_joint_efforts()
-        # return 1
+        return 1
 
     def push_effort(self, startPose, effort):
         self._gripper_close("left")
