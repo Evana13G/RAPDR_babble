@@ -1,8 +1,6 @@
 string actionName
-string gripper
-string obj
-string button 
-int64 clusterThreshold
-int64 minClusterSize
+string[] args
+string param 
+int64 T
 ---
 geometry_msgs/PoseStamped[] endEffectorInfo

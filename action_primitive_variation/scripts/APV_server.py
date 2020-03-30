@@ -36,194 +36,132 @@ from baxter_core_msgs.srv import (
     SolvePositionIKRequest,
 )
 
+from baxter_core_msgs.msg import (
+    JointCommand,
+    EndpointState,
+)
+
 from tf.transformations import *
+
 import baxter_interface
 from util.knowledge_base import KnowledgeBase
-from util.bayesian_change_point import BayesianChangePoint
-from util.general_vis import *
-from util.ros_bag import RosBag
 from util.file_io import *
+from util.general_vis import *
 from action_primitive_variation.srv import *
 from agent.srv import * 
 from environment.msg import *
+from environment.srv import ObjectLocationSrv
 
-
-block_bag = RosBag('block')
-leftButton_bag = RosBag('leftButton')
-rightButton_bag = RosBag('rightButton')
-leftGripper_bag = RosBag('leftGripper')
-rightGripper_bag = RosBag('rightGripper')
-predicates_bag = RosBag('predicate')
-jointState_bag = RosBag('jointState')
 KB = KnowledgeBase()
+objLocProxy = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
+actionExecutorProxy = rospy.ServiceProxy('action_executor_srv', ActionExecutorSrv)
 
-shouldRecord = False
-vis = True
-visNames = []
+# pushProxy = rospy.ServiceProxy('push_srv', PushSrv)
+# graspProxy = rospy.ServiceProxy('grasp_srv', PushSrv)
+# shakeProxy = rospy.ServiceProxy('shake_srv', PushSrv)
+# pressProxy = rospy.ServiceProxy('press_srv', PushSrv)
+# dropProxy = rospy.ServiceProxy('drop_srv', PushSrv)
+
+
+position = []
+orientation = []
+linear = []
+angular = []
+force = []
+torque = []
+
+def getObjectPose(object_name, pose_only=False):
+    loc_pStamped = obj_location_srv(object_name)
+    if pose_only == True:
+        return loc_pStamped.location.pose
+    return loc_pStamped.location
 
 def handle_APV(req):
+    # if '_' in req.actionName:
+    #     change the action name to have just the original action
 
-    if 'seg' in req.actionName:
-        return APVSrvResponse([])
-    global shouldRecord
+    # This is where you should pull the param names and args from KB
+    # actionToVary = req.actionName
+    # argNames = KB.getAction(actionToVary).getArgNames(actionToVary)
+    # args = req.args
+    # paramNames = [req.param]
+    # paramVals = [0]
+    # T = req.T 
+    # paramMin = KB.getAction(actionToVary).getParamMin(paramToVary)
+    # paramMax = KB.getAction(actionToVary).getParamMax(paramToVary)
+    # I = (paramMax - paramMin)/T
 
-    params = []
     actionToVary = req.actionName
-    gripper = req.gripper
-    obj = req.obj
-    button = req.button
+    
+    argNames = ['gripper', 'objectName', 'startOffset', 'endOffset']
+    args = req.args
 
-    if gripper is not '': 
-        params.append(gripper)
-    if obj is not '': 
-        params.append(obj)
-    if button is not '': 
-        params.append(button)
+    paramNames = [req.param]
+    
+    T = req.T 
+    paramMin = 0.0
+    paramMax = 500.0
+    I = (paramMax - paramMin)/T
 
-    visName = getVisName(actionToVary + ''.join(params))
+    paramVals = []
+    for i in range(0, T-1):
+        addition =  i * I
+        paramVals.append(paramMin + addition)
+    paramVals.append(paramMax)
 
-    openBags()
-    shouldRecord = True
-    execute_action(actionToVary, params)
-    shouldRecord = False
-    changePoints = extract_change_points(gripper, visName, req.clusterThreshold, req.minClusterSize)
+    for paramAssignment in paramVals:
+        actionExecutorProxy(actionToVary, argNames, args, paramNames, [paramAssignment])
+                # string actionName
+                # string[] argNames
+                # string[] args
+                # string[] paramNames
+                # float64[] params
 
-    closeBags()
+    visData()
+    return APVSrvResponse([])
 
-    return APVSrvResponse(changePoints)
+def print_data():
+    print("Position: " + str(position[0]))
+    print("Orientation: " + str(orientation[0]))
+    print("Linear: " + str(linear[0]))
+    print("Angular: " + str(angular[0]))
+    print("Force: " + str(force[0]))
+    print("Torque: " + str(torque[0]))
 
-def getVisName(nameWithoutIter):
-    i = 1
-    while(nameWithoutIter + '_' + str(i) in visNames):
-        i = i + 1
-    return nameWithoutIter + '_' + str(i)
+def visData():
+    generateEndptImage(position, 'position')
+    generateEndptImage(orientation, 'orientation')
+    generateEndptImage(linear, 'linear')
+    generateEndptImage(angular, 'angular')
+    generateEndptImage(force, 'force')
+    generateEndptImage(torque, 'torque')
 
-############### START: Call back functions that check to see if ROSbag should be being recorded
-def handle_jointStates(data):
-    if shouldRecord is not False:
-        try:
-            jointState_bag.writeToBag('robot/joint_states', data)
-        finally:
-            pass
+def recordData(msg):
+    global position
+    global orientation
+    global linear
+    global angular
+    global force
+    global torque
 
-def handle_predicates(data):
-    if shouldRecord is not False:
-        try:
-            predicates_bag.writeToBag('predicate_values', data)
-        finally:
-            pass
-
-def handle_block(data):
-    if shouldRecord is not False:
-        try:
-            block_bag.writeToBag('block_pose', data)
-        finally:
-            pass
-
-def handle_buttonLeft(data):
-    if shouldRecord is not False:
-        try:
-            leftButton_bag.writeToBag('left_button_pose', data)
-        finally:
-            pass
-
-def handle_buttonRight(data):
-    if shouldRecord is not False:
-        try:
-            rightButton_bag.writeToBag('right_button_pose', data)
-        finally:
-            pass
-
-def handle_gripperLeft(data):
-    if shouldRecord is not False:
-        try:
-            leftGripper_bag.writeToBag('left_gripper_pose', data)
-            # jointState_bag.writeToBag('left_gripper_pose', data)
-        finally:
-            pass
-
-def handle_gripperRight(data):
-    if shouldRecord is not False:
-        try:
-            rightGripper_bag.writeToBag('right_gripper_pose', data)
-        finally:
-            pass
-############### END: Call back functions that check to see if ROSbag should be being recorded
-
-
-def extract_change_points(gripperToConsider, APVtrialName, clustThreshold, minClustSize):
-    global visNames
-    if gripperToConsider == 'left_gripper':
-        bagData = leftGripper_bag.getVisualizableData()
-        segs = BayesianChangePoint(np.array(bagData), 'changePointData.csv', clustThreshold, minClustSize)
-        cps = segs.getCompressedChangePoints()
-        positionInfo = leftGripper_bag.getROSBagDataAtCps(segs.getCompressedChangePoints(), ['left_gripper_pose'], cps)
-        if vis == True:
-            visData = generateVisData_bagAndCPData('leftGripper', bagData, segs)
-            writeBagData(visData, APVtrialName)
-            visNames.append(APVtrialName)
-        return positionInfo
-    else:
-        bagData = rightGripper_bag.getVisualizableData()
-        segs = BayesianChangePoint(np.array(bagData), 'changePointData.csv', clustThreshold, minClustSize)
-        cps = segs.getCompressedChangePoints()
-        positionInfo = rightGripper_bag.getROSBagDataAtCps(segs.getCompressedChangePoints(), ['right_gripper_pose'], cps)
-        if vis == True:
-            visData = generateVisData_bagAndCPData('rightGripper', bagData, segs)
-            writeBagData(visData, APVtrialName)
-            visNames.append(APVtrialName)
-        return positionInfo
-
-def closeBags():
-    leftButton_bag.closeBag() 
-    rightButton_bag.closeBag() 
-    block_bag.closeBag() 
-    leftGripper_bag.closeBag() 
-    rightGripper_bag.closeBag() 
-    jointState_bag.closeBag()
-
-def openBags():
-    leftButton_bag.openBag() 
-    rightButton_bag.openBag() 
-    block_bag.openBag() 
-    leftGripper_bag.openBag() 
-    rightGripper_bag.openBag() 
-    jointState_bag.openBag()
-
-############### END: ROSbag handling
-
-
-def execute_action(actionName, params):
-    b = rospy.ServiceProxy(KB.getService(actionName), KB.getServiceFile(actionName))
-    resp = None
-    rospy.wait_for_service(KB.getService(actionName), timeout=60)
-    try:
-        if len(params) == 1:
-            resp = b(params[0])
-        elif len(params) == 2:
-            resp = b(params[0], params[1])   
-        elif len(params) == 3:
-            resp = b(params[0], params[1], params[2])
-        elif len(params) == 4:
-            resp = b(params[0], params[1], params[2], params[3])
-    except rospy.ServiceException, e:
-        print("Service call failed: %s"%e)
-
+    position.append(msg.pose.position)
+    orientation.append(msg.pose.orientation)
+    linear.append(msg.twist.linear)
+    angular.append(msg.twist.angular)
+    force.append(msg.wrench.force)
+    torque.append(msg.wrench.torque)
 
 def main():
     rospy.init_node("APV_node")
-
-    rospy.Subscriber("cover_pose", PoseStamped, setPoseCover)
-    rospy.Subscriber("cup_pose", PoseStamped, setPoseCup)
-    rospy.Subscriber("left_gripper_pose", PoseStamped, handle_gripperLeft)
-    rospy.Subscriber("right_gripper_pose", PoseStamped, handle_gripperRight)
-    rospy.Subscriber("robot/joint_states", JointState, handle_jointStates)
-    rospy.Subscriber("predicate_values", PredicateList, handle_predicates)
+    rospy.wait_for_service('/action_executor_srv')
 
     s = rospy.Service("APV_srv", APVSrv, handle_APV)
+    
+    recordDataSubscriber = rospy.Subscriber('/robot/limb/left/endpoint_state', EndpointState, recordData)
     rospy.spin()
     
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

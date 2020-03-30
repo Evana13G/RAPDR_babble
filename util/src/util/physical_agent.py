@@ -76,17 +76,18 @@ class PhysicalAgent(object):
 ####################################################################################################
 ############## Higher Level Action Primitives 
 
-    def push(self, startPose, endPose, objPose):
-        # self._gripper_close("left")
-        # self._hover_approach("left", startPose)
-        # self._approach("left", startPose)
-        # # limb = self.translateLimb("left")
-        # # limb.set_joint_position_speed(0.9) # 0.0 to 1.0, defaults to 0.3
-        # self._approach("left", endPose)
-        # self._retract("left_gripper")
+    # def push(self, startPose, endPose, objPose):
+    def push(self, startPose, endPose, objPose, rate=100):
+        self._gripper_close("left")
+        self._hover_approach("left", startPose)
+        self._approach("left", startPose)
+        # limb = self.translateLimb("left")
+        # limb.set_joint_position_speed(0.9) # 0.0 to 1.0, defaults to 0.3
+        self._approach("left", endPose, rate=rate)
+        self._retract("left_gripper")
         # return 1
-        self._set_joint_efforts()
-        return 1
+        # self._set_joint_efforts()
+        # return 1
 
     def push_effort(self, startPose, effort):
         self._gripper_close("left")
@@ -311,10 +312,10 @@ class PhysicalAgent(object):
     def _retract(self, gripperName):
         self._move_to_start(gripperName)
 
-    def _approach(self, gripperName, pose):
+    def _approach(self, gripperName, pose, rate=100):
         appr = copy.deepcopy(pose)
         joint_angles = self.ik_request(gripperName, appr)
-        self._guarded_move_to_joint_position(gripperName, joint_angles)
+        self._guarded_move_to_joint_position(gripperName, joint_angles, rate)
 
     def _hover_approach(self, gripperName, pose):
         appr = copy.deepcopy(pose)
@@ -325,10 +326,10 @@ class PhysicalAgent(object):
 #####################################################################################################
 ######################### Internal Functions
 
-    def _guarded_move_to_joint_position(self, limbName, joint_angles):
+    def _guarded_move_to_joint_position(self, limbName, joint_angles, rate=100):
         if joint_angles:
             limb = self.translateLimb(limbName)
-            limb.move_to_joint_positions(joint_angles)
+            limb.move_to_joint_positions(positions=joint_angles, rate=rate)
         else:
             rospy.logerr("No Joint Angles provided for move_to_joint_positions. Staying put.")
 

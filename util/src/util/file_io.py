@@ -177,8 +177,6 @@ def writeBagData(data, APVtrialName):
         writer = csv.writer(csvFile)
         writer.writerow(data['filteredCps'])
 
-
-
 def readBagData(APVtrialName):
     filePath = APVdata_Filepath + APVtrialName
     bagData_fp = filePath + '_bag.csv'
@@ -221,3 +219,14 @@ def processLogData(filePath, logDataList, outputMode='log'):
         for row in logDataList:
             print(str(row))
             print('\n')
+
+
+def writeEndpointData(data, fieldName):
+    filePath = APVdata_Filepath + fieldName
+    endptData_fp = filePath + '_endpt.csv'
+
+    with open(endptData_fp, 'a') as csvFile:
+        writer = csv.writer(csvFile)
+        writer.writerow(data.x)
+        writer.writerow(data.y)
+        writer.writerow(data.z)
