@@ -84,14 +84,14 @@ class ImageConverter:
         except CvBridgeError as e:
             print(e)
         frame = cv_image
-        cv2.imshow('frame', frame) # debugging purposes 
+        #cv2.imshow('frame', frame) # debugging purposes 
         # Convert BGR to HSV
         hsv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-        color_count_pixels(hsv_image)
+        self.color_count_pixels(hsv_image)
 
 
-    def color_count_pixels(hsv_image):
+    def color_count_pixels(self, hsv_image):
       # Black pixels 
       lower_black = np.array([0,0,0], dtype=np.uint8)
       upper_black = np.array([179,255,0 + BLACK_THRESH], dtype=np.uint8)
@@ -140,6 +140,6 @@ class ImageConverter:
       if (object == 'cover'):
         return self.green_pixels
       elif (object == 'cup'):
-        return self.white_pixels
+        return self.blue_pixels
       else:
         return 0

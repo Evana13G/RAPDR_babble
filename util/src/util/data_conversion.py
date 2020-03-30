@@ -38,6 +38,14 @@ def getPredicateLocation(predList, _oprtr, _obj):
             return pred.locationInformation
     return None
 
+# Given predlist, returns names of objects that are "visible"
+def getVisibleObjects(predList):
+    obj_list = []
+    for pred in predList:
+        if (pred.operator == "is_visible"):
+            obj_list.append(pred.object + " ")
+    return obj_list
+
 def is_touching(object1_loc, object2_loc, epsilon=0.135):
     if ((object1_loc is not None) and (object2_loc is not None)):
         obj1 = np.array((object1_loc.pose.position.x, 

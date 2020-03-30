@@ -51,14 +51,30 @@ def handle_trial(req):
     print("---------------------------------------------------------------------------------------")
     print("---------------------------------   TESTING ACTIONS   ---------------------------------")
 
+    scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
+    currentState = scenarioData()
 
-    actionName = 'push'
-    args = ['left', 'cup', '0.1', '0.18']
-    param_to_vary = 'rate'
-    T = 3 # between 1 and 10?
+    obj_list = currentState.predicateList.predicates
+    print("Printing visible objects: ")
+    print(getVisibleObjects(obj_list))
+
+    #actionName = 'push'
+    #args = ['left', 'cup', '0.1', '0.18']
+    #param_to_vary = 'rate'
+    #T = 3 # between 1 and 10?
 
 
-    APVproxy(actionName, args, param_to_vary, T)
+    #APVproxy(actionName, args, param_to_vary, T)
+
+    rospy.sleep(30) # restart or destory env during this time 
+
+    print("---------------------- AFTER ACTION ------------------------")
+    currentState = scenarioData()
+    obj_list = currentState.predicateList.predicates
+    print("Printing visible objects: ")
+    print(getVisibleObjects(obj_list))
+
+
     # print('----------- [PUSH CUP], env 1 ')
     # pushProxy('cup', 0.1, 0.18)
 

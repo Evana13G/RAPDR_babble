@@ -140,7 +140,7 @@ def handle_APV(req):
                 # float64[] params
     print("APV Complete")
 
-    visData()
+    # visData()
     return APVSrvResponse([])
 
 def print_data():
