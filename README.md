@@ -7,6 +7,7 @@ Setup each of the following, in order:
 1. Ubuntu 16.04
 
 2. ROS Kinetic (http://wiki.ros.org/kinetic/Installation/Ubuntu & http://wiki.ros.org/ROS/Tutorials)
+*SKIP the line 'sudo apt install python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential*
 
 3. Gazebo 7 (Installs with ROS installation) 
 
@@ -22,7 +23,7 @@ Setup each of the following, in order:
 
         catkin_ws/
         catkin_ws/src/
-        catkin_ws/src/RAPDR/
+        catkin_ws/src/RAPDR_babble/
         catkin_ws/src/*all baxter gazebo packages*
         catkin_ws/src/pyperplan/
 
