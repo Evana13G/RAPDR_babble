@@ -35,23 +35,28 @@ Setup each of the following, in order:
 #### Run instructions
 Each of the following should be run in a separate terminal window:
 
-1. Launch baxter sim. 
+1. Launch baxter sim:
 
         roslaunch baxter_gazebo baxter_world.launch
 
-2. Spawn the agent
-
-        rosrun agent physical_agent_executor.py
-        
-3. Spawn the environment elements (table, buttons, object)
-
-        rosrun environment initialize_environment.py
-
-4. Spawn data conversion node (converts raw data into predicate form)
+2. Spawn the data conversion module:
 
         rosrun environment scenario_data.py
 
-5. Spawn the PDDL nodes (each in a seperate terminal window):
+3. Spawn the agent proxy:
+
+        rosrun agent physical_agent_executor.py
+
+4. Spawn the environment elements:
+
+        rosrun environment publish_environment.py
+        rosrun environment load_environment.py
+
+5. Spawn action primitive variation tool:
+
+        rosrun action_primitive_variation APV.py
+
+6. [NOT CURRENTLY WORK, skip step] Spawn the PDDL nodes (each in a seperate terminal window):
 
     1. Service for generating pddl plans
 
@@ -61,11 +66,14 @@ Each of the following should be run in a separate terminal window:
 
             rosrun pddl plan_executor.py
 
-6. Run the agent brain (creepy). All configs are set here.
+7. Run the agent brain (creepy). All configs are set here.
 
         rosrun agent brain.py
+        
+8. Call the brain service [dev]:
 
-
+        rosservice call /brain_srv [tab complete for args]
+        
 #### Other Info
 The URDF models are inside the baxter_simulation package in a folder that I believe is called baxter_sim_examples/models. The URDF model for the table and the wall is called cafe_table. 
 
@@ -73,9 +81,8 @@ The URDF models are inside the baxter_simulation package in a folder that I beli
 
 "left_gripper" - left gripper \n
 "right_gripper" - right gripper \n
-"block" - object to obtain \n
-"left_button" - left button \n
-"right_button" - right button \n
+"cup" - cup \n
+"cover" - cover \n
 
 2. Many of the .py files might not be runnable. Navigate to their directories and run:
 
