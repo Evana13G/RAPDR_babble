@@ -1,5 +1,6 @@
 string objectName 
 float64 startOffset
 float64 endOffset
+int64 rate
 ---
 int64 success_bool

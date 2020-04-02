@@ -48,7 +48,7 @@ pub_cover_pose = rospy.Publisher('cover_pose', PoseStamped, queue_size = 10)
 
 def setPubAll(data):
     global pub_all
-    pub_all = data
+    pub_all = data.data
 
 def poseFromPoint(poseVar):
     newPose = poseVar.pose
@@ -59,16 +59,15 @@ def poseFromPoint(poseVar):
     newPoseStamped = PoseStamped(header = poseVar.header, pose = newPose)
     return newPoseStamped
 
-
 def publish(environment='default'):
-
     transform_listener = tf.TransformListener()
 
     rospy.wait_for_service('/gazebo/get_model_state')
     rospy.wait_for_service('/gazebo/get_link_state')
-    rospy.wait_for_message("/models_loaded", Bool) 
 
     frameid_var = "/world"
+
+    # print(pub_all)
     if pub_all == True:
         try:
             cafe_table_ms = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
@@ -178,6 +177,7 @@ def main():
     rate = rospy.Rate(10) # 10hz
 
     rospy.Subscriber("models_loaded", Bool, setPubAll)
+    rospy.wait_for_message("/models_loaded", Bool) 
 
     while not rospy.is_shutdown():
         publish()

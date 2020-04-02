@@ -40,7 +40,8 @@ pub = True
 environment = 'default'
 
 pub_all = rospy.Publisher('models_loaded', Bool, queue_size=10)
-
+moveToStartProxy = rospy.ServiceProxy('move_to_start_srv', MoveToStartSrv)
+    
 #SPAWN WALL AT 1.1525 z to be above table or 0.3755 to be below
 def load_gazebo_models(env='default'):
 
@@ -62,18 +63,21 @@ def load_gazebo_models(env='default'):
     cover_xml = ''
 
 
+    moveToStartProxy('both')
+
     with open (model_path + "cafe_table/model.sdf", "r") as table_file:
         table_xml=table_file.read().replace('\n', '')
 
     if env == 'heavy': 
         with open (model_path + "cup_with_cover/cup_model_heavy.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')
-        with open (model_path + "cup_with_cover/cover_model_heavy.sdf", "r") as cover_file:
+        with open (model_path + "cup_with_cover/cover_model_heavy_high_friction.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
+    # elif: 
     else:
         with open (model_path + "cup_with_cover/cup_model.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')
-        with open (model_path + "cup_with_cover/cover_model.sdf", "r") as cover_file:
+        with open (model_path + "cup_with_cover/cover_model_high_friction.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
 
     # Spawn Table SDF and other URDFs
@@ -157,12 +161,11 @@ def handle_environment_request(req):
 
 def main():
 
-    rospy.init_node("initialize_environment_node")
+    rospy.init_node("load_environment_node")
     rospy.on_shutdown(delete_gazebo_models)
     rospy.wait_for_service('move_to_start_srv', timeout=60)
     
-    s = rospy.Service("init_environment", HandleEnvironmentSrv, handle_environment_request)
-
+    s = rospy.Service("load_environment", HandleEnvironmentSrv, handle_environment_request)
     load_gazebo_models()
 
     rospy.spin()

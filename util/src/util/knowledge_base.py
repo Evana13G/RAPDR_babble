@@ -44,6 +44,13 @@ class KnowledgeBase(object):
         _preds.append(TemplatedPredicate('is_visible', [Variable('?o', 'obj')]))
         _preds.append(TemplatedPredicate('obtained', [Variable('?o', 'obj')]))
         
+
+# def push(req):
+# def grasp(req):
+# def shake(req):
+# def press(req):
+# def drop(req):
+
         # _a1 = Action('obtain_object', [], [], [], ObtainObjectSrv)
         # _a1.addVar(Variable('?g', 'gripper'))
         # _a1.addVar(Variable('?loc0', 'waypoint'))

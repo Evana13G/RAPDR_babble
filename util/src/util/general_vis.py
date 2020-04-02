@@ -4,8 +4,6 @@ import rosbag
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-from util.bayesian_change_point import BayesianChangePoint
-from util.ros_bag import RosBag
 from util.file_io import * 
 
 import csv
@@ -52,3 +50,30 @@ def generateVisData_bagAndCPData(bagName, bagData, cpData):
     return visualizableData
 
 
+def generateEndptImage(visData, visTitle):
+    fig = plt.figure()
+    x = [elem.x for elem in visData]
+    y = [elem.y for elem in visData]
+    z = [elem.z for elem in visData]
+
+    plt.plot(x, 'r--', label='x')
+    plt.plot(y, 'g', label='y')
+    plt.plot(z, 'b--', label='z')
+    plt.title(visTitle)
+    # saveFigureToImage(fig, imageFilePath, 'APV')
+    # plt.clf(fig)
+    # plt.close(fig)
+
+    plt.show()
+
+def generateJointImage(visData, visLabels, visTitle):
+
+    colrs = ['m', 'c', 'y', '#a3c2c2', '#ff9933', '#aa80ff']
+
+    fig = plt.figure()
+    for i in range(len(visData)):
+        clr = colrs[i % (len(colrs)-1)]
+        plt.plot(visData[i], clr, label=visLabels[i])
+    plt.legend()
+    plt.title(visTitle)
+    plt.show()

@@ -1,5 +1,12 @@
 <launch>
-	<node name="init_environment_node" pkg="environment" type="init_environment_node" />
-	<node name="obtain_object_srv" pkg="agent" type="obtain_object_srv" />
-	<node name="press_button_srv" pkg="agent" type="press_button_srv" />
+	
+	<!-- Baxter world launch  -->
+	<node name="scenario_data_node" pkg="environment" type="scenario_data_node" />
+	<node name="physical_agent_node" pkg="agent" type="physical_agent_node" />
+
+	<node name="publish_environment_node" pkg="environment" type="publish_environment_node" />
+	<node name="load_environment_node" pkg="environment" type="load_environment_node" />
+	
+	<node name="agent_brain" pkg="agent" type="agent_brain" />
+	
 </launch>

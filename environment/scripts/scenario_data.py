@@ -96,7 +96,6 @@ def setPoseTable(data):
     updatePredicates("at", "table", data)
 ########################################################
 
-
 # Jumping off point for updates. "Master" list 
 def updatePredicates(oprtr, obj, locInf):
     updateLocationPredicates(oprtr, obj, locInf)
@@ -130,7 +129,6 @@ def updateVisionBasedPredicates():
 def updatePhysicalStateBasedPredicates():
 
     # Physical state choices: touching table, to start 
-
     global predicates_list
     new_predicates = []
     for pred in predicates_list:
@@ -154,6 +152,17 @@ def getPredicates(data):
                                    pddlInitStringFormat(predicates_list),
                                    PredicateList(predicates_list))
 
+def getObjectLocation(data):
+    obj = data.obj
+    obj_choices = {
+        'cup': CupPose,
+        'cover': CoverPose,
+        'left_gripper': LeftGripperPose,
+        'right_gripper': RightGripperPose, 
+        'table': TablePose
+    }
+    return obj_choices.get(obj)
+
 def main():
     rospy.init_node("scenario_data_node")
     # rospy.wait_for_message("/robot/sim/started", Empty)
@@ -172,6 +181,7 @@ def main():
 
     # rospy.sleep(1)
     s = rospy.Service("scenario_data_srv", ScenarioDataSrv, getPredicates)
+    s = rospy.Service("object_location_srv", ObjectLocationSrv, getObjectLocation)
 
     rospy.spin()
     
