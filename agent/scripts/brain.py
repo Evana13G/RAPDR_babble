@@ -24,11 +24,11 @@ from baxter_core_msgs.msg import (
 )
 
 pushProxy = rospy.ServiceProxy('push_srv', PushSrv)
-graspProxy = rospy.ServiceProxy('grasp_srv', PushSrv)
-shakeProxy = rospy.ServiceProxy('shake_srv', PushSrv)
-pressProxy = rospy.ServiceProxy('press_srv', PushSrv)
-dropProxy = rospy.ServiceProxy('drop_srv', PushSrv)
-APVproxy = rospy.ServiceProxy('APV_srv', APVSrv)
+graspProxy = rospy.ServiceProxy('grasp_srv', GraspSrv)
+shakeProxy = rospy.ServiceProxy('shake_srv', ShakeSrv)
+pressProxy = rospy.ServiceProxy('press_srv', PressSrv)
+dropProxy = rospy.ServiceProxy('drop_srv', DropSrv)
+# APVproxy = rospy.ServiceProxy('APV_srv', APVSrv)
 
 KB = KnowledgeBase()
 envProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
@@ -52,48 +52,45 @@ def handle_trial(req):
     print("---------------------------------   TESTING ACTIONS   ---------------------------------")
 
 
-    actionName = 'push'
-    args = ['left', 'cup', '0.1', '0.18']
-    param_to_vary = 'rate'
-    T = 3 # between 1 and 10?
+    ####### APV testing Code #######
+    # actionName = 'push'
+    # args = ['left', 'cup', '0.1', '0.11']
+    # param_to_vary = 'rate'
+    # T = 3 # between 1 and 10?
+    # APVproxy(actionName, args, param_to_vary, T)
 
 
-    APVproxy(actionName, args, param_to_vary, T)
-    # print('----------- [PUSH CUP], env 1 ')
-    # pushProxy('cup', 0.1, 0.18)
 
-    # print('----------- [setting up ENV 2] ')
-    # envProxy('restart', 'heavy')
+    ##### Actions testing Code #####
   
-    # print('----------- [PUSH CUP], env 2 ')
-    # pushProxy('cup', 0.1, 0.18)
+    #### PUSH #######################################
+    # pushProxy('cup', 0.1, 0.11, None) ## DEFAULT
+    # envProxy('restart', 'heavy')      ## HEAVY    
+    #
+    # pushProxy('cup', 0.1, 0.11, None) ## DEFAULT
+    # envProxy('restart', 'heavy')      ## HEAVY    
+    #
+    # pushProxy('cup', 0.1, 0.11, 500.0) ## HIGH RATE    
+    #################################################
 
 
-    # print('----------- [PUSH CUP], env 1, rate = 30 ')
-    # pushProxy('cup', 0.1, 0.18, 30)
-
-    # print('----------- [setting up ENV 1] ')
-    # envProxy('restart', None)
-
-    # print('----------- [PUSH CUP], env 1, rate = 100 (default)')
-    # pushProxy('cup', 0.1, 0.18, None)
-
-    # print('----------- [setting up ENV 1] ')
-    # envProxy('restart', None)
-
-    # print('----------- [PUSH CUP], env 1, rate = 500 ')
-    # pushProxy('cup', 0.1, 0.18, 500)
-
-    # print('----------- [setting up ENV 1] ')
-    # envProxy('restart', None)
+    #### SHAKE ######################################
+    # shakeProxy('cup', None, None)     ## DEFAULT
+    # envProxy('restart', 'heavy')      ## HEAVY    
+    #
+    # shakeProxy('cup', None, None)     ## DEFAULT
+    # envProxy('restart', 'high_friction')      ## HEAVY    
+    #
+    shakeProxy('cup', 3, 0.5)     ## HIGH SPEED
+    #################################################
 
 
-    print("---------------------------------------------------------------------------------------")
-    print("----------------------------------   RUNNING BRAIN   ----------------------------------")
 
+
+    # print("---------------------------------------------------------------------------------------")
+    # print("----------------------------------   RUNNING BRAIN   ----------------------------------")
     # attemptsTime = []
     # totalTimeStart = 0
-
     try:
     #     # Services
     #     print('\n ... Setting up services')
@@ -313,7 +310,7 @@ def handle_trial(req):
 
 def main():
     rospy.init_node("agent_brain")
-    rospy.wait_for_service('APV_srv', timeout=60)
+    # rospy.wait_for_service('APV_srv', timeout=60)
 
     s = rospy.Service("brain_srv", BrainSrv, handle_trial)
     rospy.spin()
