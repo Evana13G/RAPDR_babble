@@ -131,16 +131,15 @@ def handle_APV(req):
         paramVals.append(paramMin + addition)
     paramVals.append(paramMax)
 
+    indices = []
+
     for paramAssignment in paramVals:
         actionExecutorProxy(actionToVary, argNames, args, paramNames, [paramAssignment])
-                # string actionName
-                # string[] argNames
-                # string[] args
-                # string[] paramNames
-                # float64[] params
+        indices.append(len(l_gripper_l_finger_joint_VELOCITY))
+
     print("APV Complete")
 
-    visData()
+    visData(indices)
     return APVSrvResponse([])
 
 def print_data():
@@ -151,7 +150,7 @@ def print_data():
     print("Force: " + str(force[0]))
     print("Torque: " + str(torque[0]))
 
-def visData():
+def visData(indices):
     # generateEndptImage(position, 'position')
     # generateEndptImage(orientation, 'orientation')
     # generateEndptImage(linear, 'linear')
@@ -161,11 +160,11 @@ def visData():
     visData = [l_gripper_l_finger_joint_VELOCITY, l_gripper_r_finger_joint_VELOCITY, left_e0_VELOCITY, left_e1_VELOCITY, left_s0_VELOCITY, left_s1_VELOCITY, left_w0_VELOCITY, left_w1_VELOCITY, left_w2_VELOCITY]
     visLabels = ['l_gripper_l_finger_joint', 'l_gripper_r_finger_joint', 'left_e0', 'left_e1', 'left_s0', 'left_s1', 'left_w0', 'left_w1', 'left_w2']
     visTitle = 'VELOCITIES'
-    generateJointImage(visData, visLabels, visTitle)
+    generateJointImage(visData, visLabels, visTitle, indices)
 
     visData = [l_gripper_l_finger_joint_EFFORT, l_gripper_r_finger_joint_EFFORT, left_e0_EFFORT, left_e1_EFFORT, left_s0_EFFORT, left_s1_EFFORT, left_w0_EFFORT, left_w1_EFFORT, left_w2_EFFORT]
     visTitle = 'EFFORTS'
-    generateJointImage(visData, visLabels, visTitle)
+    generateJointImage(visData, visLabels, visTitle, indices)
 
 def recordData(msg):
     global position

@@ -68,12 +68,25 @@ def load_gazebo_models(env='default'):
     with open (model_path + "cafe_table/model.sdf", "r") as table_file:
         table_xml=table_file.read().replace('\n', '')
 
+
+    ###############################
+    ############ HEAVY ############
     if env == 'heavy': 
         with open (model_path + "cup_with_cover/cup_model_heavy.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')
         with open (model_path + "cup_with_cover/cover_model_heavy_high_friction.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
-    # elif: 
+
+    ###############################
+    ######## HIGH FRICTION ########
+    elif env == 'high_friction':
+        with open (model_path + "cup_with_cover/cup_model_high_friction.sdf", "r") as cup_file:
+            cup_xml=cup_file.read().replace('\n', '')
+        with open (model_path + "cup_with_cover/cover_model_high_friction.sdf", "r") as cover_file:
+            cover_xml=cover_file.read().replace('\n', '')
+
+    ###############################
+    ########### DEFAULT ########### 
     else:
         with open (model_path + "cup_with_cover/cup_model.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')

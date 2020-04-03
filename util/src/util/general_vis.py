@@ -66,9 +66,9 @@ def generateEndptImage(visData, visTitle):
 
     plt.show()
 
-def generateJointImage(visData, visLabels, visTitle):
+def generateJointImage(visData, visLabels, visTitle, indices):
 
-    colrs = ['m', 'c', 'y', '#a3c2c2', '#ff9933', '#aa80ff']
+    colrs = ['m', 'c', 'y', '#a3c2c2', '#ff9933', '#aa80ff', 'r', 'b', 'chartreuse']
 
     fig = plt.figure()
     for i in range(len(visData)):
@@ -76,4 +76,9 @@ def generateJointImage(visData, visLabels, visTitle):
         plt.plot(visData[i], clr, label=visLabels[i])
     plt.legend()
     plt.title(visTitle)
+
+
+    for new_artion in indices:
+        plt.axvline(x=new_artion, color='k')
+
     plt.show()

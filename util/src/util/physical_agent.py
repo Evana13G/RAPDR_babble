@@ -81,42 +81,8 @@ class PhysicalAgent(object):
         self._gripper_close("left")
         self._hover_approach("left", startPose)
         self._approach("left", startPose)
-        # limb = self.translateLimb("left")
-        # limb.set_joint_position_speed(0.9) # 0.0 to 1.0, defaults to 0.3
         self._approach("left", endPose, rate=rate)
         self._retract("left_gripper")
-        # return 1
-        # self._set_joint_efforts()
-        return 1
-
-    def push_effort(self, startPose, effort):
-        self._gripper_close("left")
-        self._hover_approach("left", startPose)
-        self._approach("left", startPose)
-        # self._apply_effort("left_s1", effort)
-        
-        body_name = 'left_wrist'
-        ref_frame = ''
-        ref_point = startPose.pose.position
-        
-        wrench = Wrench()
-        force = Vector3()
-        force.x = 0.0
-        force.y = 0.0
-        force.z = 0.0
-        torque = Vector3()
-        torque.x = 20.0
-        torque.y = 0.0
-        torque.z = 0.0
-        wrench.force = force 
-        wrench.torque = torque 
-
-        start_time = rospy.Time(0.0) # start_time = rospy.Time.now()
-        duration = rospy.Duration(5000.0)
-
-        self._body_wrench_svc(body_name, ref_frame, ref_point, wrench, start_time, duration)
-        # self._retract("left_gripper")
-        rospy.sleep(5)
         return 1
 
     def grasp(self, pose):
@@ -125,14 +91,14 @@ class PhysicalAgent(object):
         self._approach("left", pose)
         return 1
 
-    def shake(self, objPose, twist_range=1, speed=0.1):
+    def shake(self, objPose, twist_range=1, speed=0.3):
         # For now, assume left gripper is moving (change to an argument)
         # Number of times to shake can be adjusted by the for loop 
 
         # twist_range tells you how much to move in each direction (delta)
         # speed has to do with the duration of the sleep between the two positions (frequency)
 
-
+        time_steps = 20
         lj = self._left_limb.joint_names()
         gripper_name = "left"
 
@@ -143,11 +109,12 @@ class PhysicalAgent(object):
         self._hover_approach(gripper_name, objPose)
         self._approach(gripper_name, objPose)
         self._gripper_close(gripper_name)
+        self._hover_approach(gripper_name, objPose)
 
         begin_position = self._left_limb.joint_angle(joint_name) # pose robot will move to at the end
 
         # Gripper moves in between two positions
-        for i in range(100):
+        for i in range(time_steps):
             current_position = self._left_limb.joint_angle(joint_name)
             joint_command = {joint_name: current_position + twist_range}
             self._left_limb.set_joint_positions(joint_command)
@@ -159,6 +126,10 @@ class PhysicalAgent(object):
             
         joint_command = {joint_name: begin_position}
         self._left_limb.set_joint_positions(joint_command)
+
+        self._approach(gripper_name, objPose)
+        self._gripper_open(gripper_name)
+        self._hover_approach(gripper_name, objPose)
 
         return 1
 

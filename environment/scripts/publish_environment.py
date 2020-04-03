@@ -53,7 +53,6 @@ def setPubAll(data):
 def poseFromPoint(poseVar):
     newPose = poseVar.pose
     newPose.position.z -= 0.93
-    # oldOrientationQ = newPose.orientation
     q_orientation = quaternion_from_euler(3.14, 0, 0).tolist()
     newPose.orientation = Quaternion(q_orientation [0], q_orientation [1], q_orientation [2],q_orientation [3])
     newPoseStamped = PoseStamped(header = poseVar.header, pose = newPose)
