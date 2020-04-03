@@ -300,7 +300,7 @@ class PhysicalAgent(object):
     def _guarded_move_to_joint_position(self, limbName, joint_angles, rate=100):
         if joint_angles:
             limb = self.translateLimb(limbName)
-            limb.move_to_joint_positions(positions=joint_angles, rate=rate)
+            limb.move_to_joint_positions(positions=joint_angles, _rate=rate)
         else:
             rospy.logerr("No Joint Angles provided for move_to_joint_positions. Staying put.")
 

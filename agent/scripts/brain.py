@@ -51,6 +51,9 @@ def handle_trial(req):
     print("---------------------------------------------------------------------------------------")
     print("---------------------------------   TESTING ACTIONS   ---------------------------------")
 
+    scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
+    currentState = scenarioData()
+
 
     ####### APV testing Code #######
     # actionName = 'push'
@@ -58,7 +61,6 @@ def handle_trial(req):
     # param_to_vary = 'rate'
     # T = 3 # between 1 and 10?
     # APVproxy(actionName, args, param_to_vary, T)
-
 
 
     ##### Actions testing Code #####

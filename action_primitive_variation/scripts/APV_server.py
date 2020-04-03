@@ -140,6 +140,7 @@ def handle_APV(req):
     print("APV Complete")
 
     visData(indices)
+
     return APVSrvResponse([])
 
 def print_data():
