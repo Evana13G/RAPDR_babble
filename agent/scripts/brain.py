@@ -24,8 +24,8 @@ from baxter_core_msgs.msg import (
 )
 
 pushProxy = rospy.ServiceProxy('push_srv', PushSrv)
-graspProxy = rospy.ServiceProxy('grasp_srv', GraspSrv)
 shakeProxy = rospy.ServiceProxy('shake_srv', ShakeSrv)
+graspProxy = rospy.ServiceProxy('grasp_srv', GraspSrv)
 pressProxy = rospy.ServiceProxy('press_srv', PressSrv)
 dropProxy = rospy.ServiceProxy('drop_srv', DropSrv)
 # APVproxy = rospy.ServiceProxy('APV_srv', APVSrv)
@@ -63,28 +63,72 @@ def handle_trial(req):
     # APVproxy(actionName, args, param_to_vary, T)
 
 
-    ##### Actions testing Code #####
+    ##### Actions testing Code #########################################
   
-    #### PUSH #######################################
-    # pushProxy('cup', 0.1, 0.11, None) ## DEFAULT
-    # envProxy('restart', 'heavy')      ## HEAVY    
+    #### PUSH ##########################################################
+    # Args:
+    # -- string objectName 
+    # -- float64 startOffset
+    # -- float64 endOffset
+    # -- int64 rate
     #
-    # pushProxy('cup', 0.1, 0.11, None) ## DEFAULT
-    # envProxy('restart', 'heavy')      ## HEAVY    
+    # pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
+    # envProxy('restart', 'heavy')            ## HEAVY    
     #
-    # pushProxy('cup', 0.1, 0.11, 500.0) ## HIGH RATE    
-    #################################################
+    # pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
+    # envProxy('restart', 'heavy')            ## HEAVY    
+    #
+    # pushProxy('cup', 0.1, 0.11, 500)        ## HIGH RATE 
+    # envProxy('restart', 'default')          ## DEFAULT    
+    ####################################################################
 
 
-    #### SHAKE ######################################
-    # shakeProxy('cup', None, None)     ## DEFAULT
-    # envProxy('restart', 'heavy')      ## HEAVY    
+    #### SHAKE #########################################################
+    # Args:
+    # -- string objectName
+    # -- float64 twistRange
+    # -- float64 speed
     #
-    # shakeProxy('cup', None, None)     ## DEFAULT
-    # envProxy('restart', 'high_friction')      ## HEAVY    
+    # shakeProxy('cup', None, None)           ## DEFAULT
+    # envProxy('restart', 'heavy')            ## HEAVY    
     #
-    shakeProxy('cup', 3, 0.5)     ## HIGH SPEED
-    #################################################
+    # shakeProxy('cup', None, None)           ## DEFAULT
+    # envProxy('restart', 'high_friction')    ## HEAVY    
+    #
+    # shakeProxy('cup', 3, 0.1)               ## HIGH SPEED 
+    #                                         ##(inverse relationship)
+    # envProxy('restart', 'default')          ## DEFAULT  
+    ####################################################################
+
+
+    ## !!! NON VARIATION ACTION ########################################
+    #### GRASP #########################################################
+    # Args:
+    # -- string objectName
+    #
+    # graspProxy('cup')                       ## NO VARIANTS
+    # envProxy('restart', 'default')          ## DEFAULT  
+    ####################################################################
+
+
+    #### PRESS #########################################################
+    # Args:
+    # -- float64 hoverDistance
+    # -- float64 pressAmount
+    # -- float64 rate
+    #
+    # pressProxy('cup', None, None)           ## DEFAULT
+    # envProxy('restart', 'heavy')            ## HEAVY    
+    #
+    # pressProxy('cup', None, None)           ## DEFAULT
+    # envProxy('restart', 'high_friction')    ## HEAVY    
+    #
+    # pressProxy('cup', 3, 0.1)               ## HIGH SPEED 
+    #                                         ##(inverse relationship)
+    # envProxy('restart', 'default')          ## DEFAULT  
+    ####################################################################
+
+
 
 
 
