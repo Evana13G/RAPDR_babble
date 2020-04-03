@@ -6,7 +6,7 @@ Setup each of the following, in order:
 
 1. Ubuntu 16.04
 
-2. ROS Kinetic (http://wiki.ros.org/kinetic/Installation/Ubuntu & http://wiki.ros.org/ROS/Tutorials/CreatingPackage)
+2. ROS Kinetic (http://wiki.ros.org/kinetic/Installation/Ubuntu & http://wiki.ros.org/catkin/Tutorials/create_a_workspace)
 *SKIP the line 'sudo apt install python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential*
 
 3. Gazebo 7 (Installs with ROS installation) 
