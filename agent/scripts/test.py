@@ -56,14 +56,14 @@ def handle_trial(req):
     # -- float64 endOffset
     # -- int64 rate
     #
-    # pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
+    pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
     # envProxy('restart', 'heavy')            ## HEAVY    
     #
     # pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
     # envProxy('restart', 'heavy')            ## HEAVY    
     #
     # pushProxy('cup', 0.1, 0.11, 500)        ## HIGH RATE 
-    # envProxy('restart', 'default')          ## DEFAULT    
+    envProxy('restart', 'default')          ## DEFAULT    
     ####################################################################
 
 
@@ -73,7 +73,7 @@ def handle_trial(req):
     # -- float64 twistRange
     # -- float64 speed
     #
-    # shakeProxy('cup', None, None)           ## DEFAULT
+    shakeProxy('cup', None, None)           ## DEFAULT
     # envProxy('restart', 'heavy')            ## HEAVY    
     #
     # shakeProxy('cup', None, None)           ## DEFAULT
@@ -81,7 +81,7 @@ def handle_trial(req):
     #
     # shakeProxy('cup', 3, 0.1)               ## HIGH SPEED 
     #                                         ##(inverse relationship)
-    # envProxy('restart', 'default')          ## DEFAULT  
+    envProxy('restart', 'default')          ## DEFAULT  
     ####################################################################
 
 
@@ -90,29 +90,43 @@ def handle_trial(req):
     # Args:
     # -- string objectName
     #
-    # graspProxy('cup')                       ## NO VARIANTS
-    # envProxy('restart', 'default')          ## DEFAULT  
+    graspProxy('cup')                       ## NO VARIANTS
+    envProxy('restart', 'default')          ## DEFAULT  
     ####################################################################
 
 
     #### PRESS #########################################################
     # Args:
+    # -- string objectName
     # -- float64 hoverDistance
     # -- float64 pressAmount
     # -- float64 rate
     #
-    # pressProxy('cup', None, None)           ## DEFAULT
+    pressProxy('cup', 0.1, 0.02, None)        ## DEFAULT
     # envProxy('restart', 'heavy')            ## HEAVY    
     #
-    # pressProxy('cup', None, None)           ## DEFAULT
-    # envProxy('restart', 'high_friction')    ## HEAVY    
+    # pressProxy('cup', None, None, None)     ## DEFAULT
+    # envProxy('restart', 'default')          ## DEFAULT    
     #
-    # pressProxy('cup', 3, 0.1)               ## HIGH SPEED 
-    #                                         ##(inverse relationship)
-    # envProxy('restart', 'default')          ## DEFAULT  
+    # pressProxy('cup', None, 0.2, 500)       ## HIGH PRESS AMNT AND RATE 
+    envProxy('restart', 'default')            ## DEFAULT  
     ####################################################################
 
-    
+
+    #### DROP ##########################################################
+    # Args:
+    # -- string objectName
+    # -- int64 dropHeight
+    #
+    dropProxy('cup', 0.15)                  ## DEFAULT
+    # envProxy('restart', 'heavy')            ## HEAVY    
+    #
+    # dropProxy('cup', 0.15)                  ## DEFAULT
+    # envProxy('restart', 'default')          ## DEFAULT    
+    #
+    # dropProxy('cup', 0.1)                   ## HIGH DROP AMNT 
+    envProxy('restart', 'default')          ## DEFAULT  
+    ####################################################################
 
     return BrainSrvResponse([1], 1) 
 

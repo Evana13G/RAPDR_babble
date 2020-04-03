@@ -76,22 +76,22 @@ class PhysicalAgent(object):
 ####################################################################################################
 ############## Higher Level Action Primitives 
 
-    # def push(self, startPose, endPose, objPose):
-    def push(self, startPose, endPose, objPose, rate=100):
+    def push(self, startPose, endPose, rate=100):
         self._gripper_close("left")
         self._hover_approach("left", startPose)
         self._approach("left", startPose)
         self._approach("left", endPose, rate=rate)
-        self._retract("left_gripper")
+        self._retract("left")
         return 1
 
-    def grasp(self, pose):
+    def grasp(self, objPose):
         self._gripper_open("left")
-        self._hover_approach("left", pose)
-        self._approach("left", pose)
+        self._hover_approach("left", objPose)
+        self._approach("left", objPose)
+        self._gripper_close("left")
         return 1
 
-    def shake(self, objPose, twist_range=1, speed=0.3):
+    def shake(self, objPose, twist_range=1, rate=0.3):
         # For now, assume left gripper is moving (change to an argument)
         # Number of times to shake can be adjusted by the for loop 
 
@@ -101,7 +101,6 @@ class PhysicalAgent(object):
         time_steps = 20
         lj = self._left_limb.joint_names()
         gripper_name = "left"
-
         joint_name= lj[6] # gripper twist, left_w2
 
         # GRIP OBJECT 
@@ -118,36 +117,34 @@ class PhysicalAgent(object):
             current_position = self._left_limb.joint_angle(joint_name)
             joint_command = {joint_name: current_position + twist_range}
             self._left_limb.set_joint_positions(joint_command)
-            time.sleep(speed)
+            time.sleep(rate)
             current_position = self._left_limb.joint_angle(joint_name)
             joint_command = {joint_name: current_position - twist_range}
             self._left_limb.set_joint_positions(joint_command)
-            time.sleep(speed)
+            time.sleep(rate)
             
         joint_command = {joint_name: begin_position}
         self._left_limb.set_joint_positions(joint_command)
-
         self._approach(gripper_name, objPose)
         self._gripper_open(gripper_name)
         self._hover_approach(gripper_name, objPose)
-
         return 1
 
-    def press(self, objPose, hover_distance, press_amount): #TODO
+    def press(self, startPose, endPose, rate=100): 
         self._gripper_close("left")
-        self._hover_approach("left", objPose)
-        self._approach("left", objPose)
+        self._approach("left", startPose)
+        self._approach("left", endPose, rate=rate)
+        self._retract("left")
         return 1
 
-    def drop(self, objPose, drop_height):
+    def drop(self, objPose, dropPose):
         self._gripper_open("left")
         self._hover_approach("left", objPose)
         self._approach("left", objPose)
-        self._gripper_closed("left")
-        self._hover_approach("left", objPose)
+        self._gripper_close("left")
+        self._approach("left", dropPose)
         self._gripper_open("left")
         return 1
-
 
 ###################################################################################################
 ############## Lower Level Action Primitives 

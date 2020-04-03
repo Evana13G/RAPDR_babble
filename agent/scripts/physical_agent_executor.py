@@ -50,51 +50,87 @@ def getCorrectAction(action_name):
 ################################################################################
 
 def push(req):
+    # Pull args
     objPose = getObjectPose(req.objectName)
     start_offset = float(req.startOffset) #FLOAT
     ending_offset = float(req.endOffset) #FLOAT
+    rate = req.rate
 
+    # Process args
     obj_y_val = copy.deepcopy(objPose.pose.position.y)  
     startPose = copy.deepcopy(objPose)
     endPose = copy.deepcopy(objPose)
     startPose.pose.position.y = (obj_y_val - start_offset)
     endPose.pose.position.y = (obj_y_val + ending_offset)
-    effort = req.rate
 
-    if effort == None or req.rate == 0:
-        return PushSrvResponse(pa.push(startPose, endPose, objPose))
-    return PushSrvResponse(pa.push(startPose, endPose, objPose, effort))
+    # Put args into hash object
+    argNames = ['startPose', 'endPose', 'rate']
+    argVals = [startPose, endPose, rate]
+    args = arg_list_to_hash(argNames, argVals)
 
-    # return PushSrvResponse(pa.push(startPose, endPose, objPose))
-    # return PushSrvResponse(pa.push_effort(startPose, effort)) 
+    return PushSrvResponse(pa.push(**args))
 
 def grasp(req):
+    # Pull args
     objPose = getObjectPose(req.objectName)
     return GraspSrvResponse(pa.grasp(objPose))
 
 def shake(req):
+    # Pull args
     objPose = getObjectPose(req.objectName)
     twist_range = req.twistRange
-    speed = req.speed
-    if twist_range == None or req.twistRange == 0:
-        if speed == None or req.speed == 0:
-            return ShakeSrvResponse(pa.shake(objPose))
-        return ShakeSrvResponse(pa.shake(objPose, speed=speed))
-    return ShakeSrvResponse(pa.shake(objPose, twist_range, speed))
+    rate = req.speed
+
+    # Put args into hash object
+    argNames = ['objPose', 'twist_range', 'rate']
+    argVals = [objPose, twist_range, rate]
+    args = arg_list_to_hash(argNames, argVals)
+
+    return ShakeSrvResponse(pa.shake(**args))
 
 def press(req):
+    # Pull args
     objPose = getObjectPose(req.objectName)
     hover_distance = req.hoverDistance
     press_amount = req.pressAmount
-    return PressSrvResponse(pa.press(objPose, hover_distance, press_amount))
+    rate = req.rate
+
+    # Process args
+    obj_z_val = copy.deepcopy(objPose.pose.position.z)  
+    startPose = copy.deepcopy(objPose)
+    endPose = copy.deepcopy(objPose)
+    startPose.pose.position.z = (obj_z_val + hover_distance)
+    endPose.pose.position.z = (obj_z_val + hover_distance - press_amount)
+
+    # Put args into hash object
+    argNames = ['startPose', 'endPose', 'rate']
+    argVals = [startPose, endPose, rate]
+    args = arg_list_to_hash(argNames, argVals)
+
+    return PressSrvResponse(pa.press(**args))
 
 def drop(req):
+    # Pull args
     objPose = getObjectPose(req.objectName)
     drop_height = req.dropHeight
-    return DropSrvResponse(pa.drop(objPose, drop_height))
 
+
+    # Process args
+    obj_z_val = copy.deepcopy(objPose.pose.position.z)  
+    dropPose = copy.deepcopy(objPose)
+    dropPose.pose.position.z = (obj_z_val + drop_height)
+
+    # Put args into hash object
+    argNames = ['objPose', 'dropPose']
+    argVals = [objPose, dropPose]
+    args = arg_list_to_hash(argNames, argVals)
+
+    return DropSrvResponse(pa.drop(**args))
+
+
+################################################################################
 def action_executor(req):
-    ## To call for any genearl action to be executed
+    ## To call for any general action to be executed
 
     actionName = req.actionName
     argNames = req.argNames
@@ -124,19 +160,19 @@ class ActionRequest:
         for i in range(0, len(params)):
             setattr(self, params[i], paramVals[i])
 
+    # def getArgs(self):
+
     def __str__(self):
         attrs = vars(self)
         s = 'Action Request:\n'
         s = s + '\n'.join("---%s: %s" % item for item in attrs.items())
         return s
+################################################################################
 
 ################################################################################
 ## UTIL 
 def move_to_start(req):
     return MoveToStartSrvResponse(pa._move_to_start(req.limb))
-
-def set_velocity(req):
-    return (pa._set_joint_velocity(req.limb))
 
 def open_gripper(req):
     return OpenGripperSrvResponse(pa.gripper_open(req.position))
@@ -146,6 +182,17 @@ def close_gripper(req):
 
 def approach(req):
     return ApproachSrvResponse(pa.approach(req.pose))
+
+def arg_list_to_hash(argNames, argValues):
+    args = {}
+    for i in range(len(argValues)):
+        name = argNames[i]
+        val = argValues[i]
+        print(name + ': ' + str(val))
+        if not(val == 0.0 or val == None or val == 0):
+            args[name] = val
+    return args
+
 ################################################################################
 
 def main():
@@ -166,7 +213,6 @@ def main():
     s_6 = rospy.Service("shake_srv", ShakeSrv, shake)
     s_7 = rospy.Service("press_srv", PressSrv, press)
     s_8 = rospy.Service("drop_srv", DropSrv, drop)
-    s_9 = rospy.Service("set_joint_velocity_srv", JointVelocitySrv, set_velocity)
     s_9 = rospy.Service("action_executor_srv", ActionExecutorSrv, action_executor)
 
     rospy.spin()
