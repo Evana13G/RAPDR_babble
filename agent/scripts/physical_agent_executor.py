@@ -76,6 +76,10 @@ def shake(req):
     objPose = getObjectPose(req.objectName)
     twist_range = req.twistRange
     speed = req.speed
+    if twist_range == None or req.twistRange == 0:
+        if speed == None or req.speed == 0:
+            return ShakeSrvResponse(pa.shake(objPose))
+        return ShakeSrvResponse(pa.shake(objPose, speed=speed))
     return ShakeSrvResponse(pa.shake(objPose, twist_range, speed))
 
 def press(req):
