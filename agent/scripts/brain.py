@@ -28,7 +28,7 @@ shakeProxy = rospy.ServiceProxy('shake_srv', ShakeSrv)
 graspProxy = rospy.ServiceProxy('grasp_srv', GraspSrv)
 pressProxy = rospy.ServiceProxy('press_srv', PressSrv)
 dropProxy = rospy.ServiceProxy('drop_srv', DropSrv)
-# APVproxy = rospy.ServiceProxy('APV_srv', APVSrv)
+APVproxy = rospy.ServiceProxy('APV_srv', APVSrv)
 
 KB = KnowledgeBase()
 envProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
@@ -56,11 +56,11 @@ def handle_trial(req):
 
 
     ####### APV testing Code #######
-    # actionName = 'push'
-    # args = ['left', 'cup', '0.1', '0.11']
-    # param_to_vary = 'rate'
-    # T = 3 # between 1 and 10?
-    # APVproxy(actionName, args, param_to_vary, T)
+    actionName = 'push'
+    args = ['left', 'cup', '0.1', '0.07']
+    param_to_vary = 'rate'
+    T = 4 # between 1 and 10?
+    APVproxy(actionName, args, param_to_vary, T)
 
 
     ##### Actions testing Code #########################################

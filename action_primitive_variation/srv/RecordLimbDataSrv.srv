@@ -1,0 +1,5 @@
+string mode
+string data_to_vis
+int64[] action_breakpoints
+---
+int64 success_bool

@@ -29,6 +29,7 @@ from tf.transformations import *
 from agent.srv import *
 from environment.srv import ObjectLocationSrv
 from util.physical_agent import PhysicalAgent
+from util.action_request import ActionRequest
 
 pa = None
 obj_location_srv = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
@@ -47,8 +48,9 @@ def getCorrectAction(action_name):
                'press' : press, 
                'drop' : drop}
     return actions[action]
-################################################################################
 
+################################################################################
+#### PUSH ######################################################################
 def push(req):
     # Pull args
     objPose = getObjectPose(req.objectName)
@@ -70,11 +72,8 @@ def push(req):
 
     return PushSrvResponse(pa.push(**args))
 
-def grasp(req):
-    # Pull args
-    objPose = getObjectPose(req.objectName)
-    return GraspSrvResponse(pa.grasp(objPose))
-
+################################################################################
+#### SHAKE #####################################################################
 def shake(req):
     # Pull args
     objPose = getObjectPose(req.objectName)
@@ -88,6 +87,15 @@ def shake(req):
 
     return ShakeSrvResponse(pa.shake(**args))
 
+################################################################################
+#### GRASP #####################################################################
+def grasp(req):
+    # Pull args
+    objPose = getObjectPose(req.objectName)
+    return GraspSrvResponse(pa.grasp(objPose))
+
+################################################################################
+#### PRESS #####################################################################
 def press(req):
     # Pull args
     objPose = getObjectPose(req.objectName)
@@ -109,6 +117,8 @@ def press(req):
 
     return PressSrvResponse(pa.press(**args))
 
+################################################################################
+#### DROP ######################################################################
 def drop(req):
     # Pull args
     objPose = getObjectPose(req.objectName)
@@ -127,16 +137,15 @@ def drop(req):
 
     return DropSrvResponse(pa.drop(**args))
 
-
 ################################################################################
 def action_executor(req):
     ## To call for any general action to be executed
 
     actionName = req.actionName
     argNames = req.argNames
-    args = req.args # list of strings, should be compatible with said action. 
+    args = req.args # list of strings, should be compatible with action. 
     paramNames = req.paramNames
-    paramSettings = req.params # list of floats, should be compatible with said action
+    paramSettings = req.params # list of floats, should be compatible with action
 
     assert(len(argNames) == len(args))
     assert(len(paramNames) == len(paramSettings))
@@ -147,27 +156,6 @@ def action_executor(req):
 
     a(request)
     return ActionExecutorSrvResponse(1)
-
-
-class ActionRequest:
-    def __init__(self, _actionName, args, argVals, params, paramVals):
-        self.actionName = _actionName
-        self.initVals(args, argVals, params, paramVals)
-
-    def initVals(self, args, argVals, params, paramVals):
-        for i in range(0, len(args)):
-            setattr(self, args[i], argVals[i])
-        for i in range(0, len(params)):
-            setattr(self, params[i], paramVals[i])
-
-    # def getArgs(self):
-
-    def __str__(self):
-        attrs = vars(self)
-        s = 'Action Request:\n'
-        s = s + '\n'.join("---%s: %s" % item for item in attrs.items())
-        return s
-################################################################################
 
 ################################################################################
 ## UTIL 
@@ -218,7 +206,7 @@ def main():
     rospy.spin()
 
     return 0 
-####################################################################################################
+################################################################################
 
 if __name__ == "__main__":
     main()
