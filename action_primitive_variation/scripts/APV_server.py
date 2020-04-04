@@ -55,6 +55,8 @@ from environment.srv import ObjectLocationSrv
 KB = KnowledgeBase()
 objLocProxy = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
 actionExecutorProxy = rospy.ServiceProxy('action_executor_srv', ActionExecutorSrv)
+visSrvProxy = rospy.ServiceProxy('record_limb_data_srv', RecordLimbDataSrv) 
+addBreakptSrvProxy = rospy.ServiceProxy('add_action_breakpt_srv', AddActionBreakptSrv) 
 
 def getObjectPose(object_name, pose_only=False):
     loc_pStamped = obj_location_srv(object_name)
@@ -95,16 +97,14 @@ def handle_APV(req):
         paramVals.append(paramMin + addition)
     paramVals.append(paramMax)
 
+    visSrvProxy('start', '')
     indices = []
-
     for paramAssignment in paramVals:
+        addBreakptSrvProxy() 
         actionExecutorProxy(actionToVary, argNames, args, paramNames, [paramAssignment])
-        indices.append(len(l_gripper_l_finger_joint_VELOCITY))
+        addBreakptSrvProxy() 
 
-    print("APV Complete")
-
-    visData(indices)
-
+    visSrvProxy('end', 'endejeje')
     return APVSrvResponse([])
 
 def main():

@@ -55,6 +55,8 @@ left_w0_EFFORT = []
 left_w1_EFFORT = []
 left_w2_EFFORT = []
 
+break_points = []
+
 record_all = False 
 
 def print_data():
@@ -65,7 +67,7 @@ def print_data():
     print("Force: " + str(force[0]))
     print("Torque: " + str(torque[0]))
 
-def visData(break_points, data_to_vis):
+def visData(data_to_vis):
     if 'end' in data_to_vis:
         generateEndptImage(position, 'position')
         generateEndptImage(orientation, 'orientation')
@@ -91,12 +93,13 @@ def record_endpt_data(msg):
     global force
     global torque
 
-    position.append(msg.pose.position)
-    orientation.append(msg.pose.orientation)
-    linear.append(msg.twist.linear)
-    angular.append(msg.twist.angular)
-    force.append(msg.wrench.force)
-    torque.append(msg.wrench.torque)
+    if record_all == True:
+        position.append(msg.pose.position)
+        orientation.append(msg.pose.orientation)
+        linear.append(msg.twist.linear)
+        angular.append(msg.twist.angular)
+        force.append(msg.wrench.force)
+        torque.append(msg.wrench.torque)
 
 def record_jointstate_data(msg):
     global l_gripper_l_finger_joint_VELOCITY
@@ -108,7 +111,6 @@ def record_jointstate_data(msg):
     global left_w0_VELOCITY
     global left_w1_VELOCITY
     global left_w2_VELOCITY
-
     global l_gripper_l_finger_joint_EFFORT
     global l_gripper_r_finger_joint_EFFORT
     global left_e0_EFFORT
@@ -119,37 +121,42 @@ def record_jointstate_data(msg):
     global left_w1_EFFORT
     global left_w2_EFFORT
 
-    l_gripper_l_finger_joint_VELOCITY.append(msg.velocity[1])
-    l_gripper_r_finger_joint_VELOCITY.append(msg.velocity[2])
-    left_e0_VELOCITY.append(msg.velocity[3])
-    left_e1_VELOCITY.append(msg.velocity[4])
-    left_s0_VELOCITY.append(msg.velocity[5])
-    left_s1_VELOCITY.append(msg.velocity[6])
-    left_w0_VELOCITY.append(msg.velocity[7])
-    left_w1_VELOCITY.append(msg.velocity[8])
-    left_w2_VELOCITY.append(msg.velocity[9])
+    if record_all == True:
+        l_gripper_l_finger_joint_VELOCITY.append(msg.velocity[1])
+        l_gripper_r_finger_joint_VELOCITY.append(msg.velocity[2])
+        left_e0_VELOCITY.append(msg.velocity[3])
+        left_e1_VELOCITY.append(msg.velocity[4])
+        left_s0_VELOCITY.append(msg.velocity[5])
+        left_s1_VELOCITY.append(msg.velocity[6])
+        left_w0_VELOCITY.append(msg.velocity[7])
+        left_w1_VELOCITY.append(msg.velocity[8])
+        left_w2_VELOCITY.append(msg.velocity[9])
 
-    l_gripper_l_finger_joint_EFFORT.append(msg.effort[1])
-    l_gripper_r_finger_joint_EFFORT.append(msg.effort[2])
-    left_e0_EFFORT.append(msg.effort[3])
-    left_e1_EFFORT.append(msg.effort[4])
-    left_s0_EFFORT.append(msg.effort[5])
-    left_s1_EFFORT.append(msg.effort[6])
-    left_w0_EFFORT.append(msg.effort[7])
-    left_w1_EFFORT.append(msg.effort[8])
-    left_w2_EFFORT.append(msg.effort[9])
+        l_gripper_l_finger_joint_EFFORT.append(msg.effort[1])
+        l_gripper_r_finger_joint_EFFORT.append(msg.effort[2])
+        left_e0_EFFORT.append(msg.effort[3])
+        left_e1_EFFORT.append(msg.effort[4])
+        left_s0_EFFORT.append(msg.effort[5])
+        left_s1_EFFORT.append(msg.effort[6])
+        left_w0_EFFORT.append(msg.effort[7])
+        left_w1_EFFORT.append(msg.effort[8])
+        left_w2_EFFORT.append(msg.effort[9])
 
 def handle_record_request(req):
-    print(req)
     global record_all 
     if req.mode == 'start':
         record_all = True
     elif req.mode == 'end':
         record_all = False 
-        visData(req.action_breakpoints, req.data_to_vis)
+        visData(req.data_to_vis)
     else: 
         record_all = False 
+    return 1
 
+
+def add_action_breakpt(req):
+    global break_points
+    break_points.append(len(l_gripper_l_finger_joint_VELOCITY))
     return 1
 
 def main():
@@ -158,7 +165,8 @@ def main():
     recordDataSubscriber = rospy.Subscriber('/robot/limb/left/endpoint_state', EndpointState, record_endpt_data)
     recordJSSubscriber = rospy.Subscriber('/robot/joint_states', JointState, record_jointstate_data)
     
-    s = rospy.Service("record_limb_data_srv", RecordLimbDataSrv, handle_record_request)
+    s1 = rospy.Service("record_limb_data_srv", RecordLimbDataSrv, handle_record_request)
+    s2 = rospy.Service("add_action_breakpt_srv", AddActionBreakptSrv, add_action_breakpt)
 
     rospy.spin()
     return 0

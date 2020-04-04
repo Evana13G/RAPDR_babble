@@ -11,6 +11,7 @@ add_service_files(
 FILES
 APVSrv.srv
 RecordLimbDataSrv.srv
+AddActionBreakptSrv.srv
 )
 
 ## Generate added messages and services
