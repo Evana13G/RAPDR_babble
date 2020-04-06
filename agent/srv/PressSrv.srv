@@ -1,4 +1,4 @@
-geometry_msgs/Pose objectPose
+string objectName 
 float64 hoverDistance
 float64 pressAmount
 float64 rate
