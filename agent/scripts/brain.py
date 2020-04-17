@@ -8,7 +8,8 @@ from action_primitive_variation.srv import *
 from environment.srv import *
 from pddl.srv import *
 from pddl.msg import *
-from util.knowledge_base import KnowledgeBase
+
+from util.knowledge_base.knowledge_base import KnowledgeBase
 from util.data_conversion import * 
 from util.goal_management import *
 from util.file_io import deleteAllPddlFiles, deleteAllAPVFiles, processLogData
@@ -23,22 +24,22 @@ from baxter_core_msgs.msg import (
     EndpointState,
 )
 
-pushProxy = rospy.ServiceProxy('push_srv', PushSrv)
-shakeProxy = rospy.ServiceProxy('shake_srv', ShakeSrv)
-graspProxy = rospy.ServiceProxy('grasp_srv', GraspSrv)
-pressProxy = rospy.ServiceProxy('press_srv', PressSrv)
-dropProxy = rospy.ServiceProxy('drop_srv', DropSrv)
+
+# pushProxy = rospy.ServiceProxy('push_srv', PushSrv)
+# shakeProxy = rospy.ServiceProxy('shake_srv', ShakeSrv)
+# graspProxy = rospy.ServiceProxy('grasp_srv', GraspSrv)
+# pressProxy = rospy.ServiceProxy('press_srv', PressSrv)
+# dropProxy = rospy.ServiceProxy('drop_srv', DropSrv)
 APVproxy = rospy.ServiceProxy('APV_srv', APVSrv)
+planGenerator = rospy.ServiceProxy('plan_generator_srv', PlanGeneratorSrv)
+planExecutor = rospy.ServiceProxy('plan_executor_srv', PlanExecutorSrv)
+scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
 
 KB = KnowledgeBase()
+KBProxy = rospy.ServiceProxy('get_KB_data', GetKBDataSrv)
 envProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
 
 def handle_trial(req):
-  
-    # brainFilePath = os.path.dirname(os.path.realpath(__file__))
-    # resultsDir = generateResultsDir(brainFilePath, req.runName)
-    # logFilePath = resultsDir + 'output.txt'
-    # logData =[]
 
     print("\n#####################################################################################")
     print("#######################################################################################")
@@ -48,172 +49,66 @@ def handle_trial(req):
     print("#######################################################################################")
     print("#######################################################################################")
 
-    print("---------------------------------------------------------------------------------------")
-    print("---------------------------------   TESTING ACTIONS   ---------------------------------")
 
-    scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
-    currentState = scenarioData()
+    attemptsTime = []
+    totalTimeStart = 0 ## TODO: Change this to SIM time. 
 
-
-    ####### APV testing Code #######
-    actionName = 'push'
-    args = ['left', 'cup', '0.1', '0.07']
-    param_to_vary = 'rate'
-    T = 4 # between 1 and 10?
-    APVproxy(actionName, args, param_to_vary, T)
-
-
-    ##### Actions testing Code #########################################
-  
-    #### PUSH ##########################################################
-    # Args:
-    # -- string objectName 
-    # -- float64 startOffset
-    # -- float64 endOffset
-    # -- int64 rate
-    #
-    # pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
-    # envProxy('restart', 'heavy')            ## HEAVY    
-    #
-    # pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
-    # envProxy('restart', 'heavy')            ## HEAVY    
-    #
-    # pushProxy('cup', 0.1, 0.11, 500)        ## HIGH RATE 
-    # envProxy('restart', 'default')          ## DEFAULT    
-    ####################################################################
-
-
-    #### SHAKE #########################################################
-    # Args:
-    # -- string objectName
-    # -- float64 twistRange
-    # -- float64 speed
-    #
-    # shakeProxy('cup', None, None)           ## DEFAULT
-    # envProxy('restart', 'heavy')            ## HEAVY    
-    #
-    # shakeProxy('cup', None, None)           ## DEFAULT
-    # envProxy('restart', 'high_friction')    ## HEAVY    
-    #
-    # shakeProxy('cup', 3, 0.1)               ## HIGH SPEED 
-    #                                         ##(inverse relationship)
-    # envProxy('restart', 'default')          ## DEFAULT  
-    ####################################################################
-
-
-    ## !!! NON VARIATION ACTION ########################################
-    #### GRASP #########################################################
-    # Args:
-    # -- string objectName
-    #
-    # graspProxy('cup')                       ## NO VARIANTS
-    # envProxy('restart', 'default')          ## DEFAULT  
-    ####################################################################
-
-
-    #### PRESS #########################################################
-    # Args:
-    # -- float64 hoverDistance
-    # -- float64 pressAmount
-    # -- float64 rate
-    #
-    # pressProxy('cup', None, None)           ## DEFAULT
-    # envProxy('restart', 'heavy')            ## HEAVY    
-    #
-    # pressProxy('cup', None, None)           ## DEFAULT
-    # envProxy('restart', 'high_friction')    ## HEAVY    
-    #
-    # pressProxy('cup', 3, 0.1)               ## HIGH SPEED 
-    #                                         ##(inverse relationship)
-    # envProxy('restart', 'default')          ## DEFAULT  
-    ####################################################################
-
-
-
-
-
-
-    # print("---------------------------------------------------------------------------------------")
-    # print("----------------------------------   RUNNING BRAIN   ----------------------------------")
-    # attemptsTime = []
-    # totalTimeStart = 0
     try:
-    #     # Services
-    #     print('\n ... Setting up services')
-        
-    #     planGenerator = rospy.ServiceProxy('plan_generator_srv', PlanGeneratorSrv)
-    #     planExecutor = rospy.ServiceProxy('plan_executor_srv', PlanExecutorSrv)
-    #     scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
-    #     # APV = rospy.ServiceProxy('APV_srv', APVSrv)
 
-    #     print(' ... Cleaning up data from last run')
-    #     deleteAllPddlFiles()
-    #     deleteAllAPVFiles()
+        task = req.runName
+        currentState = scenarioData()
+        goal = ['(grasped cover)']
 
-    #     print(' ... Setting up initial data')
-    #     task = 'APD'
-
-    #     currentState = scenarioData()
-
-        # goalLoc = poseStampedToString(getPredicateLocation(currentState.predicateList.predicates, 'at', 'right_gripper'))
-        # goal1 = '(obtained block)'
-        # goal = [goal1]
-        # mode = ['diffsOnly', 'noLoc']
+        mode = ['diffsOnly', 'noLoc']
         # algoMode = 'APV'
-        # newPrims = []
-        # gripperExecutingNewPrim = 'left'
+        newPrims = []
+        gripperExecutingNewPrim = 'left'
         # gripperExecutionValidity = True
 
-        # print('\nAgent has the following goal: ')
-        # print(str(goal))
-        # print('\nAgent will attempt to accomplish this goal. If attempt fails, agent will try')
-        # print('to find new actions and replan with those actions. Process repeats until the ')
-        # print('agent is able to accomplish its goal....')
-        # attempt = 1
-
-        # totalTimeStart = rospy.get_time()
+        attempt = 1
+        totalTimeStart = rospy.get_time()
 
         # while(goalAccomplished(goal, currentState.init) == False):
-        #     trialStart = rospy.get_time()
-        #     print('\n***************************   ATTEMPT #' + str(attempt) + '   ***************************')
-        #     print('Setting up domain and problem for attempt #' + str(attempt))
+        trialStart = rospy.get_time()
 
-        #     #####################################################################################
-        #     domainDict = KB.getDomainData()
-        #     domainName = domainDict['domain']
-        #     types = domainDict['types']
-        #     predicates = domainDict['predicates']
-        #     requirements = domainDict['requirements']
-        #     actions = domainDict['actions']
-        #     # print(KB.getDomainData())
-        #     print(' -- Domain setup complete')
+        #####################################################################################
+        domainDict = KB.getDomainData()
 
-        #     #####################################################################################
-        #     currentState = scenarioData()
-        #     additionalLocations = domainDict['pddlLocs']
-            
-        #     initObjs = pddlObjects(currentState.predicateList.predicates, False)
-        #     newPts = copy.deepcopy(initObjs['waypoint'])
-        #     for loc in additionalLocations:
-        #         newPts.append(loc)
-        #     newPts.append(goalLoc)
-        #     newPts = list(set(newPts))
-        #     initObjs['waypoint'] = newPts
-        #     objs = pddlObjectsStringFormat_fromDict(initObjs)
-        #     init = currentState.init
-        #     domain = Domain(domainName, requirements, types, predicates, actions)
-        #     problem = Problem(task, domainName, objs, init, goal)
-        #     filename = task + '_' + str(attempt)
-        #     print(' -- Problem setup complete')
+        domainName = domainDict['domain']
+        types = domainDict['types']
+        predicates = domainDict['predicates']
+        requirements = domainDict['requirements']
+        actions = domainDict['actions']
+        print(KB.getDomainData())
+        print(' -- Domain setup complete')
 
-        #     #####################################################################################
-        #     print('\nTriggering plan generation and execution for attempt #' + str(attempt))
-        #     plan = planGenerator(domain, problem, filename, KB.getActionsLocs())
-        #     print(' -- Plan generation complete')
+        #####################################################################################
+        currentState = scenarioData()
+        additionalLocations = domainDict['pddlLocs']
+        initObjs = pddlObjects(currentState.predicateList.predicates, False)
+        newPts = copy.deepcopy(initObjs['cartesian'])
+
+        for loc in additionalLocations:
+            newPts.append(loc)
+
+        # newPts.append(goalLoc)
+        # newPts = list(set(newPts))
+        # initObjs['cartesian'] = newPts
+        objs = pddlObjectsStringFormat_fromDict(initObjs)
+        init = currentState.init
+        domain = Domain(domainName, requirements, types, predicates, actions)
+        problem = Problem(task, domainName, objs, init, goal)
+        filename = task + '_' + str(attempt)
+        print(' -- Problem setup complete')
+
+        #####################################################################################
+        print('\nTriggering plan generation and execution for attempt #' + str(attempt))
+        plan = planGenerator(domain, problem, filename, KB.getActionsLocs())
+        print(' -- Plan generation complete')
         
-        #     # executionSuccess = planExecutor(plan.plan)
-        #     # Just to gaurantee we go into APV mode for testing 
-
+        # executionSuccess = planExecutor(plan.plan)
+        # Just to gaurantee we go into APV mode for testing 
+        
         #     if plan.plan.actions[0].params[0] == gripperExecutingNewPrim:
         #         gripperExecutionValidity = False
         #         executionSuccess = 0
@@ -356,13 +251,9 @@ def handle_trial(req):
 
 def main():
     rospy.init_node("agent_brain")
-    # rospy.wait_for_service('APV_srv', timeout=60)
-
     s = rospy.Service("brain_srv", BrainSrv, handle_trial)
     rospy.spin()
-
     return 0 
-
 
 if __name__ == "__main__":
     main()

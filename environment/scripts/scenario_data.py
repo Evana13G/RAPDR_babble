@@ -1,17 +1,11 @@
 #!/usr/bin/env python
-
-from __future__ import print_function, division
 import roslib
-#roslib.load_manifest('my_package')
 import sys
 import cv2
 import math
 import time
-from cv_bridge import CvBridge, CvBridgeError
-
 import argparse
 import struct
-import sys
 import copy
 import numpy as np
 import rospy
@@ -57,48 +51,47 @@ from environment.msg import *
 from util.image_converter import ImageConverter
 from util.data_conversion import *
 
+predicatesPublisher = rospy.Publisher('predicate_values', PredicateList, queue_size = 10)
+imageConverter = ImageConverter()
+
 CupPose = None
 CoverPose = None
 LeftGripperPose = None
 RightGripperPose = None
 TablePose = None
 
-predicatesPublisher = None 
-imageConverter = None 
-
 predicates_list = []
-
 
 ########################################################
 def setPoseCup(data):
     global CupPose
     CupPose = data
-    updatePredicates("at", "cup", data)
+    updatePredicates("cup", data)
 
 def setPoseCover(data):
     global CoverPose
     CoverPose = data
-    updatePredicates("at", "cover", data)
+    updatePredicates("cover", data)
 
 def setPoseGripperLeft(data):
     global LeftGripperPose
     LeftGripperPose = data
-    updatePredicates("at", "left_gripper", data)    
+    updatePredicates("left_gripper", data)    
 
 def setPoseGripperRight(data):
     global RightGripperPose
     RightGripperPose = data
-    updatePredicates("at", "right_gripper", data)    
+    updatePredicates("right_gripper", data)    
 
 def setPoseTable(data):
     global TablePose
     TablePose = data
-    updatePredicates("at", "table", data)
+    updatePredicates("table", data)
 ########################################################
 
 # Jumping off point for updates. "Master" list 
-def updatePredicates(oprtr, obj, locInf):
-    updateLocationPredicates(oprtr, obj, locInf)
+def updatePredicates(obj, locInf):
+    updateLocationPredicates("at", obj, locInf)
     updateVisionBasedPredicates()
     updatePhysicalStateBasedPredicates()
     predicatesPublisher.publish(predicates_list)
@@ -107,9 +100,9 @@ def updateLocationPredicates(oprtr, obj, locInf):
     global predicates_list
     new_predicates = []
     for pred in predicates_list:
-        if not((pred.operator == oprtr) and (pred.object == obj)):
+        if not((pred.operator == oprtr) and (obj in pred.objects)): ## This needs to change
             new_predicates.append(pred)
-    new_predicates.append(Predicate(operator=oprtr, object=obj, locationInformation=locInf)) 
+    new_predicates.append(Predicate(operator=oprtr, objects=[obj], locationInformation=locInf)) 
     predicates_list = new_predicates
 
 def updateVisionBasedPredicates():
@@ -122,28 +115,31 @@ def updateVisionBasedPredicates():
     # Need to update the image converter to deal with more objects and to be more sophisticated. 
     # For the image recognition part, every object MUST have a different color to identify it  
     if (imageConverter.getObjectPixelCount('cup') > 0):
-        new_predicates.append(Predicate(operator="is_visible", object="cup", locationInformation=None)) 
+        new_predicates.append(Predicate(operator="is_visible", objects=["cup"], locationInformation=None)) 
     if (imageConverter.getObjectPixelCount('cover') > 0):
-        new_predicates.append(Predicate(operator="is_visible", object="cover", locationInformation=None)) 
+        new_predicates.append(Predicate(operator="is_visible", objects=["cover"], locationInformation=None)) 
     predicates_list = new_predicates
 
 def updatePhysicalStateBasedPredicates():
+    physical_operators = ['pressed', 'obtained', 'touching']
 
-    # Physical state choices: touching table, to start 
+    # Physical state choices
     global predicates_list
     new_predicates = []
     for pred in predicates_list:
-        if ((not (pred.operator == "pressed")) and (not (pred.operator == "obtained"))):
+        if pred.operator not in physical_operators:
             new_predicates.append(pred)
 
     if is_touching(LeftGripperPose, TablePose):
-        new_predicates.append(Predicate(operator="touching_table", object="left_gripper", locationInformation=None)) 
+        new_predicates.append(Predicate(operator="touching", objects=["left_gripper", "table"], locationInformation=None)) 
     if is_touching(RightGripperPose, TablePose):
-        new_predicates.append(Predicate(operator="touching_table", object="right_gripper", locationInformation=None)) 
+        new_predicates.append(Predicate(operator="touching", objects=["right_gripper", "table"], locationInformation=None)) 
     if is_touching(CupPose, TablePose):
-        new_predicates.append(Predicate(operator="touching_table", object="cup", locationInformation=None)) 
+        new_predicates.append(Predicate(operator="touching", objects=["cup", "table"], locationInformation=None)) 
     if is_touching(CoverPose, TablePose):
-        new_predicates.append(Predicate(operator="touching_table", object="cover", locationInformation=None)) 
+        new_predicates.append(Predicate(operator="touching", objects=["cover, 'table"], locationInformation=None)) 
+    if is_touching(CoverPose, CupPose):
+        new_predicates.append(Predicate(operator="touching", objects=["cover, 'cup"], locationInformation=None)) 
 
     predicates_list = new_predicates
 
@@ -166,13 +162,6 @@ def getObjectLocation(data):
 
 def main():
     rospy.init_node("scenario_data_node")
-    # rospy.wait_for_message("/robot/sim/started", Empty)
-   
-    global predicatesPublisher 
-    global imageConverter 
-
-    predicatesPublisher = rospy.Publisher('predicate_values', PredicateList, queue_size = 10)
-    imageConverter = ImageConverter()
 
     rospy.Subscriber("cup_pose", PoseStamped, setPoseCup)
     rospy.Subscriber("cover_pose", PoseStamped, setPoseCover)
@@ -180,9 +169,8 @@ def main():
     rospy.Subscriber("right_gripper_pose", PoseStamped, setPoseGripperRight)
     rospy.Subscriber("cafe_table_pose", PoseStamped, setPoseTable)
 
-    # rospy.sleep(1)
-    s = rospy.Service("scenario_data_srv", ScenarioDataSrv, getPredicates)
-    s = rospy.Service("object_location_srv", ObjectLocationSrv, getObjectLocation)
+    s1 = rospy.Service("scenario_data_srv", ScenarioDataSrv, getPredicates)
+    s2 = rospy.Service("object_location_srv", ObjectLocationSrv, getObjectLocation)
 
     rospy.spin()
     

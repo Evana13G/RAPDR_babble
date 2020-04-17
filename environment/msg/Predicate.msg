@@ -1,3 +1,3 @@
 string operator
-string object
+string[] objects
 geometry_msgs/PoseStamped locationInformation
