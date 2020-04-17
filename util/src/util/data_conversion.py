@@ -26,11 +26,8 @@ from std_msgs.msg import (
     Empty,
 )
 
-
 from knowledge_base.kb_subclasses import *
 from knowledge_base.action import Action
-
-
 
 def getPredicateLocation(predList, _oprtr, _obj):
     for pred in predList:
@@ -110,10 +107,12 @@ def pddlObjects(predicates_list, mod=True):
             else: 
                 loc = poseStampedToString(pred.locationInformation)
                 cartesian.append(loc)
+
         elif 'gripper' in str(pred.objects):
             grippers.append(str(pred.objects))
         else:
             objs.append(str(pred.objects))
+
     cartesian = list(set(cartesian))
     buttons = list(set(buttons))
     grippers = list(set(grippers))
@@ -238,7 +237,6 @@ def getElementDiffs(predList1, predList2, OGargs=[]):
             nonRepeatingDiffs.append(o.object)
     return list(set(nonRepeatingDiffs))
 
-#wrong
 def typeChecker(elementName, types=["obj", "gripper", "cartesian"]):
     for t in types:
         if t in str(elementName):

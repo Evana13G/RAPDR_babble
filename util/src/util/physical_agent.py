@@ -76,11 +76,18 @@ class PhysicalAgent(object):
 ####################################################################################################
 ############## Higher Level Action Primitives 
 
+    # def push(self, startPose, endPose, rate=100):
+    #     self._gripper_close("left")
+    #     self._hover_approach("left", startPose)
+    #     self._approach("left", startPose)
+    #     self._approach("left", endPose, rate=rate)
+    #     self._retract("left")
+    #     return 1
+
     def push(self, startPose, endPose, rate=100):
         self._gripper_close("left")
         self._hover_approach("left", startPose)
         self._approach("left", startPose)
-
         # joint_name = 'left_s1'
         # effort = 100.0
         # start_time = rospy.Time.now()
@@ -88,13 +95,11 @@ class PhysicalAgent(object):
 
         # self._joint_effort_svc(joint_name, effort, start_time, duration)
         # joint_name = 'left_s0'
-        # self._joint_effort_svc(joint_name, effort, start_time, duration)
-        
+        # self._joint_effort_svc(joint_name, effort, start_time, duration
         rate = 1000.0
         missed_cmds = 20.0
         control_rate = rospy.Rate(rate)
         self._left_limb.set_command_timeout((1.0 / rate) * missed_cmds)
-
         i = 0
         while i<500:
             self._left_limb.set_joint_velocities({'left_w1':10.0, 'left_s0':0.0, 'left_s1' : 0.0}) 

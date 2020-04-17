@@ -45,8 +45,8 @@ def handle_trial(req):
     print("---------------------------------------------------------------------------------------")
     print("---------------------------------   TESTING ACTIONS   ---------------------------------")
 
-    scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
-    currentState = scenarioData()
+    # scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
+    # currentState = scenarioData()
 
     ##### Actions testing Code #########################################
   
@@ -57,7 +57,7 @@ def handle_trial(req):
     # -- float64 endOffset
     # -- int64 rate
     #
-    # pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
+    pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
     # envProxy('restart', 'heavy')            ## HEAVY    
     #
     # pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
