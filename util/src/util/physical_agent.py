@@ -76,11 +76,27 @@ class PhysicalAgent(object):
 ####################################################################################################
 ############## Higher Level Action Primitives 
 
+    # def push(self, startPose, endPose, rate=100):
+    #     self._gripper_close("left")
+    #     self._hover_approach("left", startPose)
+    #     self._approach("left", startPose)
+    #     self._approach("left", endPose, rate=rate)
+    #     self._retract("left")
+    #     return 1
+
     def push(self, startPose, endPose, rate=100):
         self._gripper_close("left")
         self._hover_approach("left", startPose)
         self._approach("left", startPose)
-        self._approach("left", endPose, rate=rate)
+        rate = 1000.0
+        missed_cmds = 20.0
+        control_rate = rospy.Rate(rate)
+        self._left_limb.set_command_timeout((1.0 / rate) * missed_cmds)
+        i = 0
+        while i<500: # 500
+            self._left_limb.set_joint_torques({'left_w1':100.0, 'left_s0':100.0}) #10
+            control_rate.sleep()
+            i = i + 1
         self._retract("left")
         return 1
 

@@ -4,7 +4,7 @@
       <pose frame=''>0 0 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0 0 0 -0 0</pose>
-        <mass>50</mass>
+        <mass>30</mass>
         <inertia>
           <ixx>0.4</ixx>
           <ixy>0</ixy>
@@ -24,8 +24,8 @@
         <surface>
           <friction>
             <ode>
-              <mu>50.0</mu>
-              <mu2>50.0</mu2>
+              <mu>0.0</mu>
+              <mu2>0.0</mu2>
             </ode>
           </friction>
       </surface>
