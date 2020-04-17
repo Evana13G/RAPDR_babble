@@ -26,7 +26,8 @@ from std_msgs.msg import (
     Empty,
 )
 
-from util.kb_subclasses import * 
+from knowledge_base.kb_subclasses import *
+from knowledge_base.action import Action
 
 def getPredicateLocation(predList, _oprtr, _obj):
     for pred in predList:
@@ -75,7 +76,7 @@ def pddlStringFormat(predicates_list):
 def pddlObjectsStringFormat(predicates_list):
     strData = []
     objData = pddlObjects(predicates_list, False)
-    for objType in ['waypoint', 'button', 'gripper', 'obj']:
+    for objType in ['cartesian', 'gripper', 'obj']:
         s = ''
         for item in objData[objType]:
             s = s + item + ' '
@@ -85,7 +86,7 @@ def pddlObjectsStringFormat(predicates_list):
 
 def pddlObjectsStringFormat_fromDict(dictObj):
     strData = []
-    for objType in ['waypoint', 'button', 'gripper', 'obj']:
+    for objType in ['cartesian', 'gripper', 'obj']:
         s = ''
         for item in dictObj[objType]:
             s = s + item + ' '
@@ -94,7 +95,7 @@ def pddlObjectsStringFormat_fromDict(dictObj):
     return strData
 
 def pddlObjects(predicates_list, mod=True):
-    waypoints = []
+    cartesian = []
     buttons = []
     grippers = []
     objs = []
@@ -102,26 +103,24 @@ def pddlObjects(predicates_list, mod=True):
         if pred.operator == "at":
             if mod == True:
                 loc = poseStampedToString(pred.locationInformation) + ' '
-                waypoints.append(loc)
+                cartesian.append(loc)
             else: 
                 loc = poseStampedToString(pred.locationInformation)
-                waypoints.append(loc)
-        if 'button' in str(pred.objects):
-            buttons.append(str(pred.objects))
+                cartesian.append(loc)
+
         elif 'gripper' in str(pred.objects):
             grippers.append(str(pred.objects))
         else:
             objs.append(str(pred.objects))
 
-    waypoints = list(set(waypoints))
+    cartesian = list(set(cartesian))
     buttons = list(set(buttons))
     grippers = list(set(grippers))
     objs = list(set(objs))
 
     objects = {}
-    objects['types'] = ['waypoint', 'button', 'gripper', 'obj']
-    objects['waypoint'] = waypoints
-    objects['button'] = buttons
+    objects['types'] = ['cartesian', 'gripper', 'obj']
+    objects['cartesian'] = cartesian
     objects['gripper'] = grippers
     objects['obj'] = objs
 
@@ -132,14 +131,9 @@ def pddlInitStringFormat(predicates_list):
     for pred in predicates_list:
         if pred.operator == "at":
             loc = poseStampedToString(pred.locationInformation)
-            if 'button' in str(pred.objects):
-                stringList.append('(button_at ' + str(pred.objects) + ' ' + loc + ')')
-            elif 'gripper' in str(pred.objects):
-                stringList.append('(gripper_at ' + str(pred.objects) + ' ' + loc + ')')
-            else:
-                stringList.append('(obj_at ' + str(pred.objects) + ' ' + loc + ')')
+            stringList.append('(at ' + str(pred.objects[0]) + ' ' + loc + ')')
         else:
-            stringList.append('(' + pred.operator + ' ' + str(pred.objects) + ')')
+            stringList.append('(' + pred.operator + ' ' + str(" ".join(pred.objects)) + ')')
     return stringList
 
 def pddlCondsKBFormat(_vars, args, predicates_list, mode):
@@ -243,7 +237,7 @@ def getElementDiffs(predList1, predList2, OGargs=[]):
             nonRepeatingDiffs.append(o.object)
     return list(set(nonRepeatingDiffs))
 
-def typeChecker(elementName, types=["obj", "gripper", "button", "waypoint"]):
+def typeChecker(elementName, types=["obj", "gripper", "cartesian"]):
     for t in types:
         if t in str(elementName):
             return t
@@ -259,7 +253,7 @@ def getBoundLocs(preds):
     coorespondingArgs = list(set(coorespondingArgs))
 
     for i in range(len(coorespondingArgs)):
-        locVars.append(Variable('?loc'+str(i), 'waypoint'))
+        locVars.append(Variable('?loc'+str(i), 'cartesian'))
 
     return locVars, coorespondingArgs 
 
@@ -278,7 +272,7 @@ def pddlActionKBFormat(_vars, args, preCondsPredList, effectsPredList, mode=[]):
 
     args = removeNoneInstances(args)
     for _v in copy.deepcopy(_vars):
-        if _v.getType() != 'waypoint':
+        if _v.getType() != 'cartesian':
             templatedVars.append(_v)
 
     if 'noLoc' in mode:
