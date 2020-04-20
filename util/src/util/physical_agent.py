@@ -42,6 +42,8 @@ from tf.transformations import *
 
 import baxter_interface
 
+import dill
+import pickle 
 ##################################################################
 
 class PhysicalAgent(object):
@@ -88,25 +90,61 @@ class PhysicalAgent(object):
         self._gripper_close("left")
         self._hover_approach("left", startPose)
         self._approach("left", startPose)
-        # joint_name = 'left_s1'
-        # effort = 100.0
-        # start_time = rospy.Time.now()
-        # duration = rospy.Duration(5)
 
-        # self._joint_effort_svc(joint_name, effort, start_time, duration)
-        # joint_name = 'left_s0'
-        # self._joint_effort_svc(joint_name, effort, start_time, duration
-        rate = 1000.0
-        missed_cmds = 20.0
-        control_rate = rospy.Rate(rate)
-        self._left_limb.set_command_timeout((1.0 / rate) * missed_cmds)
-        i = 0
-        while i<500:
-            self._left_limb.set_joint_velocities({'left_w1':10.0, 'left_s0':0.0, 'left_s1' : 0.0}) 
-            control_rate.sleep()
-            i = i + 1
-        # self._approach("left", endPose, rate=rate)
-        self._retract("left")
+        # call inverse kinematics to get joint angles of start pose and end pose
+        # if you calc a goal joint position using ik_request you can then pass 
+        # that to move_join_position to get to goal position
+        gripperName = "left"
+        joint_angles_start = self.ik_request(gripperName, startPose)
+        joint_angles_end = self.ik_request(gripperName, endPose)
+
+
+        # v = d/t
+        # time will be the input param 
+        # we have distance that each joint will travel b/c start/end position
+        # given current position what should the velocity of each limb be 
+        # so that they reach their respective goal positions at the same time 
+
+        # rate = 1000.0 # figure out proper rate 
+        # missed_cmds = 20.0
+        # control_rate = rospy.Rate(rate)
+        # self._left_limb.set_command_timeout((1.0 / rate) * missed_cmds)
+        # i = 0
+        # while i<500:
+        #     self._left_limb.set_joint_velocities({'left_w1':10.0, 'left_s0':0.0, 'left_s1' : 0.0}) 
+        #     control_rate.sleep()
+        #     i = i + 1
+        # # self._approach("left", endPose, rate=rate)
+        # self._retract("left")
+
+
+        ############ Experimenting below ############
+        #speed = 0.1
+        #self._left_limb.set_joint_position_speed(speed)  # default is 0.3   
+
+        # USE THIS TO COLLECT JOINT EFFORTS 
+        # joint_efforts_list = self._left_limb.move_to_joint_positions(positions=joint_angles_end, _rate=rate, collect_torques=True)
+        # with open('joint_efforts_list.txt', 'wb') as fp:
+            # dill.dump(joint_efforts_list, fp)
+
+        # USE THIS TO USE THE COLLECTED JOINT EFFORTS 
+        with open ('joint_efforts_list.txt', 'rb') as fp:
+            joint_efforts_list = dill.load(fp)
+
+        # With a given factor to scale by, edit joint torques 
+        new_efforts_list = copy.deepcopy(joint_efforts_list)
+        scale = 2
+        for joint_effort_dic in new_efforts_list:
+            for (joint,effort) in joint_effort_dic.items():
+                joint_effort_dic[joint] = effort * scale
+
+        self._left_limb.move_with_joint_torques(new_efforts_list)
+
+
+        # Todo, collect joint efforts in a more controlled manner (i.e. filter out the end)
+        # Tweak the rate parameter, seems like the arm moves too fast 
+        # Multiply all joint efforts by a fact (i.e. 2) to see if the arm can push the heavy object 
+
         return 1
 
     def grasp(self, objPose):

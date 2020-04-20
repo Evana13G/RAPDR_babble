@@ -8,7 +8,7 @@ from action_primitive_variation.srv import *
 from environment.srv import *
 from pddl.srv import *
 from pddl.msg import *
-from util.knowledge_base import KnowledgeBase
+#from util.knowledge_base import KnowledgeBase
 from util.data_conversion import * 
 from util.goal_management import *
 from util.file_io import deleteAllPddlFiles, deleteAllAPVFiles, processLogData
@@ -57,6 +57,11 @@ def handle_trial(req):
     # -- float64 endOffset
     # -- int64 rate
     #
+
+    envProxy('restart', 'default')          ## DEFAULT 
+    pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
+
+    envProxy('restart', 'heavy')          ## DEFAULT 
     pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
     # envProxy('restart', 'heavy')            ## HEAVY    
     #
