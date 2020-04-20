@@ -29,6 +29,9 @@ add_service_files(
   FILES 
   PlanExecutorSrv.srv 
   PlanGeneratorSrv.srv 
+  GetKBActionLocsSrv.srv
+  GetKBDomainSrv.srv
+  GetKBPddlLocsSrv.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs gazebo_msgs)

@@ -25,18 +25,13 @@ from baxter_core_msgs.msg import (
 )
 
 
-# pushProxy = rospy.ServiceProxy('push_srv', PushSrv)
-# shakeProxy = rospy.ServiceProxy('shake_srv', ShakeSrv)
-# graspProxy = rospy.ServiceProxy('grasp_srv', GraspSrv)
-# pressProxy = rospy.ServiceProxy('press_srv', PressSrv)
-# dropProxy = rospy.ServiceProxy('drop_srv', DropSrv)
 APVproxy = rospy.ServiceProxy('APV_srv', APVSrv)
 planGenerator = rospy.ServiceProxy('plan_generator_srv', PlanGeneratorSrv)
 planExecutor = rospy.ServiceProxy('plan_executor_srv', PlanExecutorSrv)
 scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
 
-KB = KnowledgeBase()
-KBProxy = rospy.ServiceProxy('get_KB_data', GetKBDataSrv)
+KBDomainProxy = rospy.ServiceProxy('get_KB_domain_srv', GetKBDomainSrv)
+KBPddlLocsProxy = rospy.ServiceProxy('get_KB_pddl_locs', GetKBPddlLocsSrv)
 envProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
 
 def handle_trial(req):
@@ -71,20 +66,11 @@ def handle_trial(req):
         # while(goalAccomplished(goal, currentState.init) == False):
         trialStart = rospy.get_time()
 
+        filename = task + '_' + str(attempt)
         #####################################################################################
-        domainDict = KB.getDomainData()
-
-        domainName = domainDict['domain']
-        types = domainDict['types']
-        predicates = domainDict['predicates']
-        requirements = domainDict['requirements']
-        actions = domainDict['actions']
-        print(KB.getDomainData())
-        print(' -- Domain setup complete')
-
         #####################################################################################
         currentState = scenarioData()
-        additionalLocations = domainDict['pddlLocs']
+        additionalLocations = KBPddlLocsProxy().pddlLocs
         initObjs = pddlObjects(currentState.predicateList.predicates, False)
         newPts = copy.deepcopy(initObjs['cartesian'])
 
@@ -92,19 +78,14 @@ def handle_trial(req):
             newPts.append(loc)
 
         # newPts.append(goalLoc)
-        # newPts = list(set(newPts))
-        # initObjs['cartesian'] = newPts
+        newPts = list(set(newPts))
+        initObjs['cartesian'] = newPts
+
         objs = pddlObjectsStringFormat_fromDict(initObjs)
         init = currentState.init
-        domain = Domain(domainName, requirements, types, predicates, actions)
-        problem = Problem(task, domainName, objs, init, goal)
-        filename = task + '_' + str(attempt)
-        print(' -- Problem setup complete')
-
-        #####################################################################################
-        print('\nTriggering plan generation and execution for attempt #' + str(attempt))
-        plan = planGenerator(domain, problem, filename, KB.getActionsLocs())
-        print(' -- Plan generation complete')
+        problem = Problem(task, KBDomainProxy().domain.name, objs, init, goal)
+        plan = planGenerator(problem, filename)
+        print(plan)
         
         # executionSuccess = planExecutor(plan.plan)
         # Just to gaurantee we go into APV mode for testing 

@@ -96,7 +96,6 @@ def pddlObjectsStringFormat_fromDict(dictObj):
 
 def pddlObjects(predicates_list, mod=True):
     cartesian = []
-    buttons = []
     grippers = []
     objs = []
     for pred in predicates_list:
@@ -109,12 +108,11 @@ def pddlObjects(predicates_list, mod=True):
                 cartesian.append(loc)
 
         elif 'gripper' in str(pred.objects):
-            grippers.append(str(pred.objects))
+            grippers.extend(pred.objects)
         else:
-            objs.append(str(pred.objects))
+            objs.extend(pred.objects)
 
     cartesian = list(set(cartesian))
-    buttons = list(set(buttons))
     grippers = list(set(grippers))
     objs = list(set(objs))
 

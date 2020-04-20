@@ -131,15 +131,15 @@ def updatePhysicalStateBasedPredicates():
             new_predicates.append(pred)
 
     if is_touching(LeftGripperPose, TablePose):
-        new_predicates.append(Predicate(operator="touching", objects=["left_gripper", "table"], locationInformation=None)) 
+        new_predicates.append(Predicate(operator="touching", objects=['left_gripper', "table"], locationInformation=None)) 
     if is_touching(RightGripperPose, TablePose):
-        new_predicates.append(Predicate(operator="touching", objects=["right_gripper", "table"], locationInformation=None)) 
+        new_predicates.append(Predicate(operator="touching", objects=['right_gripper', "table"], locationInformation=None)) 
     if is_touching(CupPose, TablePose):
-        new_predicates.append(Predicate(operator="touching", objects=["cup", "table"], locationInformation=None)) 
+        new_predicates.append(Predicate(operator="touching", objects=['cup', 'table'], locationInformation=None)) 
     if is_touching(CoverPose, TablePose):
-        new_predicates.append(Predicate(operator="touching", objects=["cover, 'table"], locationInformation=None)) 
+        new_predicates.append(Predicate(operator="touching", objects=['cover', 'table'], locationInformation=None)) 
     if is_touching(CoverPose, CupPose):
-        new_predicates.append(Predicate(operator="touching", objects=["cover, 'cup"], locationInformation=None)) 
+        new_predicates.append(Predicate(operator="touching", objects=['cover', 'cup'], locationInformation=None)) 
 
     predicates_list = new_predicates
 

@@ -177,11 +177,10 @@ class KnowledgeBase(object):
         return copy.deepcopy(self.actions)
 
     def getActionsLocs(self):
-        # locBindings = []
+        locBindings = []
         # for action in self.actions:
         #     locBindings.append(LocationBinding(action.getName(), action.getExecutionParams()))
-        # return LocationBindingList(locBindings)
-        return None
+        return LocationBindingList(locBindings)
 
 # (self, actionName, _args, _preConds, _effects, _params, _srvFile)
     def createAction(self, name, origAction, args, preconds, effects, params, srvFile, mode):
