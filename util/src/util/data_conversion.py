@@ -87,11 +87,12 @@ def pddlObjectsStringFormat(predicates_list):
 def pddlObjectsStringFormat_fromDict(dictObj):
     strData = []
     for objType in ['cartesian', 'gripper', 'obj']:
-        s = ''
-        for item in dictObj[objType]:
-            s = s + item + ' '
-        s = s + '- ' + objType
-        strData.append(s)
+        if len(dictObj[objType]) > 0:
+            s = ''
+            for item in dictObj[objType]:
+                s = s + item + ' '
+            s = s + '- ' + objType
+            strData.append(s)
     return strData
 
 def pddlObjects(predicates_list, mod=True):
@@ -106,7 +107,10 @@ def pddlObjects(predicates_list, mod=True):
             else: 
                 loc = poseStampedToString(pred.locationInformation)
                 cartesian.append(loc)
-
+            if 'gripper' in str(pred.objects):
+                grippers.extend(pred.objects)
+            else:
+                objs.extend(pred.objects)
         elif 'gripper' in str(pred.objects):
             grippers.extend(pred.objects)
         else:

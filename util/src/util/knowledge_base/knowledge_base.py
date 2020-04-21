@@ -41,18 +41,16 @@ class KnowledgeBase(object):
         _pddllocs = []
 
         ## types of atoms available
+        _types.append(Type('object', ['entity', 'location']))
         _types.append(Type('entity', ['obj', 'gripper']))
         _types.append(Type('location', ['cartesian']))
 
         ## Types of predicates available, templated
         _preds.append(TemplatedPredicate('at', [Variable('?e', 'entity'), Variable('?loc', 'cartesian')]))
         _preds.append(TemplatedPredicate('touching', [Variable('?e', 'entity'), Variable('?e', 'entity')]))
-        
-        # _preds.append(TemplatedPredicate('touching', [Variable('?o', 'obj'), Variable('?o', 'obj')]))
-
-        _preds.append(TemplatedPredicate('is_visible', [Variable('?o', 'obj')]))
+        _preds.append(TemplatedPredicate('is_visible', [Variable('?e', 'entity')]))
         _preds.append(TemplatedPredicate('grasped', [Variable('?o', 'obj')]))
-    
+
         #actionName, _args, _preConds, _effects, _params, _param_defaults, _srvFile
 
         ## PUSH 
@@ -71,7 +69,7 @@ class KnowledgeBase(object):
         grasp = Action('grasp', [], [], [], [], GraspSrv) # All default, add after 
         grasp.addArg(Variable('?g', 'gripper'))
         grasp.addArg(Variable('?o', 'obj'))
-        grasp.addPreCond(StaticPredicate('not', [StaticPredicate('grasped', ['?o'])]))
+        # grasp.addPreCond(StaticPredicate('not', [StaticPredicate('grasped', ['?o'])]))
         grasp.addEffect(StaticPredicate('grasped', ['?o']))
 
         ## SHAKE
