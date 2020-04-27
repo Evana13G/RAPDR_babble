@@ -84,24 +84,37 @@ class PhysicalAgent(object):
     #     self._retract("left")
     #     return 1
 
-    def push(self, startPose, endPose, rate=100):
+    def push(self, startPose, endPose, rate=10):
         self._gripper_close("left")
         self._hover_approach("left", startPose)
         self._approach("left", startPose)
 
-
         ########### Add code here 
+        gripperName = "left"
+        joint_angles_start = self.ik_request(gripperName, startPose)
+        joint_angles_end = self.ik_request(gripperName, endPose)
 
-        rate = 1000.0
+        joint_movement_amounts = {}
+        T = 1.0/float(rate)
+        joints = ['left_w0','left_w1','left_w2','left_e0','left_e1','left_s0','left_s1']
+
+        for joint in joints: 
+            diff = joint_angles_end[joint] - joint_angles_start[joint]
+            joint_movement_amounts[joint] = diff/T
+
+        _rate = 10000.0
         missed_cmds = 20.0
-        control_rate = rospy.Rate(rate)
-        self._left_limb.set_command_timeout((1.0 / rate) * missed_cmds)
+        control_rate = rospy.Rate(_rate)
+        self._left_limb.set_command_timeout((1.0 / _rate) * missed_cmds)
+
         i = 0
-        while i<500:
-            self._left_limb.set_joint_velocities({'left_w1':10.0, 'left_s0':0.0, 'left_s1' : 0.0}) 
+        while i<1000:
+            self._left_limb.set_joint_velocities(joint_movement_amounts) 
             control_rate.sleep()
             i = i + 1
-        self._retract("left")
+        
+        rospy.sleep(3)
+        # self._retract("left")
         return 1
 
     def grasp(self, objPose):

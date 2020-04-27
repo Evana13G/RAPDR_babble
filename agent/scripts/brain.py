@@ -63,31 +63,29 @@ def handle_trial(req):
         attempt = 1
         totalTimeStart = rospy.get_time()
 
-        # while(goalAccomplished(goal, currentState.init) == False):
-        trialStart = rospy.get_time()
+        while(goalAccomplished(goal, currentState.init) == False):
+            trialStart = rospy.get_time()
 
-        filename = task + '_' + str(attempt)
-        #####################################################################################
-        #####################################################################################
-        currentState = scenarioData()
-        additionalLocations = KBPddlLocsProxy().pddlLocs
-        initObjs = pddlObjects(currentState.predicateList.predicates, False)
-        newPts = copy.deepcopy(initObjs['cartesian'])
+            filename = task + '_' + str(attempt)
+            currentState = scenarioData()
+            additionalLocations = KBPddlLocsProxy().pddlLocs
+            initObjs = pddlObjects(currentState.predicateList.predicates, False)
+            newPts = copy.deepcopy(initObjs['cartesian'])
 
-        for loc in additionalLocations:
-            newPts.append(loc)
+            for loc in additionalLocations:
+                newPts.append(loc)
 
-        # newPts.append(goalLoc)
-        newPts = list(set(newPts))
-        initObjs['cartesian'] = newPts
+            # newPts.append(goalLoc)
+            newPts = list(set(newPts))
+            initObjs['cartesian'] = newPts
 
-        objs = pddlObjectsStringFormat_fromDict(initObjs)
-        init = currentState.init
-        problem = Problem(task, KBDomainProxy().domain.name, objs, init, goal)
-        plan = planGenerator(problem, filename)
-        print(plan)
-        
-        # executionSuccess = planExecutor(plan.plan)
+            objs = pddlObjectsStringFormat_fromDict(initObjs)
+            init = currentState.init
+            problem = Problem(task, KBDomainProxy().domain.name, objs, init, goal)
+            plan = planGenerator(problem, filename)
+
+            executionSuccess = planExecutor(plan.plan)
+            break
         # Just to gaurantee we go into APV mode for testing 
         
         #     if plan.plan.actions[0].params[0] == gripperExecutingNewPrim:

@@ -52,7 +52,6 @@ from agent.srv import *
 from environment.msg import *
 from environment.srv import ObjectLocationSrv
 
-KB = KnowledgeBase()
 objLocProxy = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
 actionExecutorProxy = rospy.ServiceProxy('action_executor_srv', ActionExecutorSrv)
 visSrvProxy = rospy.ServiceProxy('record_limb_data_srv', RecordLimbDataSrv) 

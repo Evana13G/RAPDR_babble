@@ -11,6 +11,6 @@ class Variable():
 
     def getType(self):
         return self.type
-
+    	
     def __str__(self):
         return self.variable + ' - ' + self.type

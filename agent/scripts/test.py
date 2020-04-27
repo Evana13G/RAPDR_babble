@@ -8,7 +8,6 @@ from action_primitive_variation.srv import *
 from environment.srv import *
 from pddl.srv import *
 from pddl.msg import *
-from util.knowledge_base import KnowledgeBase
 from util.data_conversion import * 
 from util.goal_management import *
 from util.file_io import deleteAllPddlFiles, deleteAllAPVFiles, processLogData
@@ -57,14 +56,17 @@ def handle_trial(req):
     # -- float64 endOffset
     # -- int64 rate
     #
-    pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
-    # envProxy('restart', 'heavy')            ## HEAVY    
+    print("----LOW MASS, LOW VELOCITY")
+    pushProxy('cup', 0.05, 0.11, None)       ## DEFAULT
+    envProxy('restart', 'heavy')            ## HEAVY    
     #
-    # pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
-    # envProxy('restart', 'heavy')            ## HEAVY    
+    print("----HIGH MASS, LOW VELOCITY")
+    pushProxy('cup', 0.05, 0.11, None)       ## DEFAULT
+    envProxy('restart', 'heavy')            ## HEAVY    
     #
-    # pushProxy('cup', 0.1, 0.11, 500)        ## HIGH RATE 
-    # envProxy('restart', 'default')          ## DEFAULT    
+    print("----HIGH MASS, HIGH VELOCITY")
+    pushProxy('cup', 0.1, 0.11, 100000)        ## HIGH RATE 
+    envProxy('restart', 'default')          ## DEFAULT    
     ####################################################################
 
 

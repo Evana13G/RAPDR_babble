@@ -30,7 +30,6 @@ from environment.srv import ObjectLocationSrv
 from util.physical_agent import PhysicalAgent
 from util.action_request import ActionRequest
 
-
 pa = None
 obj_location_srv = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
 
@@ -150,7 +149,7 @@ def action_executor(req):
     assert(len(argNames) == len(args))
     assert(len(paramNames) == len(paramSettings))
 
-    ## Just do push for now 
+    ## Just do push for now setExecutionArgNames
     a = getCorrectAction(actionName)
     request = ActionRequest(actionName, argNames, args, paramNames, paramSettings)
 
@@ -176,7 +175,6 @@ def arg_list_to_hash(argNames, argValues):
     for i in range(len(argValues)):
         name = argNames[i]
         val = argValues[i]
-        print(name + ': ' + str(val))
         if not(val == 0.0 or val == None or val == 0):
             args[name] = val
     return args
@@ -202,6 +200,7 @@ def main():
     s_7 = rospy.Service("press_srv", PressSrv, press)
     s_8 = rospy.Service("drop_srv", DropSrv, drop)
     s_9 = rospy.Service("action_executor_srv", ActionExecutorSrv, action_executor)
+    s_10 = rospy.Service("pddl_action_executor_srv", ActionExecutorSrv, action_executor)
 
     rospy.spin()
 

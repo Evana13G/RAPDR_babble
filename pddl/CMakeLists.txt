@@ -18,11 +18,14 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   Action.msg
-  ActionList.msg
+  ActionInfo.msg
+  ActionExecutionInfo.msg
+  ActionExecutionInfoList.msg
   Problem.msg
   Domain.msg
   LocationBindingList.msg
   LocationBinding.msg
+  ExecutableAction.msg
 )
 
 add_service_files(
@@ -32,6 +35,7 @@ add_service_files(
   GetKBActionLocsSrv.srv
   GetKBDomainSrv.srv
   GetKBPddlLocsSrv.srv
+  GetKBActionInfoSrv.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs gazebo_msgs)

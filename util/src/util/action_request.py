@@ -11,12 +11,12 @@ class ActionRequest:
         for i in range(0, len(params)):
             setattr(self, params[i], paramVals[i])
 
-    # def getArgs(self):
+    def defaults_setter(self):
+        return
 
     def __str__(self):
         attrs = vars(self)
         s = 'Action Request:\n'
         s = s + '\n'.join("---%s: %s" % item for item in attrs.items())
         return s
-
 

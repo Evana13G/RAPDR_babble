@@ -46,15 +46,23 @@ def handle_pddlLocs_req(req):
 def handle_action_locs_req(req):
     return KB.getActionsLocs()
 
+def get_action_info(req):
+    action = KB.getAction(req.actionName)
+
+    name = req.actionName
+    argNames = action.getExecutionArgNames()
+    paramNames = [x.getName() for x in action.getParams()]
+    paramDefaults = [x.getDefaultVal() for x in action.getParams()]
+
+    return ActionInfo(name, argNames, paramNames, paramDefaults)
+
 ################################################################################
 
 def main():
     rospy.init_node("knowledge_base_node")
 
-    # Could do just one general get request, all using the same srv file... 
-    # well their return would be diff so maybe no
     s1 = rospy.Service("get_KB_domain_srv", GetKBDomainSrv, handle_domain_req)
-    # s2 = rospy.Service("get_KB_actions", GetKBDataSrv, get_actions)
+    s2 = rospy.Service("get_KB_action_info_srv", GetKBActionInfoSrv, get_action_info)
     s3 = rospy.Service("get_KB_action_locs", GetKBActionLocsSrv, handle_action_locs_req)
     s4 = rospy.Service("get_KB_pddl_locs", GetKBPddlLocsSrv, handle_pddlLocs_req)
 

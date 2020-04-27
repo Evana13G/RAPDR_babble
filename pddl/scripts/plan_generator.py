@@ -64,12 +64,15 @@ def generate_plan(req):
     bindings = {}
     for bind in locBindings.bindings:
       bindings[bind.actionName] = bind.endEffectorInfo
-    actionList = []
-    
+
+    actionList = []    
     for act in plan:
-        actionList.append(Action(act['actionName'], act['params'], None))
-        # actionList.append(Action(act['actionName'], act['params'], bindings[act['actionName']]))
-    return PlanGeneratorSrvResponse(ActionList(actionList))
+        name = act['actionName']
+        argVals = act['args']
+        action = ActionExecutionInfo(name, argVals)
+        actionList.append(action)
+
+    return PlanGeneratorSrvResponse(ActionExecutionInfoList(actionList))
 
 
 ############### START: ROSbag handling
