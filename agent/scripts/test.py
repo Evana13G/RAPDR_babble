@@ -58,11 +58,11 @@ def handle_trial(req):
     # -- int64 rate
     #
 
-    envProxy('restart', 'default')          ## DEFAULT 
-    pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
+    envProxy('restart', 'default')          ## DEFAULT
+    graspProxy('cup') 
+    
+    #pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
 
-    envProxy('restart', 'heavy')          ## DEFAULT 
-    pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
     # envProxy('restart', 'heavy')            ## HEAVY    
     #
     # pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT

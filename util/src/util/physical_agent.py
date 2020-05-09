@@ -11,6 +11,8 @@ import rospkg
 
 import time
 
+import tf
+
 from gazebo_msgs.srv import (
     SpawnModel,
     DeleteModel,
@@ -91,6 +93,7 @@ class PhysicalAgent(object):
         self._hover_approach("left", startPose)
         self._approach("left", startPose)
 
+
         # call inverse kinematics to get joint angles of start pose and end pose
         # if you calc a goal joint position using ik_request you can then pass 
         # that to move_join_position to get to goal position
@@ -133,12 +136,14 @@ class PhysicalAgent(object):
 
         # With a given factor to scale by, edit joint torques 
         new_efforts_list = copy.deepcopy(joint_efforts_list)
-        scale = 2
+        scale = 0.1 # 2
         for joint_effort_dic in new_efforts_list:
             for (joint,effort) in joint_effort_dic.items():
                 joint_effort_dic[joint] = effort * scale
 
         self._left_limb.move_with_joint_torques(new_efforts_list)
+
+        self._retract("left")
 
 
         # Todo, collect joint efforts in a more controlled manner (i.e. filter out the end)
@@ -147,13 +152,116 @@ class PhysicalAgent(object):
 
         return 1
 
+    def _rpy_to_quat(self, roll, pitch, yaw, objPose):
+        quaternion = tf.transformations.quaternion_from_euler(roll, pitch, yaw)
+        objPose.pose.orientation.x = quaternion[0]
+        objPose.pose.orientation.y = quaternion[1]
+        objPose.pose.orientation.z = quaternion[2]
+        objPose.pose.orientation.w = quaternion[3]
+        return objPose
+
+    def _print_rpy(self, roll, pitch, yaw):
+        print("ROLL")
+        print(roll)
+        print("PITCH")
+        print(pitch)
+        print("YAW")
+        print(yaw)
+        return 
+
+    def _orientation_solver(self, orientationStr, objPose):
+        # Obtain main orientation to add offset
+        quaternion = (
+        objPose.pose.orientation.x,
+        objPose.pose.orientation.y,
+        objPose.pose.orientation.z,
+        objPose.pose.orientation.w)
+        euler = tf.transformations.euler_from_quaternion(quaternion)
+        roll = euler[0]
+        pitch = euler[1]
+        yaw = euler[2]
+
+        if orientationStr == "top": # good
+            return objPose
+        elif orientationStr == "left": # good
+            roll += -1.5 
+            pitch += 1.5 
+            self._print_rpy(roll, pitch, yaw)
+            return self._rpy_to_quat(roll, pitch, yaw, objPose)
+        elif orientationStr == "right":
+            roll += 0
+            pitch += -0.8
+            yaw += 1.5
+            self._print_rpy(roll, pitch, yaw)
+            return self._rpy_to_quat(roll, pitch, yaw, objPose)
+            # roll += 1.1
+            # pitch += -1
+            # yaw += 0
+            # self._print_rpy(roll, pitch, yaw)
+            # return self._rpy_to_quat(roll, pitch, yaw, objPose)
+        elif orientationStr == "back": # good
+            pitch += 0.9
+            yaw += 0.1
+            self._print_rpy(roll, pitch, yaw)
+            return self._rpy_to_quat(roll, pitch, yaw, objPose)
+        elif orientationStr == "front": # -0.9 for pitch doesn't work perfectly
+            roll += -1.5
+            pitch += 0.5
+            yaw += -0.5
+            self._print_rpy(roll, pitch, yaw)
+            return self._rpy_to_quat(roll, pitch, yaw, objPose)
+        else:
+            return objPose
+
     def grasp(self, objPose):
         self._gripper_open("left")
-        self._hover_approach("left", objPose)
+
+        objPose = self._orientation_solver("right", objPose) # edit gripper orientation
+
+
+        objPose.pose.position.y += - 0.1 #offset
+        objPose.pose.position.x += - 0.02 #offset
+        self._approach("left", objPose)
+        objPose.pose.position.y += (0.1 + 0.02)  #offset
+        objPose.pose.position.x += 0.01 #offset
         self._approach("left", objPose)
         self._gripper_close("left")
+
+        ###### Right grasp #####
+        # self._gripper_open("left")
+        # objPose = self._orientation_solver("right", objPose) # edit gripper orientation
+        # objPose.pose.position.y += - 0.1 
+        # objPose.pose.position.x += - 0.02
+        # self._approach("left", objPose)
+        # objPose.pose.position.y += (0.1 + 0.02)
+        # objPose.pose.position.x += 0.01
+        # self._approach("left", objPose)
+        # self._gripper_close("left")
+
+        ###### Left grasp ######
+        # self._gripper_open("left")
+        # objPose = self._orientation_solver("left", objPose) # edit gripper orientation
+        # objPose.pose.position.y += 0.1 
+        # objPose.pose.position.x += -0.055
+        # self._approach("left", objPose)
+        # objPose.pose.position.y += (-0.1 - 0.03) #offset
+        # self._approach("left", objPose)
+        # self._gripper_close("left")
+
+        ###### Top grasp ######
+        # self._gripper_open("left")
+        # objPose = self._orientation_solver("top", objPose) # edit gripper orientation
+        # self._hover_approach("left", objPose)
+        # self._approach("left", objPose)
+        # self._gripper_close("left")
+
         return 1
 
+
+# Have a general function below, where you take in type of orientation you want 
+# i.e. top right and then we call that function to caculation the orientation 
+# with bunch of if statements and hardcoded (of-course can do inverse 
+# of left/right when we find the best orientation)
     def shake(self, objPose, twist_range=1, rate=0.3):
         # For now, assume left gripper is moving (change to an argument)
         # Number of times to shake can be adjusted by the for loop 
