@@ -181,76 +181,156 @@ class PhysicalAgent(object):
         pitch = euler[1]
         yaw = euler[2]
 
-        if orientationStr == "top": # good
+        if (orientationStr == "left_top") or (orientationStr == "right_top"): # good
             return objPose
-        elif orientationStr == "left": # good
+        elif orientationStr == "left_left": # good
             roll += -1.5 
             pitch += 1.5 
-            self._print_rpy(roll, pitch, yaw)
             return self._rpy_to_quat(roll, pitch, yaw, objPose)
-        elif orientationStr == "right":
-            roll += 0
+        elif orientationStr == "left_right":
             pitch += -0.8
             yaw += 1.5
-            self._print_rpy(roll, pitch, yaw)
             return self._rpy_to_quat(roll, pitch, yaw, objPose)
-            # roll += 1.1
-            # pitch += -1
-            # yaw += 0
-            # self._print_rpy(roll, pitch, yaw)
-            # return self._rpy_to_quat(roll, pitch, yaw, objPose)
-        elif orientationStr == "back": # good
+        elif orientationStr == "left_back": # good
             pitch += 0.9
             yaw += 0.1
-            self._print_rpy(roll, pitch, yaw)
             return self._rpy_to_quat(roll, pitch, yaw, objPose)
-        elif orientationStr == "front": # -0.9 for pitch doesn't work perfectly
-            roll += -1.5
-            pitch += 0.5
-            yaw += -0.5
-            self._print_rpy(roll, pitch, yaw)
+        elif orientationStr == "left_front": # good
+            pitch += -0.8
+            return self._rpy_to_quat(roll, pitch, yaw, objPose)
+        elif orientationStr == "right_left": # good
+            pitch += 0.8
+            yaw += 1.5
+            return self._rpy_to_quat(roll, pitch, yaw, objPose)
+        elif orientationStr == "right_right": # good
+            roll += 1.5 
+            pitch += 1.5
+            return self._rpy_to_quat(roll, pitch, yaw, objPose)
+        elif orientationStr == "right_back": # good
+            pitch += 0.8
+            return self._rpy_to_quat(roll, pitch, yaw, objPose)
+        elif orientationStr == "right_front": # good
+            pitch += -0.8
             return self._rpy_to_quat(roll, pitch, yaw, objPose)
         else:
             return objPose
 
     def grasp(self, objPose):
-        self._gripper_open("left")
 
-        objPose = self._orientation_solver("right", objPose) # edit gripper orientation
+        # Note: For left gripper the initial object dimensions was 0.4 by 0.4 
+        # The right gripper does not open as far as the left gripper, so 0.25 by 0.25 is used 
 
 
-        objPose.pose.position.y += - 0.1 #offset
-        objPose.pose.position.x += - 0.02 #offset
-        self._approach("left", objPose)
-        objPose.pose.position.y += (0.1 + 0.02)  #offset
-        objPose.pose.position.x += 0.01 #offset
-        self._approach("left", objPose)
-        self._gripper_close("left")
+        ###### Right Gripper, front grasp ##### 
+        # self._gripper_open("right")
+        # objPose = self._orientation_solver("right_front", objPose) # edit gripper orientation
+        # objPose.pose.position.y += 0.01 #offset
+        # objPose.pose.position.z += 0.075 #offset
+        # self._approach("right", objPose)
+        # objPose.pose.position.x += 0.015 #offset
+        # objPose.pose.position.y += 0.005 #offset
+        # objPose.pose.position.z += -0.08 #offset
+        # self._approach("right", objPose)
+        # self._gripper_close("right")
 
-        ###### Right grasp #####
+        ###### Right Gripper, left grasp ##### 
+        # self._gripper_open("right")
+        # objPose = self._orientation_solver("right_left", objPose) # edit gripper orientation
+        # objPose.pose.position.y += 0.04 #offset
+        # self._approach("right", objPose)
+        # objPose.pose.position.y += -0.05 #offset
+        # self._approach("right", objPose)
+        # self._gripper_close("right")
+
+
+        ###### Right Gripper, back grasp ##### 
+        # self._gripper_open("right")
+        # objPose = self._orientation_solver("right_back", objPose) # edit gripper orientation
+        # objPose.pose.position.x += 0.02
+        # objPose.pose.position.y += 0.005 #offset
+        # self._approach("right", objPose)
+        # objPose.pose.position.x += -0.02
+        # self._approach("right", objPose)
+        # self._gripper_close("right")
+
+        ###### Right Gripper, right grasp ##### (ok but can make better)
+        # self._gripper_open("right")
+        # objPose = self._orientation_solver("right_right", objPose) # edit gripper orientation
+        # objPose.pose.position.x += -0.03 #offset
+        # objPose.pose.position.y += -0.01 #offset
+        # objPose.pose.position.z += -0.01 #offset
+        # self._approach("right", objPose)
+        # objPose.pose.position.x += -0.035 #offset
+        # self._approach("right", objPose)
+        # objPose.pose.position.y += 0.05 #offset
+        # self._approach("right", objPose)
+        # self._gripper_close("right")
+
+        ###### Right Gripper, top grasp #####
+        # self._gripper_open("right")
+        # objPose = self._orientation_solver("right_top", objPose) # edit gripper orientation
+        # objPose.pose.position.z += 0.1 #offset
+        # self._approach("right", objPose)
+        # objPose.pose.position.z += -0.09 #offset
+        # self._approach("right", objPose)
+        # self._gripper_close("right")
+
+        ###### Left Gripper, Front grasp #####
         # self._gripper_open("left")
-        # objPose = self._orientation_solver("right", objPose) # edit gripper orientation
-        # objPose.pose.position.y += - 0.1 
-        # objPose.pose.position.x += - 0.02
+        # objPose = self._orientation_solver("left_front", objPose) # edit gripper orientation
+        # objPose.pose.position.y += -0.01 #offset
+        # objPose.pose.position.z += 0.075 #offset
         # self._approach("left", objPose)
-        # objPose.pose.position.y += (0.1 + 0.02)
-        # objPose.pose.position.x += 0.01
+        # objPose.pose.position.x += 0.015 #offset
+        # objPose.pose.position.y += -0.01
+        # objPose.pose.position.z += -0.08 #offset
         # self._approach("left", objPose)
         # self._gripper_close("left")
 
-        ###### Left grasp ######
         # self._gripper_open("left")
-        # objPose = self._orientation_solver("left", objPose) # edit gripper orientation
-        # objPose.pose.position.y += 0.1 
+        # self._orientation_solver("left_front", objPose) # edit gripper orientation
+        # objPose.pose.position.x += -0.01 #offset
+        # objPose.pose.position.z += 0.1 #offset
+        # self._approach("left", objPose)
+        # objPose.pose.position.x += -0.01 #offset
+        # objPose.pose.position.z += -0.1 #offset
+        # self._approach("left", objPose)
+        # self._gripper_close("left")
+
+        ###### Left Gripper, Back grasp #####
+        # self._gripper_open("left")
+        # objPose = self._orientation_solver("left_back", objPose) # edit gripper orientation
+        # objPose.pose.position.y += 0.005 #offset
+        # objPose.pose.position.x += 0.005 #offset
+        # self._approach("left", objPose)
+        # self._gripper_close("left")
+
+        ###### Left Gripper, Right grasp #####
+        # self._gripper_open("left")
+        # objPose = self._orientation_solver("left_right", objPose) # edit gripper orientation
+        # objPose.pose.position.y += - 0.1 #offset
+        # objPose.pose.position.x += - 0.02 #offset
+        # objPose.pose.position.z += - 0.015 #offset
+        # self._approach("left", objPose)
+        # objPose.pose.position.y += (0.1 + 0.015)  #offset
+        # objPose.pose.position.x += 0.01 #offset
+        # self._approach("left", objPose)
+        # self._gripper_close("left")
+
+        ###### Left Gripper, Left grasp ######
+        # self._gripper_open("left")
+        # objPose = self._orientation_solver("left_left", objPose) # edit gripper orientation
         # objPose.pose.position.x += -0.055
+        # objPose.pose.position.y += 0.1 
+        # objPose.pose.position.z += -0.01
         # self._approach("left", objPose)
-        # objPose.pose.position.y += (-0.1 - 0.03) #offset
+        # objPose.pose.position.y += -0.15 #offset
         # self._approach("left", objPose)
         # self._gripper_close("left")
 
-        ###### Top grasp ######
+        ###### Left Gripper, Top grasp ######
         # self._gripper_open("left")
-        # objPose = self._orientation_solver("top", objPose) # edit gripper orientation
+        # objPose = self._orientation_solver("left_top", objPose) # edit gripper orientation
         # self._hover_approach("left", objPose)
         # self._approach("left", objPose)
         # self._gripper_close("left")
