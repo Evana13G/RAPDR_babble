@@ -1,5 +1,8 @@
 string objectName
+string limbSide 
+string gripperOrientation 
 float64 twistRange
 float64 speed
+float64 numShakes
 ---
 int64 success_bool

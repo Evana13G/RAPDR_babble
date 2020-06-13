@@ -1,3 +1,5 @@
 string objectName
+string limbSide 
+string gripperOrientation 
 ---
 int64 success_bool

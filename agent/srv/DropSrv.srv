@@ -1,4 +1,6 @@
 string objectName
+string limbSide 
+string gripperOrientation 
 int64 dropHeight
 ---
 int64 success_bool

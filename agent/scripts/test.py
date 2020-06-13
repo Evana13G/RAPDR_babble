@@ -49,6 +49,12 @@ def handle_trial(req):
     # currentState = scenarioData()
 
     ##### Actions testing Code #########################################
+
+    # envProxy('restart', 'default')            ## HEAVY  
+    # shakeProxy('cup', 'right', 'front', None, None)           ## DEFAULT 
+
+    envProxy('restart', 'default')          ## DEFAULT    
+    dropProxy('cup', 'right', 'front', 0.15)                  ## DEFAULT
   
     #### PUSH ##########################################################
     # Args:
@@ -57,11 +63,8 @@ def handle_trial(req):
     # -- float64 endOffset
     # -- int64 rate
     #
-
-    envProxy('restart', 'default')          ## DEFAULT
-    graspProxy('cup') 
     
-    #pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
+    # pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
 
     # envProxy('restart', 'heavy')            ## HEAVY    
     #
@@ -123,7 +126,7 @@ def handle_trial(req):
     # Args:
     # -- string objectName
     # -- int64 dropHeight
-    #
+
     # dropProxy('cup', 0.15)                  ## DEFAULT
     # envProxy('restart', 'heavy')            ## HEAVY    
     #

@@ -9,6 +9,8 @@ import numpy as np
 import rospy
 import rospkg
 
+import tf
+
 from gazebo_msgs.srv import (
     SpawnModel,
     DeleteModel,
@@ -29,11 +31,14 @@ from agent.srv import *
 from environment.srv import ObjectLocationSrv
 from util.physical_agent import PhysicalAgent
 from util.action_request import ActionRequest
+from tf.transformations import *
 
 
 pa = None
 obj_location_srv = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
 
+################################################################################
+#### GENERAL FUNCTIONS #########################################################
 def getObjectPose(object_name, pose_only=False):
     loc_pStamped = obj_location_srv(object_name)
     if pose_only == True:
@@ -48,6 +53,60 @@ def getCorrectAction(action_name):
                'press' : press, 
                'drop' : drop}
     return actions[action]
+
+def rpy_to_quat(roll, pitch, yaw, objPose):
+    quaternion = tf.transformations.quaternion_from_euler(roll, pitch, yaw)
+    objPose.pose.orientation.x = quaternion[0]
+    objPose.pose.orientation.y = quaternion[1]
+    objPose.pose.orientation.z = quaternion[2]
+    objPose.pose.orientation.w = quaternion[3]
+    return objPose
+
+def orientation_solver(orientationStr, objPose):
+    # Obtain main orientation to add offset
+    quaternion = (
+    objPose.pose.orientation.x,
+    objPose.pose.orientation.y,
+    objPose.pose.orientation.z,
+    objPose.pose.orientation.w)
+    euler = tf.transformations.euler_from_quaternion(quaternion)
+    roll = euler[0]
+    pitch = euler[1]
+    yaw = euler[2]
+
+    if (orientationStr == "left_top") or (orientationStr == "right_top"): 
+        return objPose
+    elif orientationStr == "left_left": 
+        roll += -1.5 
+        pitch += 1.5 
+        return rpy_to_quat(roll, pitch, yaw, objPose)
+    elif orientationStr == "left_right":
+        pitch += -0.8
+        yaw += 1.5
+        return rpy_to_quat(roll, pitch, yaw, objPose)
+    elif orientationStr == "left_back": 
+        pitch += 0.9
+        yaw += 0.1
+        return rpy_to_quat(roll, pitch, yaw, objPose)
+    elif orientationStr == "left_front": 
+        pitch += -0.8
+        return rpy_to_quat(roll, pitch, yaw, objPose)
+    elif orientationStr == "right_left": 
+        pitch += 0.8
+        yaw += 1.5
+        return rpy_to_quat(roll, pitch, yaw, objPose)
+    elif orientationStr == "right_right": 
+        roll += 1.5 
+        pitch += 1.5
+        return rpy_to_quat(roll, pitch, yaw, objPose)
+    elif orientationStr == "right_back": 
+        pitch += 0.8
+        return rpy_to_quat(roll, pitch, yaw, objPose)
+    elif orientationStr == "right_front": 
+        pitch += -0.8
+        return rpy_to_quat(roll, pitch, yaw, objPose)
+    else:
+        return objPose
 
 ################################################################################
 #### PUSH ######################################################################
@@ -77,12 +136,18 @@ def push(req):
 def shake(req):
     # Pull args
     objPose = getObjectPose(req.objectName)
+    limbSide = req.limbSide
+    gripperOrientation = req.gripperOrientation
     twist_range = req.twistRange
     rate = req.speed
+    num_shakes = req.numShakes
+
+    orientationStr = limbSide + "_" + gripperOrientation
+    objPose = orientation_solver(orientationStr, getObjectPose(req.objectName)) # adjust orientation of gripper
 
     # Put args into hash object
-    argNames = ['objPose', 'twist_range', 'rate']
-    argVals = [objPose, twist_range, rate]
+    argNames = ['objPose', 'orientationStr', 'twist_range', 'rate', 'num_shakes']
+    argVals = [objPose, orientationStr, twist_range, rate, num_shakes]
     args = arg_list_to_hash(argNames, argVals)
 
     return ShakeSrvResponse(pa.shake(**args))
@@ -91,8 +156,17 @@ def shake(req):
 #### GRASP #####################################################################
 def grasp(req):
     # Pull args
-    objPose = getObjectPose(req.objectName)
-    return GraspSrvResponse(pa.grasp(objPose))
+    limbSide = req.limbSide
+    gripperOrientation = req.gripperOrientation
+    
+    orientationStr = limbSide + "_" + gripperOrientation
+    objPose = orientation_solver(orientationStr, getObjectPose(req.objectName)) # adjust orientation of gripper
+
+    # Put args into hash object
+    argNames = ['objPose', 'orientationStr']
+    argVals = [objPose, orientationStr]
+    args = arg_list_to_hash(argNames, argVals)
+    return GraspSrvResponse(pa.grasp(**args))
 
 ################################################################################
 #### PRESS #####################################################################
@@ -122,17 +196,16 @@ def press(req):
 def drop(req):
     # Pull args
     objPose = getObjectPose(req.objectName)
+    limbSide = req.limbSide
+    gripperOrientation = req.gripperOrientation
     drop_height = req.dropHeight
-
-
-    # Process args
-    obj_z_val = copy.deepcopy(objPose.pose.position.z)  
-    dropPose = copy.deepcopy(objPose)
-    dropPose.pose.position.z = (obj_z_val + drop_height)
+    
+    orientationStr = limbSide + "_" + gripperOrientation
+    objPose = orientation_solver(orientationStr, getObjectPose(req.objectName)) # adjust orientation of gripper
 
     # Put args into hash object
-    argNames = ['objPose', 'dropPose']
-    argVals = [objPose, dropPose]
+    argNames = ['objPose', 'orientationStr', 'drop_height']
+    argVals = [objPose, orientationStr, drop_height]
     args = arg_list_to_hash(argNames, argVals)
 
     return DropSrvResponse(pa.drop(**args))
