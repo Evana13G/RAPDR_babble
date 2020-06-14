@@ -53,8 +53,12 @@ def handle_trial(req):
     # envProxy('restart', 'default')            ## HEAVY  
     # shakeProxy('cup', 'right', 'front', None, None)           ## DEFAULT 
 
-    envProxy('restart', 'default')          ## DEFAULT    
-    dropProxy('cup', 'right', 'front', 0.15)                  ## DEFAULT
+    # envProxy('restart', 'default')          ## DEFAULT    
+    # dropProxy('cup', 'right', 'front', 0.15)                  ## DEFAULT
+
+    envProxy('restart', 'default')          ## DEFAULT 
+    graspProxy('cup', 'right', 'right')                       ## NO VARIANTS 
+
   
     #### PUSH ##########################################################
     # Args:

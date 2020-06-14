@@ -74,6 +74,7 @@ def orientation_solver(orientationStr, objPose):
     pitch = euler[1]
     yaw = euler[2]
 
+    # Obtain roll, pitch, and yaw for specific orientation 
     if (orientationStr == "left_top") or (orientationStr == "right_top"): 
         return objPose
     elif orientationStr == "left_left": 
@@ -142,8 +143,9 @@ def shake(req):
     rate = req.speed
     num_shakes = req.numShakes
 
+    # Obtain new object pose given limb side and gripper orientation 
     orientationStr = limbSide + "_" + gripperOrientation
-    objPose = orientation_solver(orientationStr, getObjectPose(req.objectName)) # adjust orientation of gripper
+    objPose = orientation_solver(orientationStr, getObjectPose(req.objectName))
 
     # Put args into hash object
     argNames = ['objPose', 'orientationStr', 'twist_range', 'rate', 'num_shakes']
@@ -159,8 +161,9 @@ def grasp(req):
     limbSide = req.limbSide
     gripperOrientation = req.gripperOrientation
     
+    # Obtain new object pose given limb side and gripper orientation 
     orientationStr = limbSide + "_" + gripperOrientation
-    objPose = orientation_solver(orientationStr, getObjectPose(req.objectName)) # adjust orientation of gripper
+    objPose = orientation_solver(orientationStr, getObjectPose(req.objectName))
 
     # Put args into hash object
     argNames = ['objPose', 'orientationStr']
@@ -200,8 +203,9 @@ def drop(req):
     gripperOrientation = req.gripperOrientation
     drop_height = req.dropHeight
     
+    # Obtain new object pose given limb side and gripper orientation 
     orientationStr = limbSide + "_" + gripperOrientation
-    objPose = orientation_solver(orientationStr, getObjectPose(req.objectName)) # adjust orientation of gripper
+    objPose = orientation_solver(orientationStr, getObjectPose(req.objectName))
 
     # Put args into hash object
     argNames = ['objPose', 'orientationStr', 'drop_height']
