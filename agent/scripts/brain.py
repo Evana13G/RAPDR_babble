@@ -85,6 +85,8 @@ def handle_trial(req):
             plan = planGenerator(problem, filename)
 
             executionSuccess = planExecutor(plan.plan)
+
+
             break
         # Just to gaurantee we go into APV mode for testing 
         

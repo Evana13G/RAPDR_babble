@@ -26,7 +26,6 @@ from std_msgs.msg import (
     Empty,
 )
 
-from knowledge_base.kb_subclasses import *
 from knowledge_base.action import Action
 
 def getPredicateLocation(predList, _oprtr, _obj):

@@ -24,7 +24,6 @@ from pddl.msg import *
 from agent.srv import *
 from util.data_conversion import * 
 
-from kb_subclasses import *
 from action import Action
 from type import Type
 from predicate import TemplatedPredicate, StaticPredicate
