@@ -33,6 +33,7 @@ scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
 KBDomainProxy = rospy.ServiceProxy('get_KB_domain_srv', GetKBDomainSrv)
 KBPddlLocsProxy = rospy.ServiceProxy('get_KB_pddl_locs', GetKBPddlLocsSrv)
 envProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
+moveToStartProxy = rospy.ServiceProxy('move_to_start_srv', MoveToStartSrv)
 
 def handle_trial(req):
 
@@ -52,7 +53,9 @@ def handle_trial(req):
 
         task = req.runName
         currentState = scenarioData()
-        goal = ['(grasped cover)']
+        
+        # goal = ['(grasped cover)']
+        goal = ['(touching left_gripper cover)']
 
         mode = ['diffsOnly', 'noLoc']
         # algoMode = 'APV'
@@ -84,31 +87,30 @@ def handle_trial(req):
             problem = Problem(task, KBDomainProxy().domain.name, objs, init, goal)
             plan = planGenerator(problem, filename)
 
-            executionSuccess = planExecutor(plan.plan)
-
-
-            break
-        # Just to gaurantee we go into APV mode for testing 
-        
-        #     if plan.plan.actions[0].params[0] == gripperExecutingNewPrim:
+        #     if gripperExecutingNewPrim in plan.plan.actions[0].argVals:
         #         gripperExecutionValidity = False
         #         executionSuccess = 0
         #     else:
         #         gripperExecutionValidity = True
         #         executionSuccess = planExecutor(plan.plan)
 
-        #     #####################################################################################
-        #     currentState = scenarioData()
-        #     if (executionSuccess == 1):
-        #         print(' -- Plan execution complete')
-        #         if (goalAccomplished(goal, currentState.init) == False):
-        #             print(' ---- Goal COMPLETE ')
-        #             break
-        #     else:
-        #         print(' -- Plan execution failed')
-        #         moveLeftArmToStart(lPA)
-        #         moveRightArmToStart(rPA)
-        #     #####################################################################################
+            #####################################################################################
+            # For testing: 
+            executionSuccess = planExecutor(plan.plan)
+            # executionSuccess = False # Just to gaurantee we go into APV mode for testing 
+
+            #####################################################################################
+            currentState = scenarioData()
+
+            if (executionSuccess.success_bool == 1):
+                print(' -- Plan execution complete')
+                if (goalAccomplished(goal, currentState.init) == True):
+                    print(' ---- Goal COMPLETE ')
+                    break
+            else:
+                print(' -- Plan execution failed')
+                moveToStartProxy() #maybe this should be reset environment proxy...
+            #####################################################################################
 
         #     # MODE 1: start
         #     if algoMode == 'APV':
