@@ -146,6 +146,12 @@ def action_executor(req):
     paramNames = req.paramNames
     paramSettings = req.params # list of floats, should be compatible with action
 
+    print(actionName)
+    print(argNames)
+    print(args)
+    print(paramNames)
+    print(paramSettings)
+
     assert(len(argNames) == len(args))
     assert(len(paramNames) == len(paramSettings))
 

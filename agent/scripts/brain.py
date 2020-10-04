@@ -58,7 +58,7 @@ def handle_trial(req):
         goal = ['(touching left_gripper cover)']
 
         mode = ['diffsOnly', 'noLoc']
-        # algoMode = 'APV'
+        algoMode = 'APV'
         newPrims = []
         gripperExecutingNewPrim = 'left'
         # gripperExecutionValidity = True
@@ -96,13 +96,13 @@ def handle_trial(req):
 
             #####################################################################################
             # For testing: 
-            executionSuccess = planExecutor(plan.plan)
-            # executionSuccess = False # Just to gaurantee we go into APV mode for testing 
+            # executionSuccess = planExecutor(plan.plan).success_bool
+            executionSuccess = 0 # Just to gaurantee we go into APV mode for testing 
 
             #####################################################################################
             currentState = scenarioData()
 
-            if (executionSuccess.success_bool == 1):
+            if (executionSuccess == 1):
                 print(' -- Plan execution complete')
                 if (goalAccomplished(goal, currentState.init) == True):
                     print(' ---- Goal COMPLETE ')
@@ -112,33 +112,45 @@ def handle_trial(req):
                 moveToStartProxy() #maybe this should be reset environment proxy...
             #####################################################################################
 
-        #     # MODE 1: start
-        #     if algoMode == 'APV':
-        #     # MODE 1: end
-
-        #         print('\nGenerating all possible action/arg combinations (to send to APV) for attempt #' + str(attempt))
-        #         momentOfFailurePreds = scenarioData().predicates
-        #         APVtrials = generateAllCombos()
+            if algoMode == 'APV':
+                # TODO: Need to write an algo to do this intelligently 
+                print('\nGenerating all possible action/arg combinations (to send to APV) for attempt #' + str(attempt))
+                momentOfFailurePreds = scenarioData().predicates
+                APVtrials = generateAllCombos()
                     
-        #         print(' -- generation complete, ' + str(len(APVtrials)) + ' total combos found')
-        #         #for t in APVtrials:
-        #         ###    print(t)
+                print(' -- generation complete, ' + str(len(APVtrials)) + ' total combos found')
+                for t in APVtrials:
+                   print(t)
 
-        #     #####################################################################################
-        #         print('\nFinding segmentation possibilities (across all combos generated) for attempt #' + str(attempt))
-        #         trialNo = 0
+            #####################################################################################
+                print('\nFinding segmentation possibilities (across all combos generated) for attempt #' + str(attempt))
+                trialNo = 0
+
+                while(len(APVtrials) >= 1): 
+                # Pretty much remove this p for MODE 2 
+
+                    T = 4 # Hardcoded interval selection ... need to think more on this one.. 
+                    param = 'speed'
+
+                    # TODO Have this selective;; can probably encode it in the list in the function that generates 
+                    # all combos 
+                    comboChoice = random.randint(0, len(APVtrials) - 1)
+                    comboToExecute = APVtrials[comboChoice]
+                    comboToExecute.append(T)
+
+                    print("\n -- Combo # " + str(trialNo) + ': ' + str(comboToExecute))
+
+                    try:
+
+                        #### Find variations for this combo choice
+                        resp = APVproxy(*comboToExecute)
+                        # string actionName
+                        # string[] args
+                        # string param 
+                        # int64 T
 
 
-        #         # MODE 1: start
-        #         while(len(APVtrials) >= 1): 
-        #         # MODE 1: end 
-        #         # Pretty much remove this p for MODE 2 
-
-        #             comboChoice = random.randint(0, len(APVtrials) - 1)
-        #             print("\n -- Combo # " + str(trialNo) + ': ' + str(APVtrials[comboChoice]))
-
-        #             try:
-        #                 #### Find change points    
+        #                     
         #                 resp = APV(APVtrials[comboChoice][0], APVtrials[comboChoice][1], APVtrials[comboChoice][2], APVtrials[comboChoice][3], req.clusterThreshold, req.minClusterSize)
         #                 print(' ---- ' + str(len(resp.endEffectorInfo)) + " total change points found")
         #                 print("Trying partial plan execution on segmentations")
@@ -182,10 +194,15 @@ def handle_trial(req):
         #                     else:
         #                         print(' -- iteration ' + str(i) + ' not successful')
         #                     i = i + 1 
-        #             except rospy.ServiceException, e:
-        #                 print("Service call failed: %s"%e)
-        #             del APVtrials[comboChoice]
-        #             trialNo = trialNo + 1 
+
+                        print("continue here")
+                        break
+                    except rospy.ServiceException, e:
+                        print("Service call failed: %s"%e)
+
+                    del APVtrials[comboChoice]
+                    trialNo = trialNo + 1 
+
         #         # MODE 1: start
         #         algoMode = 'planAndRun'               
         #     else:

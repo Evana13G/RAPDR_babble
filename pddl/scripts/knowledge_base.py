@@ -53,8 +53,10 @@ def get_action_info(req):
     argNames = action.getExecutionArgNames()
     paramNames = [x.getName() for x in action.getParams()]
     paramDefaults = [x.getDefaultVal() for x in action.getParams()]
+    paramMins = [x.getMin() for x in action.getParams()]
+    paramMaxs = [x.getMax() for x in action.getParams()]
 
-    return ActionInfo(name, argNames, paramNames, paramDefaults)
+    return ActionInfo(name, argNames, paramNames, paramDefaults, paramMins, paramMaxs)
 
 ################################################################################
 

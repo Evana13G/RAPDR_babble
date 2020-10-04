@@ -44,10 +44,10 @@ from baxter_core_msgs.msg import (
 from tf.transformations import *
 
 import baxter_interface
-from util.knowledge_base import KnowledgeBase
 from util.file_io import *
 from util.general_vis import *
 from action_primitive_variation.srv import *
+from pddl.srv import *
 from agent.srv import * 
 from environment.msg import *
 from environment.srv import ObjectLocationSrv
@@ -56,6 +56,7 @@ objLocProxy = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
 actionExecutorProxy = rospy.ServiceProxy('action_executor_srv', ActionExecutorSrv)
 visSrvProxy = rospy.ServiceProxy('record_limb_data_srv', RecordLimbDataSrv) 
 addBreakptSrvProxy = rospy.ServiceProxy('add_action_breakpt_srv', AddActionBreakptSrv) 
+actionInfoProxy = rospy.ServiceProxy('get_KB_action_info_srv', GetKBActionInfoSrv)
 
 def getObjectPose(object_name, pose_only=False):
     loc_pStamped = obj_location_srv(object_name)
@@ -67,29 +68,26 @@ def handle_APV(req):
     # if '_' in req.actionName:
     #     change the action name to have just the original action
 
+    actionToVary = req.actionName
+    args = req.args
+    paramToVary = req.param
+    T = req.T 
+
     # This is where you should pull the param names and args from KB
-    # actionToVary = req.actionName
-    # argNames = KB.getAction(actionToVary).getArgNames(actionToVary)
-    # args = req.args
-    # paramNames = [req.param]
-    # paramVals = [0]
-    # T = req.T 
+    actionInfo = actionInfoProxy(actionToVary).actionInfo
+    argNames = actionInfo.executableArgNames
+    paramNames = actionInfo.paramNames
+    paramDefaults = actionInfo.paramDefaults
+    assert(len(argNames) == len(args))
+
     # paramMin = KB.getAction(actionToVary).getParamMin(paramToVary)
     # paramMax = KB.getAction(actionToVary).getParamMax(paramToVary)
-    # I = (paramMax - paramMin)/T
 
-    actionToVary = req.actionName
-    
-    argNames = ['gripper', 'objectName', 'startOffset', 'endOffset']
-    args = req.args
-
-    paramNames = [req.param]
-    
-    T = req.T 
     paramMin = 0.0
     paramMax = 500.0
     I = (paramMax - paramMin)/T
 
+    ## Process parameter values 
     paramVals = []
     for i in range(0, T-1):
         addition =  i * I
@@ -100,7 +98,9 @@ def handle_APV(req):
     indices = []
     for paramAssignment in paramVals:
         addBreakptSrvProxy() 
-        actionExecutorProxy(actionToVary, argNames, args, paramNames, [paramAssignment])
+
+        actionExecutorProxy(actionToVary, argNames, args, [paramToVary], [paramAssignment])
+
         addBreakptSrvProxy() 
 
     visSrvProxy('end', 'endejeje')
