@@ -53,8 +53,13 @@ def getCorrectAction(action_name):
 def push(req):
     # Pull args
     objPose = getObjectPose(req.objectName)
-    start_offset = float(req.startOffset) #FLOAT
-    ending_offset = float(req.endOffset) #FLOAT
+    
+    # These need to be in a dict, and depend on the object 
+    # start_offset = float(req.startOffset) #FLOAT
+    # ending_offset = float(req.endOffset) #FLOAT
+
+    start_offset = 0.1
+    ending_offset = 0.4
     rate = req.rate
 
     # Process args

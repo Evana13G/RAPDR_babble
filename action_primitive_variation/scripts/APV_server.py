@@ -50,13 +50,14 @@ from action_primitive_variation.srv import *
 from pddl.srv import *
 from agent.srv import * 
 from environment.msg import *
-from environment.srv import ObjectLocationSrv
+from environment.srv import *
 
 objLocProxy = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
 actionExecutorProxy = rospy.ServiceProxy('action_executor_srv', ActionExecutorSrv)
 visSrvProxy = rospy.ServiceProxy('record_limb_data_srv', RecordLimbDataSrv) 
 addBreakptSrvProxy = rospy.ServiceProxy('add_action_breakpt_srv', AddActionBreakptSrv) 
 actionInfoProxy = rospy.ServiceProxy('get_KB_action_info_srv', GetKBActionInfoSrv)
+envResetProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
 
 def getObjectPose(object_name, pose_only=False):
     loc_pStamped = obj_location_srv(object_name)
@@ -73,18 +74,22 @@ def handle_APV(req):
     paramToVary = req.param
     T = req.T 
 
+    if paramToVary == None or paramToVary == '':
+        return APVSrvResponse([])
+
     # This is where you should pull the param names and args from KB
     actionInfo = actionInfoProxy(actionToVary).actionInfo
     argNames = actionInfo.executableArgNames
     paramNames = actionInfo.paramNames
-    paramDefaults = actionInfo.paramDefaults
+    paramDefaults = list(actionInfo.paramDefaults)
+    paramMins = list(actionInfo.paramMins)
+    paramMaxs = list(actionInfo.paramMaxs)
     assert(len(argNames) == len(args))
+    assert(len(paramNames) == len(paramDefaults) == len(paramMins) == len(paramMaxs))
 
-    # paramMin = KB.getAction(actionToVary).getParamMin(paramToVary)
-    # paramMax = KB.getAction(actionToVary).getParamMax(paramToVary)
-
-    paramMin = 0.0
-    paramMax = 500.0
+    i_paramToVary = paramNames.index(paramToVary)
+    paramMin = paramMins[i_paramToVary]
+    paramMax = paramMaxs[i_paramToVary]
     I = (paramMax - paramMin)/T
 
     ## Process parameter values 
@@ -94,16 +99,18 @@ def handle_APV(req):
         paramVals.append(paramMin + addition)
     paramVals.append(paramMax)
 
-    visSrvProxy('start', '')
-    indices = []
+    # visSrvProxy('start', '')
     for paramAssignment in paramVals:
-        addBreakptSrvProxy() 
-
-        actionExecutorProxy(actionToVary, argNames, args, [paramToVary], [paramAssignment])
-
-        addBreakptSrvProxy() 
-
-    visSrvProxy('end', 'endejeje')
+        # addBreakptSrvProxy() 
+        # envResetProxy('restart', 'default') # action, environment setting
+        paramSettings = copy.deepcopy(paramDefaults)
+        paramSettings[i_paramToVary] = paramAssignment
+        print('Action: ' + str(actionToVary) + ', Param: ' + str(paramToVary) + ', ' + str(paramAssignment))
+        actionExecutorProxy(actionToVary, argNames, args, paramNames, paramSettings)
+        
+        envResetProxy('restart', 'default')
+        # addBreakptSrvProxy() 
+    # visSrvProxy('end', 'endejeje')
     return APVSrvResponse([])
 
 def main():

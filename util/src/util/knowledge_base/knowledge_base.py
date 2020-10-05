@@ -86,7 +86,7 @@ class KnowledgeBase(object):
         push.addPreCond(StaticPredicate('at', ['?o', '?loc0']))
         push.addEffect(StaticPredicate('at', ['?o', '?loc1']))
         push.addEffect(StaticPredicate('not', [StaticPredicate('at', ['?o', '?loc0'])]))
-        push_p1 = Parameter('rate', 100, 50, 1000)
+        push_p1 = Parameter('rate', 100.0, 50.0, 1000.0)
         push.addParam(push_p1)
         push.setExecutionArgNames(['gripper', 'objectName'])
 
@@ -103,7 +103,7 @@ class KnowledgeBase(object):
         shake = Action('shake', [], [], [], [], ShakeSrv) # All default, add after 
         shake.addArg(Variable('?g', 'gripper'))
         shake.addArg(Variable('?o', 'obj'))
-        shake_p1 = Parameter('twistRange', 1, 0, 5)
+        shake_p1 = Parameter('twistRange', 1.0, 0.0, 5.0)
         shake_p2 = Parameter('speed', 0.3, 1.5, 0.05)
         shake.addParam(shake_p1)
         shake.addParam(shake_p2)
@@ -115,7 +115,7 @@ class KnowledgeBase(object):
         press.addArg(Variable('?o', 'obj'))
         press_p1 = Parameter('hoverDistance', 0.1, 0.03, 0.3)
         press_p2 = Parameter('pressAmount', 0.01, 0.03, 0.3)
-        press_p3 = Parameter('rate', 100, 50, 1000)
+        press_p3 = Parameter('rate', 100.0, 50.0, 1000.0)
         press.addParam(press_p1)
         press.addParam(press_p2)
         press.addParam(press_p3)
