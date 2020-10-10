@@ -56,7 +56,19 @@ def get_action_info(req):
     paramMins = [x.getMin() for x in action.getParams()]
     paramMaxs = [x.getMax() for x in action.getParams()]
 
-    return ActionInfo(name, argNames, paramNames, paramDefaults, paramMins, paramMaxs)
+    return ActionInfo(name, 
+                      argNames, 
+                      paramNames, 
+                      paramDefaults, 
+                      paramMins, 
+                      paramMaxs)
+
+# def get_instatiated_pddl(req):
+#     action = KB.getAction(req.actionName)
+
+#     preConds = [str(x) for x in action.getPreconditions()]
+#     effects = [str(x) for x in action.getEffects()]
+
 
 ################################################################################
 

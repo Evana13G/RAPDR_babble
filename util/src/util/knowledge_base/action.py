@@ -40,6 +40,9 @@ class Action(object):
     def getArgs(self):
         return copy.deepcopy(self.args)
 
+    def getPreconditions(self):
+        return copy.deepcopy(self.preconditions)
+
     def getEffects(self):
         return copy.deepcopy(self.effects)
 
@@ -54,9 +57,6 @@ class Action(object):
 
     def getExecutionArgNames(self):
         return self.executionArgNames
-
-    # def extractExecutionArgs(self):
-    #     for 
 
     def getNonLocationVars(self):
         args = []

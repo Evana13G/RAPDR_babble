@@ -49,33 +49,7 @@ class KnowledgeBase(object):
         _preds.append(TemplatedPredicate('touching', [Variable('?e', 'entity'), Variable('?e', 'entity')]))
         _preds.append(TemplatedPredicate('is_visible', [Variable('?e', 'entity')]))
         _preds.append(TemplatedPredicate('grasped', [Variable('?o', 'obj')]))
-
-
-# PUSH
-# string objectName 
-# float64 startOffset
-# float64 endOffset
-# int64 rate
-
-# PRESS
-# string objectName 
-# float64 hoverDistance
-# float64 pressAmount
-# float64 rate
-
-# SHAKE
-# string objectName
-# float64 twistRange
-# float64 speed
-
-# DROP
-# string objectName
-# int64 dropHeight
-
-# GRASP
-# string objectName
-
-
+        
 
         ## PUSH 
         push = Action('push', [], [], [], [], PushSrv) # All default, add after 
@@ -86,7 +60,7 @@ class KnowledgeBase(object):
         push.addPreCond(StaticPredicate('at', ['?o', '?loc0']))
         push.addEffect(StaticPredicate('at', ['?o', '?loc1']))
         push.addEffect(StaticPredicate('not', [StaticPredicate('at', ['?o', '?loc0'])]))
-        push_p1 = Parameter('rate', 100.0, 50.0, 1000.0)
+        push_p1 = Parameter('rate', 50.0, 50.0, 800.0)
         push.addParam(push_p1)
         push.setExecutionArgNames(['gripper', 'objectName'])
 

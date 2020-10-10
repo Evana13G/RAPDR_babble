@@ -53,7 +53,7 @@ def handle_trial(req):
 
         task = req.runName
         currentState = scenarioData()
-        
+        print(currentState)
         # goal = ['(grasped cover)']
         goal = ['(touching left_gripper cover)']
 
@@ -129,9 +129,8 @@ def handle_trial(req):
                 while(len(APVtrials) >= 1): 
                 # Pretty much remove this p for MODE 2 
 
-                    T = 4 # Hardcoded interval selection ... need to think more on this one.. 
-                    param = 'speed'
-
+                    T = 3 # Hardcoded interval selection ... need to think more on this one.. 
+                    
                     # TODO Have this selective;; can probably encode it in the list in the function that generates 
                     # all combos 
                     comboChoice = random.randint(0, len(APVtrials) - 1)
@@ -144,18 +143,9 @@ def handle_trial(req):
 
                         #### Find variations for this combo choice
                         resp = APVproxy(*comboToExecute)
-                        # string actionName
-                        # string[] args
-                        # string param 
-                        # int64 T
 
-
-        #                     
-        #                 resp = APV(APVtrials[comboChoice][0], APVtrials[comboChoice][1], APVtrials[comboChoice][2], APVtrials[comboChoice][3], req.clusterThreshold, req.minClusterSize)
         #                 print(' ---- ' + str(len(resp.endEffectorInfo)) + " total change points found")
         #                 print("Trying partial plan execution on segmentations")
-        #                 moveLeftArmToStart(lPA)
-        #                 moveRightArmToStart(rPA)
         #                 #### Iterate across segmentations
         #                 i = 0
         #                 while i <= len(resp.endEffectorInfo) - 2:

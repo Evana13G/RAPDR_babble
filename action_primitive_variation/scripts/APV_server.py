@@ -84,6 +84,10 @@ def handle_APV(req):
     paramDefaults = list(actionInfo.paramDefaults)
     paramMins = list(actionInfo.paramMins)
     paramMaxs = list(actionInfo.paramMaxs)
+    
+    # preconditions = actionInfo.preconditions
+    # effects = actionInfo.effects
+    
     assert(len(argNames) == len(args))
     assert(len(paramNames) == len(paramDefaults) == len(paramMins) == len(paramMaxs))
 
@@ -99,30 +103,36 @@ def handle_APV(req):
         paramVals.append(paramMin + addition)
     paramVals.append(paramMax)
 
-    # visSrvProxy('start', '')
     for paramAssignment in paramVals:
-        # addBreakptSrvProxy() 
-        # envResetProxy('restart', 'default') # action, environment setting
         paramSettings = copy.deepcopy(paramDefaults)
         paramSettings[i_paramToVary] = paramAssignment
         print('Action: ' + str(actionToVary) + ', Param: ' + str(paramToVary) + ', ' + str(paramAssignment))
         actionExecutorProxy(actionToVary, argNames, args, paramNames, paramSettings)
-        
-        envResetProxy('restart', 'default')
-        # addBreakptSrvProxy() 
-    # visSrvProxy('end', 'endejeje')
+        envResetProxy('restart', 'heavy')
     return APVSrvResponse([])
+
 
 def main():
     rospy.init_node("APV_node")
     rospy.wait_for_service('/action_executor_srv')
-
     s = rospy.Service("APV_srv", APVSrv, handle_APV)
-
     rospy.spin()
-    
     return 0
 
 
 if __name__ == '__main__':
     sys.exit(main())
+
+    # # visSrvProxy('start', '')
+    # for paramAssignment in paramVals:
+    #     # addBreakptSrvProxy() 
+    #     # envResetProxy('restart', 'default') # action, environment setting
+    #     paramSettings = copy.deepcopy(paramDefaults)
+    #     paramSettings[i_paramToVary] = paramAssignment
+    #     print('Action: ' + str(actionToVary) + ', Param: ' + str(paramToVary) + ', ' + str(paramAssignment))
+    #     actionExecutorProxy(actionToVary, argNames, args, paramNames, paramSettings)
+        
+    #     envResetProxy('restart', 'default')
+    #     # addBreakptSrvProxy() 
+    # # visSrvProxy('end', 'endejeje')
+    # return APVSrvResponse([])
