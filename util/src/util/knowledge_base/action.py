@@ -66,6 +66,37 @@ class Action(object):
                 args.append(t)
         return args
 
+    def bind_args(self, args, locs):
+        assert(len(args) == len(self.args) or len(args) + len(locs) == len(self.args))
+        i_args = 0
+        i_locs = 0
+        bound_vars = {}
+
+        for i in range(len(self.args)):
+            pddl_arg = self.args[i].getName()
+            if 'loc' in pddl_arg:
+                bound_vars[pddl_arg] = locs[i_locs]
+                i_locs += 1
+            else:
+                bound_vars[pddl_arg] = args[i_args]
+                i_args += 1
+
+        return bound_vars        
+        
+    def get_instatiated_preconditions(self, args, locs):
+        bindings = self.bind_args(args, locs)
+        instatiated = []
+        for p in self.preconditions:
+            instatiated.append(p.get_instatiated_str(bindings))
+        return instatiated
+
+    def get_instatiated_effects(self, args, locs):
+        bindings = self.bind_args(args, locs)
+        instatiated = []
+        for p in self.effects:
+            instatiated.append(p.get_instatiated_str(bindings))
+        return instatiated
+
     def __str__(self):
         s = '(:action ' + self.name + '\n'
         s = s + '    :parameters (' 

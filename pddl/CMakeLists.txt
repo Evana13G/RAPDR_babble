@@ -26,6 +26,7 @@ add_message_files(
   LocationBindingList.msg
   LocationBinding.msg
   ExecutableAction.msg
+  ActionPDDLBinding.msg
 )
 
 add_service_files(
@@ -36,6 +37,7 @@ add_service_files(
   GetKBDomainSrv.srv
   GetKBPddlLocsSrv.srv
   GetKBActionInfoSrv.srv
+  GetActionPDDLBindingSrv.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs gazebo_msgs)

@@ -38,7 +38,7 @@ KBDomainProxy = rospy.ServiceProxy('get_KB_domain_srv', GetKBDomainSrv)
 KBPddlLocsProxy = rospy.ServiceProxy('get_KB_pddl_locs', GetKBPddlLocsSrv)
 envProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
 moveToStartProxy = rospy.ServiceProxy('move_to_start_srv', MoveToStartSrv)
-
+instatiatedPDDLBindings = rospy.ServiceProxy('get_pddl_instatiations_srv', GetActionPDDLBindingSrv)
 
 def handle_trial(req):
 
@@ -58,10 +58,11 @@ def handle_trial(req):
     print("\n -- Combo # " + str(trialNo) + ': ' + str(comboToExecute))
 
     try:
-        currentState = scenarioData()
-        print(currentState)
+        # currentState = scenarioData()
+        actionStuff = instatiatedPDDLBindings('push', ['left_gripper', 'cover'])
+
         #### Find variations for this combo choice
-        resp = APVproxy(*comboToExecute)
+        # resp = APVproxy(*comboToExecute)
 
 
     

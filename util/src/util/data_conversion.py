@@ -94,6 +94,7 @@ def pddlObjectsStringFormat_fromDict(dictObj):
             strData.append(s)
     return strData
 
+
 def pddlObjects(predicates_list, mod=True):
     cartesian = []
     grippers = []
@@ -219,6 +220,21 @@ def poseStampedToString(val):
     x = round(val.pose.position.x, 1)
     y = round(val.pose.position.y, 1)
     z = round(val.pose.position.z, 1)
+    if x == -0.0:
+        x = 0.0
+    if y == -0.0:
+        y = 0.0
+    if z == -0.0:
+        z = 0.0
+
+    return (str(x) + ',' + 
+            str(y) + ',' + 
+            str(z))
+
+def poseToString(val):
+    x = round(val.position.x, 1)
+    y = round(val.position.y, 1)
+    z = round(val.position.z, 1)
     if x == -0.0:
         x = 0.0
     if y == -0.0:
