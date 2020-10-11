@@ -8,7 +8,6 @@ from action_primitive_variation.srv import *
 from environment.srv import *
 from pddl.srv import *
 from pddl.msg import *
-from util.knowledge_base import KnowledgeBase
 from util.data_conversion import * 
 from util.goal_management import *
 from util.file_io import deleteAllPddlFiles, deleteAllAPVFiles, processLogData
@@ -28,25 +27,44 @@ shakeProxy = rospy.ServiceProxy('shake_srv', ShakeSrv)
 graspProxy = rospy.ServiceProxy('grasp_srv', GraspSrv)
 pressProxy = rospy.ServiceProxy('press_srv', PressSrv)
 dropProxy = rospy.ServiceProxy('drop_srv', DropSrv)
-APVproxy = rospy.ServiceProxy('APV_srv', APVSrv)
 
+
+APVproxy = rospy.ServiceProxy('APV_srv', APVSrv)
+# planGenerator = rospy.ServiceProxy('plan_generator_srv', PlanGeneratorSrv)
+# planExecutor = rospy.ServiceProxy('plan_executor_srv', PlanExecutorSrv)
+scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
+
+KBDomainProxy = rospy.ServiceProxy('get_KB_domain_srv', GetKBDomainSrv)
+KBPddlLocsProxy = rospy.ServiceProxy('get_KB_pddl_locs', GetKBPddlLocsSrv)
 envProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
+moveToStartProxy = rospy.ServiceProxy('move_to_start_srv', MoveToStartSrv)
+
 
 def handle_trial(req):
-
-    print("\n#####################################################################################")
-    print("#######################################################################################")
-    print('## Action Primivitive Discovery in Robotic Agents through Action Parameter Variation ##')
-    print('## -- a proof of concept model for knowledge aquisition in intelligent agents        ##')
-    print('## -- Evana Gizzi, Amel Hassan, Jivko Sinapov, 2020                                  ##')
-    print("#######################################################################################")
-    print("#######################################################################################")
 
     print("---------------------------------------------------------------------------------------")
     print("---------------------------------   TESTING ACTIONS   ---------------------------------")
 
-    # scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
-    # currentState = scenarioData()
+    APVtrials = generateAllCombos()
+
+    trialNo = 0
+
+    T = 3 
+ 
+    comboChoice = random.randint(0, len(APVtrials) - 1)
+    comboToExecute = APVtrials[comboChoice]
+    comboToExecute.append(T)
+
+    print("\n -- Combo # " + str(trialNo) + ': ' + str(comboToExecute))
+
+    try:
+        currentState = scenarioData()
+        print(currentState)
+        #### Find variations for this combo choice
+        resp = APVproxy(*comboToExecute)
+
+
+    
 
     ##### Actions testing Code #########################################
   
@@ -57,13 +75,16 @@ def handle_trial(req):
     # -- float64 endOffset
     # -- int64 rate
     #
-    pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
+    # print("----LOW MASS, LOW VELOCITY")
+    # pushProxy('cup', 0.05, 0.11, None)       ## DEFAULT
     # envProxy('restart', 'heavy')            ## HEAVY    
-    #
-    # pushProxy('cup', 0.1, 0.11, None)       ## DEFAULT
+    # #
+    # print("----HIGH MASS, LOW VELOCITY")
+    # pushProxy('cup', 0.05, 0.11, None)       ## DEFAULT
     # envProxy('restart', 'heavy')            ## HEAVY    
-    #
-    # pushProxy('cup', 0.1, 0.11, 500)        ## HIGH RATE 
+    # #
+    # print("----HIGH MASS, HIGH VELOCITY")
+    # pushProxy('cup', 0.1, 0.11, 100000)        ## HIGH RATE 
     # envProxy('restart', 'default')          ## DEFAULT    
     ####################################################################
 
@@ -129,8 +150,11 @@ def handle_trial(req):
     # envProxy('restart', 'default')          ## DEFAULT  
     ####################################################################
 
-    return BrainSrvResponse([1], 1) 
-
+        return BrainSrvResponse([1], 1) 
+    
+    except rospy.ServiceException, e:
+        print("Service call failed: %s"%e)
+        return BrainSrvResponse([1], 1) # temp
 
 def main():
     rospy.init_node("test_brain")

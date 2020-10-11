@@ -25,19 +25,15 @@ from baxter_core_msgs.msg import (
 )
 
 
-# pushProxy = rospy.ServiceProxy('push_srv', PushSrv)
-# shakeProxy = rospy.ServiceProxy('shake_srv', ShakeSrv)
-# graspProxy = rospy.ServiceProxy('grasp_srv', GraspSrv)
-# pressProxy = rospy.ServiceProxy('press_srv', PressSrv)
-# dropProxy = rospy.ServiceProxy('drop_srv', DropSrv)
 APVproxy = rospy.ServiceProxy('APV_srv', APVSrv)
 planGenerator = rospy.ServiceProxy('plan_generator_srv', PlanGeneratorSrv)
 planExecutor = rospy.ServiceProxy('plan_executor_srv', PlanExecutorSrv)
 scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
 
-KB = KnowledgeBase()
-KBProxy = rospy.ServiceProxy('get_KB_data', GetKBDataSrv)
+KBDomainProxy = rospy.ServiceProxy('get_KB_domain_srv', GetKBDomainSrv)
+KBPddlLocsProxy = rospy.ServiceProxy('get_KB_pddl_locs', GetKBPddlLocsSrv)
 envProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
+moveToStartProxy = rospy.ServiceProxy('move_to_start_srv', MoveToStartSrv)
 
 def handle_trial(req):
 
@@ -57,10 +53,12 @@ def handle_trial(req):
 
         task = req.runName
         currentState = scenarioData()
-        goal = ['(grasped cover)']
+        print(currentState)
+        # goal = ['(grasped cover)']
+        goal = ['(touching left_gripper cover)']
 
         mode = ['diffsOnly', 'noLoc']
-        # algoMode = 'APV'
+        algoMode = 'APV'
         newPrims = []
         gripperExecutingNewPrim = 'left'
         # gripperExecutionValidity = True
@@ -68,99 +66,86 @@ def handle_trial(req):
         attempt = 1
         totalTimeStart = rospy.get_time()
 
-        # while(goalAccomplished(goal, currentState.init) == False):
-        trialStart = rospy.get_time()
+        while(goalAccomplished(goal, currentState.init) == False):
+            trialStart = rospy.get_time()
 
-        #####################################################################################
-        domainDict = KB.getDomainData()
+            filename = task + '_' + str(attempt)
+            currentState = scenarioData()
+            additionalLocations = KBPddlLocsProxy().pddlLocs
+            initObjs = pddlObjects(currentState.predicateList.predicates, False)
+            newPts = copy.deepcopy(initObjs['cartesian'])
 
-        domainName = domainDict['domain']
-        types = domainDict['types']
-        predicates = domainDict['predicates']
-        requirements = domainDict['requirements']
-        actions = domainDict['actions']
-        print(KB.getDomainData())
-        print(' -- Domain setup complete')
+            for loc in additionalLocations:
+                newPts.append(loc)
 
-        #####################################################################################
-        currentState = scenarioData()
-        additionalLocations = domainDict['pddlLocs']
-        initObjs = pddlObjects(currentState.predicateList.predicates, False)
-        newPts = copy.deepcopy(initObjs['cartesian'])
+            # newPts.append(goalLoc)
+            newPts = list(set(newPts))
+            initObjs['cartesian'] = newPts
 
-        for loc in additionalLocations:
-            newPts.append(loc)
+            objs = pddlObjectsStringFormat_fromDict(initObjs)
+            init = currentState.init
+            problem = Problem(task, KBDomainProxy().domain.name, objs, init, goal)
+            plan = planGenerator(problem, filename)
 
-        # newPts.append(goalLoc)
-        # newPts = list(set(newPts))
-        # initObjs['cartesian'] = newPts
-        objs = pddlObjectsStringFormat_fromDict(initObjs)
-        init = currentState.init
-        domain = Domain(domainName, requirements, types, predicates, actions)
-        problem = Problem(task, domainName, objs, init, goal)
-        filename = task + '_' + str(attempt)
-        print(' -- Problem setup complete')
-
-        #####################################################################################
-        print('\nTriggering plan generation and execution for attempt #' + str(attempt))
-        plan = planGenerator(domain, problem, filename, KB.getActionsLocs())
-        print(' -- Plan generation complete')
-        
-        # executionSuccess = planExecutor(plan.plan)
-        # Just to gaurantee we go into APV mode for testing 
-        
-        #     if plan.plan.actions[0].params[0] == gripperExecutingNewPrim:
+        #     if gripperExecutingNewPrim in plan.plan.actions[0].argVals:
         #         gripperExecutionValidity = False
         #         executionSuccess = 0
         #     else:
         #         gripperExecutionValidity = True
         #         executionSuccess = planExecutor(plan.plan)
 
-        #     #####################################################################################
-        #     currentState = scenarioData()
-        #     if (executionSuccess == 1):
-        #         print(' -- Plan execution complete')
-        #         if (goalAccomplished(goal, currentState.init) == False):
-        #             print(' ---- Goal COMPLETE ')
-        #             break
-        #     else:
-        #         print(' -- Plan execution failed')
-        #         moveLeftArmToStart(lPA)
-        #         moveRightArmToStart(rPA)
-        #     #####################################################################################
+            #####################################################################################
+            # For testing: 
+            # executionSuccess = planExecutor(plan.plan).success_bool
+            executionSuccess = 0 # Just to gaurantee we go into APV mode for testing 
 
-        #     # MODE 1: start
-        #     if algoMode == 'APV':
-        #     # MODE 1: end
+            #####################################################################################
+            currentState = scenarioData()
 
-        #         print('\nGenerating all possible action/arg combinations (to send to APV) for attempt #' + str(attempt))
-        #         momentOfFailurePreds = scenarioData().predicates
-        #         APVtrials = generateAllCombos()
+            if (executionSuccess == 1):
+                print(' -- Plan execution complete')
+                if (goalAccomplished(goal, currentState.init) == True):
+                    print(' ---- Goal COMPLETE ')
+                    break
+            else:
+                print(' -- Plan execution failed')
+                moveToStartProxy() #maybe this should be reset environment proxy...
+            #####################################################################################
+
+            if algoMode == 'APV':
+                # TODO: Need to write an algo to do this intelligently 
+                print('\nGenerating all possible action/arg combinations (to send to APV) for attempt #' + str(attempt))
+                momentOfFailurePreds = scenarioData().predicates
+                APVtrials = generateAllCombos()
                     
-        #         print(' -- generation complete, ' + str(len(APVtrials)) + ' total combos found')
-        #         #for t in APVtrials:
-        #         ###    print(t)
+                print(' -- generation complete, ' + str(len(APVtrials)) + ' total combos found')
+                for t in APVtrials:
+                   print(t)
 
-        #     #####################################################################################
-        #         print('\nFinding segmentation possibilities (across all combos generated) for attempt #' + str(attempt))
-        #         trialNo = 0
+            #####################################################################################
+                print('\nFinding segmentation possibilities (across all combos generated) for attempt #' + str(attempt))
+                trialNo = 0
 
+                while(len(APVtrials) >= 1): 
+                # Pretty much remove this p for MODE 2 
 
-        #         # MODE 1: start
-        #         while(len(APVtrials) >= 1): 
-        #         # MODE 1: end 
-        #         # Pretty much remove this p for MODE 2 
+                    T = 3 # Hardcoded interval selection ... need to think more on this one.. 
+                    
+                    # TODO Have this selective;; can probably encode it in the list in the function that generates 
+                    # all combos 
+                    comboChoice = random.randint(0, len(APVtrials) - 1)
+                    comboToExecute = APVtrials[comboChoice]
+                    comboToExecute.append(T)
 
-        #             comboChoice = random.randint(0, len(APVtrials) - 1)
-        #             print("\n -- Combo # " + str(trialNo) + ': ' + str(APVtrials[comboChoice]))
+                    print("\n -- Combo # " + str(trialNo) + ': ' + str(comboToExecute))
 
-        #             try:
-        #                 #### Find change points    
-        #                 resp = APV(APVtrials[comboChoice][0], APVtrials[comboChoice][1], APVtrials[comboChoice][2], APVtrials[comboChoice][3], req.clusterThreshold, req.minClusterSize)
+                    try:
+
+                        #### Find variations for this combo choice
+                        resp = APVproxy(*comboToExecute)
+
         #                 print(' ---- ' + str(len(resp.endEffectorInfo)) + " total change points found")
         #                 print("Trying partial plan execution on segmentations")
-        #                 moveLeftArmToStart(lPA)
-        #                 moveRightArmToStart(rPA)
         #                 #### Iterate across segmentations
         #                 i = 0
         #                 while i <= len(resp.endEffectorInfo) - 2:
@@ -199,10 +184,15 @@ def handle_trial(req):
         #                     else:
         #                         print(' -- iteration ' + str(i) + ' not successful')
         #                     i = i + 1 
-        #             except rospy.ServiceException, e:
-        #                 print("Service call failed: %s"%e)
-        #             del APVtrials[comboChoice]
-        #             trialNo = trialNo + 1 
+
+                        print("continue here")
+                        break
+                    except rospy.ServiceException, e:
+                        print("Service call failed: %s"%e)
+
+                    del APVtrials[comboChoice]
+                    trialNo = trialNo + 1 
+
         #         # MODE 1: start
         #         algoMode = 'planAndRun'               
         #     else:

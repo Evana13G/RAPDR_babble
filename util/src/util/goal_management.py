@@ -2,13 +2,13 @@ from util.physical_agent import PhysicalAgent
 import os 
 
 def goalAccomplished(goalList, currentState):
-	numGoalsAccomplished = 0
-	for goal in goalList:
-		if goal in currentState:
-			numGoalsAccomplished = numGoalsAccomplished + 1
-	if numGoalsAccomplished == len(goalList):
-		return True
-	return False
+    numGoalsAccomplished = 0
+    for goal in goalList:
+        if goal in currentState:
+            numGoalsAccomplished = numGoalsAccomplished + 1
+    if numGoalsAccomplished == len(goalList):
+        return True
+    return False
 
 
 # def findAllCombos(objects, action):
@@ -75,11 +75,16 @@ def compileResults(brainRunDirectory, runName):
 
 def generateAllCombos():
     APVtrials = []
-    APVtrials.append(['obtain_object', 'left_gripper', 'wall', None]) 
-    APVtrials.append(['obtain_object', 'left_gripper', 'table', None]) 
-    APVtrials.append(['obtain_object', 'left_gripper', 'block', None]) 
-    APVtrials.append(['press_button', 'left_gripper', 'left_button', None]) 
-    APVtrials.append(['press_button', 'left_gripper', 'right_button', None]) 
+    APVtrials.append(['push', ['left_gripper', 'cover'], 'rate']) 
+    # APVtrials.append(['grasp', ['left_gripper', 'cover'], None]) 
+    # APVtrials.append(['shake', ['left_gripper', 'cover'], 'twistRange']) 
+    # APVtrials.append(['shake', ['left_gripper', 'cover'], 'speed']) 
+    # APVtrials.append(['press', ['left_gripper', 'cover'], 'hoverDistance']) 
+    # APVtrials.append(['press', ['left_gripper', 'cover'], 'pressAmount']) 
+    # APVtrials.append(['press', ['left_gripper', 'cover'], 'rate']) 
+    # APVtrials.append(['drop', ['left_gripper', 'cover'], 'dropHeight']) 
+
+
     return APVtrials  
     ##### BOTH need this #####
     #objectsToIterate = pddlObjects(currentState.predicateList.predicates, False)

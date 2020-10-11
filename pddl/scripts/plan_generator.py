@@ -19,13 +19,14 @@ from std_msgs.msg import (
 
 from tf.transformations import *
 
-from util.knowledge_base import KnowledgeBase
 from util.file_io import * 
 from action_primitive_variation.srv import *
 from agent.srv import * 
 from pddl.msg import *
 from pddl.srv import *
 
+KBDomainProxy = rospy.ServiceProxy('get_KB_domain_srv', GetKBDomainSrv)
+KBActionLocsProxy = rospy.ServiceProxy('get_KB_action_locs', GetKBActionLocsSrv)
 
 def generate_plan(req):
 
@@ -38,13 +39,14 @@ def generate_plan(req):
     problemFilepath = dataFilepath + problemFile
     solutionFilepath = dataFilepath + solutionFile
 
+    domain = KBDomainProxy().domain
     # # write to the files
     writeToDomainFile(domainFilepath, 
-                      req.domain.name, 
-                      req.domain.requirements,
-                      req.domain.types, 
-                      req.domain.predicates, 
-                      req.domain.actions)
+                      domain.name, 
+                      domain.requirements,
+                      domain.types, 
+                      domain.predicates, 
+                      domain.actions)
 
     writeToProblemFile(problemFilepath, 
                        req.problem.task,
@@ -53,19 +55,24 @@ def generate_plan(req):
                        req.problem.init, 
                        req.problem.goals)
 
-    pddlDriver = os.path.dirname(os.path.realpath(__file__)) + "/../../../pyperplan/src/pyperplan.py" 
+    pddlDriver = os.path.dirname(os.path.realpath(__file__)) + "/../../../Pyperplan/src/pyperplan.py" 
     os.system('python3 ' + pddlDriver + ' ' + domainFilepath + ' ' + problemFilepath)
 
     plan = getPlanFromSolutionFile(solutionFilepath)
 
+    locBindings = KBActionLocsProxy().locBindings
     bindings = {}
-    for bind in req.bindings.bindings:
+    for bind in locBindings.bindings:
       bindings[bind.actionName] = bind.endEffectorInfo
-    actionList = []
-    
+
+    actionList = []    
     for act in plan:
-        actionList.append(Action(act['actionName'], act['params'], bindings[act['actionName']]))
-    return PlanGeneratorSrvResponse(ActionList(actionList))
+        name = act['actionName']
+        argVals = act['args']
+        action = ActionExecutionInfo(name, argVals)
+        actionList.append(action)
+
+    return PlanGeneratorSrvResponse(ActionExecutionInfoList(actionList))
 
 
 ############### START: ROSbag handling

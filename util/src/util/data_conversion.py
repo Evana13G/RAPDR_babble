@@ -26,7 +26,6 @@ from std_msgs.msg import (
     Empty,
 )
 
-from knowledge_base.kb_subclasses import *
 from knowledge_base.action import Action
 
 def getPredicateLocation(predList, _oprtr, _obj):
@@ -87,16 +86,16 @@ def pddlObjectsStringFormat(predicates_list):
 def pddlObjectsStringFormat_fromDict(dictObj):
     strData = []
     for objType in ['cartesian', 'gripper', 'obj']:
-        s = ''
-        for item in dictObj[objType]:
-            s = s + item + ' '
-        s = s + '- ' + objType
-        strData.append(s)
+        if len(dictObj[objType]) > 0:
+            s = ''
+            for item in dictObj[objType]:
+                s = s + item + ' '
+            s = s + '- ' + objType
+            strData.append(s)
     return strData
 
 def pddlObjects(predicates_list, mod=True):
     cartesian = []
-    buttons = []
     grippers = []
     objs = []
     for pred in predicates_list:
@@ -107,14 +106,16 @@ def pddlObjects(predicates_list, mod=True):
             else: 
                 loc = poseStampedToString(pred.locationInformation)
                 cartesian.append(loc)
-
+            if 'gripper' in str(pred.objects):
+                grippers.extend(pred.objects)
+            else:
+                objs.extend(pred.objects)
         elif 'gripper' in str(pred.objects):
-            grippers.append(str(pred.objects))
+            grippers.extend(pred.objects)
         else:
-            objs.append(str(pred.objects))
+            objs.extend(pred.objects)
 
     cartesian = list(set(cartesian))
-    buttons = list(set(buttons))
     grippers = list(set(grippers))
     objs = list(set(objs))
 

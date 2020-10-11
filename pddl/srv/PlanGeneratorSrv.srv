@@ -1,6 +1,4 @@
-Domain domain
 Problem problem
 string filename
-LocationBindingList bindings
 ---
-ActionList plan
+ActionExecutionInfoList plan

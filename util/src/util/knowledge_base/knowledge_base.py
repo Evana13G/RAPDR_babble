@@ -24,7 +24,6 @@ from pddl.msg import *
 from agent.srv import *
 from util.data_conversion import * 
 
-from kb_subclasses import *
 from action import Action
 from type import Type
 from predicate import TemplatedPredicate, StaticPredicate
@@ -41,19 +40,16 @@ class KnowledgeBase(object):
         _pddllocs = []
 
         ## types of atoms available
+        _types.append(Type('object', ['entity', 'location']))
         _types.append(Type('entity', ['obj', 'gripper']))
         _types.append(Type('location', ['cartesian']))
 
         ## Types of predicates available, templated
         _preds.append(TemplatedPredicate('at', [Variable('?e', 'entity'), Variable('?loc', 'cartesian')]))
         _preds.append(TemplatedPredicate('touching', [Variable('?e', 'entity'), Variable('?e', 'entity')]))
-        
-        # _preds.append(TemplatedPredicate('touching', [Variable('?o', 'obj'), Variable('?o', 'obj')]))
-
-        _preds.append(TemplatedPredicate('is_visible', [Variable('?o', 'obj')]))
+        _preds.append(TemplatedPredicate('is_visible', [Variable('?e', 'entity')]))
         _preds.append(TemplatedPredicate('grasped', [Variable('?o', 'obj')]))
-    
-        #actionName, _args, _preConds, _effects, _params, _param_defaults, _srvFile
+        
 
         ## PUSH 
         push = Action('push', [], [], [], [], PushSrv) # All default, add after 
@@ -64,42 +60,48 @@ class KnowledgeBase(object):
         push.addPreCond(StaticPredicate('at', ['?o', '?loc0']))
         push.addEffect(StaticPredicate('at', ['?o', '?loc1']))
         push.addEffect(StaticPredicate('not', [StaticPredicate('at', ['?o', '?loc0'])]))
-        push_p1 = Parameter('rate' , None, 100, 50, 1000)
+        push_p1 = Parameter('rate', 50.0, 50.0, 800.0)
         push.addParam(push_p1)
+        push.setExecutionArgNames(['gripper', 'objectName'])
 
         ## GRASP
         grasp = Action('grasp', [], [], [], [], GraspSrv) # All default, add after 
         grasp.addArg(Variable('?g', 'gripper'))
         grasp.addArg(Variable('?o', 'obj'))
-        grasp.addPreCond(StaticPredicate('not', [StaticPredicate('grasped', ['?o'])]))
+        # grasp_p1 = Parameter('grasp_amount' , None, 1, 0, 5)
+        # grasp.addParam(grasp_p1)
         grasp.addEffect(StaticPredicate('grasped', ['?o']))
+        grasp.setExecutionArgNames(['gripper', 'objectName'])
 
         ## SHAKE
         shake = Action('shake', [], [], [], [], ShakeSrv) # All default, add after 
         shake.addArg(Variable('?g', 'gripper'))
         shake.addArg(Variable('?o', 'obj'))
-        shake_p1 = Parameter('twistRange' , None, 1, 0, 5)
-        shake_p2 = Parameter('speed', None, 0.3, 1.5, 0.05)
-        push.addParam(shake_p1)
-        push.addParam(shake_p2)
+        shake_p1 = Parameter('twistRange', 1.0, 0.0, 5.0)
+        shake_p2 = Parameter('speed', 0.3, 1.5, 0.05)
+        shake.addParam(shake_p1)
+        shake.addParam(shake_p2)
+        shake.setExecutionArgNames(['gripper', 'objectName'])
 
         ## PRESS
         press = Action('press', [], [], [], [], PressSrv) # All default, add after 
         press.addArg(Variable('?g', 'gripper'))
         press.addArg(Variable('?o', 'obj'))
-        press_p1 = Parameter('hoverDistance' , None, 0.1, 0.03, 0.3)
-        press_p2 = Parameter('pressAmount' , None, 0.01, 0.03, 0.3)
-        press_p3 = Parameter('rate' , None, 100, 50, 1000)
-        push.addParam(press_p1)
-        push.addParam(press_p2)
-        push.addParam(press_p3)
+        press_p1 = Parameter('hoverDistance', 0.1, 0.03, 0.3)
+        press_p2 = Parameter('pressAmount', 0.01, 0.03, 0.3)
+        press_p3 = Parameter('rate', 100.0, 50.0, 1000.0)
+        press.addParam(press_p1)
+        press.addParam(press_p2)
+        press.addParam(press_p3)
+        press.setExecutionArgNames(['gripper', 'objectName'])
 
         ## DROP
         drop = Action('drop', [], [], [], [], DropSrv) # All default, add after 
         drop.addArg(Variable('?g', 'gripper'))
         drop.addArg(Variable('?o', 'obj'))
-        drop_p1 = Parameter('dropHeight' , None, 0.1, 0.01, 0.3)
-        push.addParam(drop_p1)
+        drop_p1 = Parameter('dropHeight', 0.1, 0.01, 0.3)
+        drop.addParam(drop_p1)
+        drop.setExecutionArgNames(['gripper', 'objectName'])
 
         _actions.append(push)
         _actions.append(grasp)
@@ -177,13 +179,11 @@ class KnowledgeBase(object):
         return copy.deepcopy(self.actions)
 
     def getActionsLocs(self):
-        # locBindings = []
+        locBindings = []
         # for action in self.actions:
         #     locBindings.append(LocationBinding(action.getName(), action.getExecutionParams()))
-        # return LocationBindingList(locBindings)
-        return None
+        return LocationBindingList(locBindings)
 
-# (self, actionName, _args, _preConds, _effects, _params, _srvFile)
     def createAction(self, name, origAction, args, preconds, effects, params, srvFile, mode):
         theOGaction = self.getAction(origAction)
         newActionName = name

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import copy 
+
 class Action(object):
     def __init__(self, actionName, _args, _preConds, _effects, _params, _srvFile, _pddlLocs = []):
         self.name = actionName 
@@ -10,8 +12,12 @@ class Action(object):
         self.params = _params
         self.srvFile = _srvFile
         self.pddlLocs = _pddlLocs
+        self.executionArgNames = []
 
     #### SETTERS
+    def setExecutionArgNames(self, argNames):
+        self.executionArgNames = argNames
+        
     def addArg(self, arg):
         self.args.append(arg) # check to make sure this actually sets it 
 
@@ -24,12 +30,18 @@ class Action(object):
     def addParam(self, param):
         self.params.append(param)
 
+    def setParamDefault(self, param, val):
+        self.paramDefaults[param] = val
+
     #### GETTERS
     def getName(self):
         return self.name 
 
     def getArgs(self):
         return copy.deepcopy(self.args)
+
+    def getPreconditions(self):
+        return copy.deepcopy(self.preconditions)
 
     def getEffects(self):
         return copy.deepcopy(self.effects)
@@ -42,7 +54,10 @@ class Action(object):
 
     def getParams(self):
         return self.params
-        
+
+    def getExecutionArgNames(self):
+        return self.executionArgNames
+
     def getNonLocationVars(self):
         args = []
         for v in self.args:
@@ -80,3 +95,29 @@ class Action(object):
             # s = s 
             s = s + '    :effect (and)\n)' 
         return s
+
+######################################################
+# PUSH
+# string objectName 
+# float64 startOffset
+# float64 endOffset
+# int64 rate
+
+# PRESS
+# string objectName 
+# float64 hoverDistance
+# float64 pressAmount
+# float64 rate
+
+# SHAKE
+# string objectName
+# float64 twistRange
+# float64 speed
+
+# DROP
+# string objectName
+# int64 dropHeight
+
+# GRASP
+# string objectName
+

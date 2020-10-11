@@ -121,7 +121,7 @@ def getPlanFromSolutionFile(filePath):
                 if args[p+1] is not None: 
                     params.append(args[p+1])
             
-            action['params'] = params
+            action['args'] = params
             plan.append(action)
     return plan
 

@@ -11,13 +11,13 @@
 (:predicates
     (at ?e - entity ?loc - cartesian)
     (touching ?e - entity ?e - entity)
-    (is_visible ?o - obj)
+    (is_visible ?e - entity)
     (grasped ?o - obj)
 )
 
 (:action push
-    :parameters (?g - gripper ?loc0 - cartesian ?e - entity ?loc1 - cartesian )
-    :precondition (at ?e ?loc0 )
+    :parameters (?g - gripper ?loc0 - cartesian ?o - obj ?loc1 - cartesian )
+    :precondition (at ?o ?loc0 )
     :effect (and
         (at ?o ?loc1 )
         (not (at ?o ?loc0 ) ))
@@ -25,7 +25,7 @@
 
 (:action grasp
     :parameters (?g - gripper ?o - obj )
-    :precondition (not (grasped ?o ) )
+    :precondition (and)
     :effect (grasped ?o )
 )
 
