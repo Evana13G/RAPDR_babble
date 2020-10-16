@@ -57,7 +57,7 @@ Each of the following should be run in a separate terminal window:
 
         rosrun action_primitive_variation APV.py
 
-6. [NOT CURRENTLY WORK, skip step] Spawn the PDDL nodes (each in a seperate terminal window):
+6. Spawn the PDDL nodes (each in a seperate terminal window):
 
     1. Service for generating pddl plans
 
