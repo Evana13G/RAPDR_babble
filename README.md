@@ -67,11 +67,15 @@ Each of the following should be run in a separate terminal window:
 
             rosrun pddl plan_executor.py
 
-7. Run the agent brain (creepy). All configs are set here.
+7. Spawn the knowledge base interface node:
+
+            rosrun pddl knowledge_base.py
+            
+8. Run the agent brain (creepy). All configs are set here.
 
         rosrun agent brain.py
         
-8. Call the brain service [dev]:
+9. Call the brain service [dev]:
 
         rosservice call /brain_srv [tab complete for args]
         
