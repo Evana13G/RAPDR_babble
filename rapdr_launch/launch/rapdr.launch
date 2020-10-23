@@ -3,9 +3,6 @@
 
     Last Edited: 10/22/2020
 
-    TODO: 1. Make sure Gazebo doesn't spawn twice (Need to double check to comfirm this issue)
-          2. Way to accept rosservice call and arg in command line
-
 -->
 
 <launch>
@@ -34,10 +31,5 @@
 
     <!--Start Agent Brain-->
     <node name="brain" pkg="agent" type="brain.py"/>
-
-
-    <!--Start Rosservice (NOT DONE)-->
-    <!-- <node pkg="rosservice" type="rosservice" name="enable_motors" args="call /brain_srv"/> -->
-
 
 </launch>
