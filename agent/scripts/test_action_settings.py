@@ -56,7 +56,15 @@ def test_action_settings(req):
         # ORIGINAL ACTION CALL
         # pushProxy(objectName, startOffset, endOffset, rate)
         #
-        #print("----Push Action")
+        # print("----Push Action")
+        
+        gripper = 'left_gripper'
+        objectName = 'cover'
+        movementMagnitude = 0.4
+        rate = 10.0
+        orientation = 'left'
+
+        pushProxy(gripper, objectName, movementMagnitude, rate, orientation)
         # envProxy('restart', 'default')     
         ####################################################################
 
