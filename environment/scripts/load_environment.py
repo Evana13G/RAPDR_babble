@@ -36,7 +36,6 @@ from tf.transformations import *
 from environment.srv import * 
 from agent.srv import MoveToStartSrv
 
-pub = True
 environment = 'default'
 
 pub_all = rospy.Publisher('models_loaded', Bool, queue_size=10)

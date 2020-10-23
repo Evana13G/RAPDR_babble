@@ -29,6 +29,7 @@ from agent.srv import *
 from environment.srv import ObjectLocationSrv
 from util.physical_agent import PhysicalAgent
 from util.action_request import ActionRequest
+from util.data_conversion import arg_list_to_hash
 
 pa = None
 obj_location_srv = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
@@ -58,7 +59,7 @@ def push(req):
     # start_offset = float(req.startOffset) #FLOAT
     # ending_offset = float(req.endOffset) #FLOAT
 
-    start_offset = 0.13
+    start_offset = 0.1
     ending_offset = 0.4
     rate = req.rate
 
@@ -175,14 +176,14 @@ def close_gripper(req):
 def approach(req):
     return ApproachSrvResponse(pa.approach(req.pose))
 
-def arg_list_to_hash(argNames, argValues):
-    args = {}
-    for i in range(len(argValues)):
-        name = argNames[i]
-        val = argValues[i]
-        if not(val == 0.0 or val == None or val == 0):
-            args[name] = val
-    return args
+# def arg_list_to_hash(argNames, argValues):
+#     args = {}
+#     for i in range(len(argValues)):
+#         name = argNames[i]
+#         val = argValues[i]
+#         if not(val == 0.0 or val == None or val == 0):
+#             args[name] = val
+#     return args
 
 ################################################################################
 

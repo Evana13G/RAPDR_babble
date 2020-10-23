@@ -24,11 +24,17 @@ from std_msgs.msg import (
     Empty,
 )
 
+from util.data_conversion import *
+from environment.srv import * 
 from pddl.srv import *
 from pddl.msg import *
+from agent.srv import *
 from util.knowledge_base.knowledge_base import KnowledgeBase
 
 KB = KnowledgeBase()
+getObjLoc = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
+executionInfo = rospy.ServiceProxy('get_offset', GetHardcodedOffsetSrv)
+orientationSolver = rospy.ServiceProxy('calc_gripper_orientation_pose', CalcGripperOrientationPoseSrv)
 
 def handle_domain_req(req):
     domainDict = KB.getDomainData()
@@ -47,9 +53,8 @@ def handle_action_locs_req(req):
     return KB.getActionsLocs()
 
 def get_action_info(req):
-    action = KB.getAction(req.actionName)
-
     name = req.actionName
+    action = KB.getAction(name)
     argNames = action.getExecutionArgNames()
     paramNames = [x.getName() for x in action.getParams()]
     paramDefaults = [x.getDefaultVal() for x in action.getParams()]
@@ -63,12 +68,19 @@ def get_action_info(req):
                       paramMins, 
                       paramMaxs)
 
-# def get_instatiated_pddl(req):
-#     action = KB.getAction(req.actionName)
+def handle_get_pddl_instatiations(req):    
+    name = req.actionName
+    action = KB.getAction(name)
+    args = req.orderedArgs 
 
-#     preConds = [str(x) for x in action.getPreconditions()]
-#     effects = [str(x) for x in action.getEffects()]
+    # info = executionInfo('cover', 'left')
+    # info2 = orientationSolver('left_gripper', 'cover', 'left')
 
+    locs = [poseStampedToString(getObjLoc(x).location) for x in args]
+    preConds = action.get_instatiated_preconditions(args, locs)
+    effects = action.get_instatiated_preconditions(args, locs)
+
+    return ActionPDDLBinding(name, preConds, effects)
 
 ################################################################################
 
@@ -79,6 +91,7 @@ def main():
     s2 = rospy.Service("get_KB_action_info_srv", GetKBActionInfoSrv, get_action_info)
     s3 = rospy.Service("get_KB_action_locs", GetKBActionLocsSrv, handle_action_locs_req)
     s4 = rospy.Service("get_KB_pddl_locs", GetKBPddlLocsSrv, handle_pddlLocs_req)
+    s5 = rospy.Service("get_pddl_instatiations_srv", GetActionPDDLBindingSrv, handle_get_pddl_instatiations)
 
     rospy.spin()
 

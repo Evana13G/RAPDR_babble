@@ -17,16 +17,16 @@
 
 (:action push
     :parameters (?g - gripper ?loc0 - cartesian ?o - obj ?loc1 - cartesian )
-    :precondition (at ?o ?loc0 )
+    :precondition (at ?o ?loc0)
     :effect (and
-        (at ?o ?loc1 )
-        (not (at ?o ?loc0 ) ))
+        (at ?o ?loc1)
+        (not (at ?o ?loc0)))
 )
 
 (:action grasp
     :parameters (?g - gripper ?o - obj )
     :precondition (and)
-    :effect (grasped ?o )
+    :effect (grasped ?o)
 )
 
 (:action shake

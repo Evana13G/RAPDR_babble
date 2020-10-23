@@ -94,6 +94,7 @@ def pddlObjectsStringFormat_fromDict(dictObj):
             strData.append(s)
     return strData
 
+
 def pddlObjects(predicates_list, mod=True):
     cartesian = []
     grippers = []
@@ -230,6 +231,21 @@ def poseStampedToString(val):
             str(y) + ',' + 
             str(z))
 
+def poseToString(val):
+    x = round(val.position.x, 1)
+    y = round(val.position.y, 1)
+    z = round(val.position.z, 1)
+    if x == -0.0:
+        x = 0.0
+    if y == -0.0:
+        y = 0.0
+    if z == -0.0:
+        z = 0.0
+
+    return (str(x) + ',' + 
+            str(y) + ',' + 
+            str(z))
+
 def getElementDiffs(predList1, predList2, OGargs=[]):
     nonRepeatingDiffs =[]
     diffs = getPredicateDiffs(predList1, predList2)
@@ -309,4 +325,13 @@ def pddlActionKBFormat(_vars, args, preCondsPredList, effectsPredList, mode=[]):
     effects = pddlCondsKBFormat(templatedVars, args, newEffects, mode)
 
     return templatedVars, preconds, effects, locArgs
+
+def arg_list_to_hash(argNames, argValues):
+    args = {}
+    for i in range(len(argValues)):
+        name = argNames[i]
+        val = argValues[i]
+        if not(val == 0.0 or val == None or val == 0):
+            args[name] = val
+    return args
 

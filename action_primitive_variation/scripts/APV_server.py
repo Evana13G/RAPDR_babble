@@ -14,10 +14,6 @@ import rosbag
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-from gazebo_msgs.srv import (
-    SpawnModel,
-    DeleteModel,
-)
 from geometry_msgs.msg import (
     PoseStamped,
     Pose,

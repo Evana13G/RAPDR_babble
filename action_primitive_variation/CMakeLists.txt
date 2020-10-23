@@ -14,11 +14,10 @@ RecordLimbDataSrv.srv
 AddActionBreakptSrv.srv
 )
 
-## Generate added messages and services
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
 
-## Declare a catkin package
-catkin_package()
+catkin_package(
+  CATKIN_DEPENDS message_runtime
+)
 
-## Build talker and listener
 include_directories(include ${catkin_INCLUDE_DIRS})

@@ -21,11 +21,6 @@ from agent.srv import *
 from pddl.msg import *
 from pddl.srv import *
 
-actionToVary = None 
-gripper = None
-obj = None
-button = None
-
 actionExecutorProxy = rospy.ServiceProxy('action_executor_srv', ActionExecutorSrv)
 actionInfoProxy = rospy.ServiceProxy('get_KB_action_info_srv', GetKBActionInfoSrv)
 
