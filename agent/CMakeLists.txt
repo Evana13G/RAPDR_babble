@@ -31,6 +31,7 @@ JointVelocitySrv.srv
 ActionExecutorSrv.srv
 CalcGripperOrientationPoseSrv.srv
 GetHardcodedOffsetSrv.srv
+EmptyTestSrv.srv
 )
 
 catkin_python_setup()

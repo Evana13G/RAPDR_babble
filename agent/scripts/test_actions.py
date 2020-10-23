@@ -36,7 +36,7 @@ shakeProxy = rospy.ServiceProxy('shake_srv', ShakeSrv)
 pressProxy = rospy.ServiceProxy('press_srv', PressSrv)
 
 
-def handle_trial(req):
+def test_all_actions(req):
     print("---------------------------------------------------------------------------------------")
     print("---------------------------------   TESTING ACTIONS   ---------------------------------")
 
@@ -117,16 +117,16 @@ def handle_trial(req):
         # envProxy('restart', 'default')            ## DEFAULT  
         ####################################################################
 
-        return BrainSrvResponse([1], 1) 
+        return TestActionSrvResponse(True)  
     
     except rospy.ServiceException, e:
         print("Service call failed: %s"%e)
-        return BrainSrvResponse([1], 1) # temp
+        return TestActionSrvResponse(False) 
 
 def main():
-    rospy.init_node("test_brain")
+    rospy.init_node("test_actions")
 
-    s = rospy.Service("test_actions_srv", BrainSrv, handle_trial)
+    s = rospy.Service("test_actions_srv", EmptyTestSrv, test_all_actions)
     rospy.spin()
 
     return 0 
