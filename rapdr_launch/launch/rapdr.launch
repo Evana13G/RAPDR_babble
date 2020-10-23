@@ -1,0 +1,45 @@
+<!--
+    Launching the files necessary to run the Action Primitive Discovery Simulation
+
+    Last Edited: 10/22/2020
+    
+    TODO: Way to accept rosservice call and arg in command line
+
+-->
+
+<launch>
+
+    <!-- Launches Baxter Gazebo Simulation -->
+    <include file="$(find baxter_gazebo)/launch/baxter_world.launch"> </include>
+
+    <!--Start Data Conversion Module-->
+    <node name="scenario_data" pkg="environment" type="scenario_data.py"/>
+
+    <!--Start Agent Proxy-->
+    <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py"/>
+
+    <!--Start Publishing Environment Elements-->
+    <node name="publish_environment" pkg="environment" type="publish_environment.py"/>
+
+    <!--Start Loading Environment Elements-->
+    <node name="load_environment" pkg="environment" type="load_environment.py"/>
+
+    <!--Start Action Primitive Variation Tool-->
+    <node name="APV" pkg="action_primitive_variation" type="APV_server.py"/>
+
+    <!--Start PDDL Nodes-->
+    <node name="plan_generator" pkg="pddl" type="plan_generator.py"/>
+    <node name="plan_executor" pkg="pddl" type="plan_executor.py"/>
+
+    <!--Start Knowledge Base Interface Node-->
+    <node name="knowledge_base" pkg="pddl" type="knowledge_base.py"/>
+
+    <!--Start Agent Brain-->
+    <node name="brain" pkg="agent" type="brain.py"/>
+
+
+    <!--Start Rosservice (NOT DONE)-->
+    <!-- <node pkg="rosservice" type="rosservice" name="enable_motors" args="call /brain_srv"/> -->
+
+
+</launch>
