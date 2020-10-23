@@ -2,15 +2,13 @@
     Launching the files necessary to run the Action Primitive Discovery Simulation
 
     Last Edited: 10/22/2020
-    
-    TODO: Way to accept rosservice call and arg in command line
+
+    TODO: 1. Make sure Gazebo doesn't spawn twice (Need to double check to comfirm this issue)
+          2. Way to accept rosservice call and arg in command line
 
 -->
 
 <launch>
-
-    <!-- Launches Baxter Gazebo Simulation -->
-    <include file="$(find baxter_gazebo)/launch/baxter_world.launch"> </include>
 
     <!--Start Data Conversion Module-->
     <node name="scenario_data" pkg="environment" type="scenario_data.py"/>
