@@ -55,7 +55,7 @@ Each of the following should be run in a separate terminal window:
 
 5. Spawn action primitive variation tool:
 
-        rosrun action_primitive_variation APV.py
+        rosrun action_primitive_variation APV_server.py
 
 6. Spawn the PDDL nodes (each in a seperate terminal window):
 
