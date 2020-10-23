@@ -1,4 +1,0 @@
-string actionName
-string[] argNames
----
-int64 success_bool

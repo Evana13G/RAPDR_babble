@@ -24,7 +24,6 @@ from baxter_core_msgs.msg import (
     EndpointState,
 )
 
-
 APVproxy = rospy.ServiceProxy('APV_srv', APVSrv)
 planGenerator = rospy.ServiceProxy('plan_generator_srv', PlanGeneratorSrv)
 planExecutor = rospy.ServiceProxy('plan_executor_srv', PlanExecutorSrv)
@@ -53,7 +52,7 @@ def handle_trial(req):
 
         task = req.runName
         currentState = scenarioData()
-        print(currentState)
+
         # goal = ['(grasped cover)']
         goal = ['(touching left_gripper cover)']
 

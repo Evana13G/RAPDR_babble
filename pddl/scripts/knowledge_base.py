@@ -33,7 +33,8 @@ from util.knowledge_base.knowledge_base import KnowledgeBase
 
 KB = KnowledgeBase()
 getObjLoc = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
-executionInfo = rospy.ServiceProxy('get_execution_info', GetExecutionInfoSrv)
+executionInfo = rospy.ServiceProxy('get_offset', GetHardcodedOffsetSrv)
+orientationSolver = rospy.ServiceProxy('calc_gripper_orientation_pose', CalcGripperOrientationPoseSrv)
 
 def handle_domain_req(req):
     domainDict = KB.getDomainData()
@@ -72,7 +73,8 @@ def handle_get_pddl_instatiations(req):
     action = KB.getAction(name)
     args = req.orderedArgs 
 
-    info = executionInfo(name, args)
+    # info = executionInfo('cover', 'left')
+    # info2 = orientationSolver('left_gripper', 'cover', 'left')
 
     locs = [poseStampedToString(getObjLoc(x).location) for x in args]
     preConds = action.get_instatiated_preconditions(args, locs)

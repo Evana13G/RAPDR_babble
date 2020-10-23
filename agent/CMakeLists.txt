@@ -10,9 +10,10 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
-#add_message_files(
-#  FILES
-#)
+add_message_files(
+FILES
+HardcodedOffset.msg
+)
 
 add_service_files(
 FILES 
@@ -28,15 +29,19 @@ PressSrv.srv
 DropSrv.srv
 JointVelocitySrv.srv
 ActionExecutorSrv.srv
-GetExecutionInfoSrv.srv
+CalcGripperOrientationPoseSrv.srv
+GetHardcodedOffsetSrv.srv
 )
+
+catkin_python_setup()
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
 
-catkin_package()
+catkin_package(
+  CATKIN_DEPENDS message_runtime
+)
 
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
 )
-

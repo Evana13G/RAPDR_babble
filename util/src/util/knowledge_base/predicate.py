@@ -31,6 +31,6 @@ class StaticPredicate(object):
 
     def __str__(self):
         args = ''
-        for var in self.vars:
+        for v in self.vars:
             args = args + ' ' + str(v)
         return "(" + self.operator + args + ")"

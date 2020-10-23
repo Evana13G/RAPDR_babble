@@ -1,0 +1,5 @@
+string gripperName
+string objectName
+string orientation
+---
+geometry_msgs/PoseStamped configuration

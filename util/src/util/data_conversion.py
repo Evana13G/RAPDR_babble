@@ -326,3 +326,12 @@ def pddlActionKBFormat(_vars, args, preCondsPredList, effectsPredList, mode=[]):
 
     return templatedVars, preconds, effects, locArgs
 
+def arg_list_to_hash(argNames, argValues):
+    args = {}
+    for i in range(len(argValues)):
+        name = argNames[i]
+        val = argValues[i]
+        if not(val == 0.0 or val == None or val == 0):
+            args[name] = val
+    return args
+
