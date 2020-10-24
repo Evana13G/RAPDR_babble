@@ -64,8 +64,8 @@ def test_action_settings(req):
         movementMagnitude = '0.4'
         rate = '10.0'
         orientation = 'left'
-        # controller = [movementMagnitude, rate, orientation]
-        controller = [rate]
+        controller = [movementMagnitude, rate, orientation]
+        # controller = [rate]
 
         rawActionExecutionProxy(actionName, args, controller)
         # envProxy('restart', 'default')     

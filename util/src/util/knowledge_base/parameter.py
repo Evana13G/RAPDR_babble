@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 class Parameter():
-    def __init__(self, _name, _default, _min, _max):
+    def __init__(self, _name, _default, _min, _max, _possibleVals=None):
         self.name = _name
-        self.default_val = _default
-        self.min = _min
-        self.max = _max
+        self.default_val = str(_default)
+        self.min = str(_min)
+        self.max = str(_max)
+        self.possible_vals = _possibleVals
 
     # SETTERS 
     def setVal(self, _val):
@@ -24,7 +25,8 @@ class Parameter():
     def getMax(self):
         return self.max
 
-
+    def getPossibleVals(self):
+        return self.possible_vals
 
     # def __str__(self):
     #     return self.variable + ' - ' + self.type
