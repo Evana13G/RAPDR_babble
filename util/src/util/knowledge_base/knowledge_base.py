@@ -78,7 +78,7 @@ class KnowledgeBase(object):
         shake.addArg(Variable('?g', 'gripper'))
         shake.addArg(Variable('?o', 'obj'))
         shake_p1 = Parameter('twistRange', 1.0, 0.0, 5.0)
-        shake_p2 = Parameter('speed', 0.3, 1.5, 0.05)
+        shake_p2 = Parameter('rate', 0.3, 1.5, 0.05)
         shake.addParam(shake_p1)
         shake.addParam(shake_p2)
         shake.setExecutionArgNames(['gripper', 'objectName'])

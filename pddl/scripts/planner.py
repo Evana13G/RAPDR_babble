@@ -17,16 +17,15 @@ from std_msgs.msg import (
     Empty,
 )
 
-from tf.transformations import *
 
 from util.file_io import * 
-from action_primitive_variation.srv import *
 from agent.srv import * 
 from pddl.msg import *
 from pddl.srv import *
 
 KBDomainProxy = rospy.ServiceProxy('get_KB_domain_srv', GetKBDomainSrv)
 KBActionLocsProxy = rospy.ServiceProxy('get_KB_action_locs', GetKBActionLocsSrv)
+pddlActionExecutorProxy = rospy.ServiceProxy('pddl_action_executor_srv', PddlExecutorSrv)
 
 def generate_plan(req):
 
@@ -75,13 +74,25 @@ def generate_plan(req):
     return PlanGeneratorSrvResponse(ActionExecutionInfoList(actionList))
 
 
-############### START: ROSbag handling
+def execute_plan(req):
+    try:
+        for action in req.actions.actions:
+            actionName = action.actionName
+            args = action.argVals  
+            pddlActionExecutorProxy(actionName, args)
+        return PlanExecutorSrvResponse(1)        
+    except rospy.ServiceException, e:
+        print("Service call failed: %s"%e)
+        return PlanExecutorSrvResponse(0)
 
+
+###########################################################################
 def main():
-    rospy.init_node("plan_generator_node")
+    rospy.init_node("pddl_planner_node")
     rospy.wait_for_message("/robot/sim/started", Empty)
 
-    s = rospy.Service("plan_generator_srv", PlanGeneratorSrv, generate_plan)
+    rospy.Service("plan_generator_srv", PlanGeneratorSrv, generate_plan)
+    rospy.Service("plan_executor_srv", PlanExecutorSrv, execute_plan)
 
 
     rospy.spin()

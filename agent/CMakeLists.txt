@@ -32,6 +32,8 @@ ActionExecutorSrv.srv
 CalcGripperOrientationPoseSrv.srv
 GetHardcodedOffsetSrv.srv
 EmptyTestSrv.srv
+PddlExecutorSrv.srv
+RawActionExecutorSrv.srv
 )
 
 catkin_python_setup()

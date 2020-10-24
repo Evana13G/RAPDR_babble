@@ -97,7 +97,7 @@ def handle_trial(req):
             # For testing: 
             # executionSuccess = planExecutor(plan.plan).success_bool
             executionSuccess = 0 # Just to gaurantee we go into APV mode for testing 
-
+            # return
             #####################################################################################
             currentState = scenarioData()
 

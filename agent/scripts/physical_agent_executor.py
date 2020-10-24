@@ -26,6 +26,8 @@ from std_msgs.msg import (
 
 
 from agent.srv import *
+from pddl.srv import *
+from pddl.msg import *
 from environment.srv import ObjectLocationSrv
 from util.physical_agent import PhysicalAgent
 from util.action_request import ActionRequest
@@ -33,6 +35,7 @@ from util.data_conversion import arg_list_to_hash
 
 pa = None
 obj_location_srv = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
+actionInfoProxy = rospy.ServiceProxy('get_KB_action_info_srv', GetKBActionInfoSrv)
 
 def getObjectPose(object_name, pose_only=False):
     loc_pStamped = obj_location_srv(object_name)
@@ -50,9 +53,10 @@ def getCorrectAction(action_name):
     return actions[action]
 
 ################################################################################
+################################################################################
+
 #### PUSH ######################################################################
 def push(req):
-    # Pull args
     objPose = getObjectPose(req.objectName)
     
     # These need to be in a dict, and depend on the object 
@@ -75,34 +79,27 @@ def push(req):
     argVals = [startPose, endPose, rate]
     args = arg_list_to_hash(argNames, argVals)
 
-    return PushSrvResponse(pa.push(**args))
+    return ActionExecutorSrvResponse(pa.push(**args))
 
-################################################################################
 #### SHAKE #####################################################################
 def shake(req):
-    # Pull args
     objPose = getObjectPose(req.objectName)
     twist_range = req.twistRange
-    rate = req.speed
+    rate = req.rate
 
-    # Put args into hash object
     argNames = ['objPose', 'twist_range', 'rate']
     argVals = [objPose, twist_range, rate]
     args = arg_list_to_hash(argNames, argVals)
 
-    return ShakeSrvResponse(pa.shake(**args))
+    return ActionExecutorSrvResponse(pa.shake(**args))
 
-################################################################################
 #### GRASP #####################################################################
 def grasp(req):
-    # Pull args
     objPose = getObjectPose(req.objectName)
-    return GraspSrvResponse(pa.grasp(objPose))
+    return ActionExecutorSrvResponse(pa.grasp(objPose))
 
-################################################################################
 #### PRESS #####################################################################
 def press(req):
-    # Pull args
     objPose = getObjectPose(req.objectName)
     hover_distance = req.hoverDistance
     press_amount = req.pressAmount
@@ -120,9 +117,8 @@ def press(req):
     argVals = [startPose, endPose, rate]
     args = arg_list_to_hash(argNames, argVals)
 
-    return PressSrvResponse(pa.press(**args))
+    return ActionExecutorSrvResponse(pa.press(**args))
 
-################################################################################
 #### DROP ######################################################################
 def drop(req):
     # Pull args
@@ -140,11 +136,14 @@ def drop(req):
     argVals = [objPose, dropPose]
     args = arg_list_to_hash(argNames, argVals)
 
-    return DropSrvResponse(pa.drop(**args))
+    return ActionExecutorSrvResponse(pa.drop(**args))
 
 ################################################################################
+################################################################################
+
+## To call for any general action to be executed
+# Performs checks and send to the appropriate srv
 def action_executor(req):
-    ## To call for any general action to be executed
 
     actionName = req.actionName
     argNames = req.argNames
@@ -152,15 +151,44 @@ def action_executor(req):
     paramNames = req.paramNames
     paramSettings = req.params # list of floats, should be compatible with action
 
-    assert(len(argNames) == len(args))
-    assert(len(paramNames) == len(paramSettings))
+    assert(len(req.argNames) == len(req.args))
+    assert(len(req.paramNames) == len(req.params))
 
-    ## Just do push for now setExecutionArgNames
     a = getCorrectAction(actionName)
-    request = ActionRequest(actionName, argNames, args, paramNames, paramSettings)
+    zipped_request = ActionRequest(actionName, argNames, args, paramNames, paramSettings)
+    return a(zipped_request)
 
-    a(request)
-    return ActionExecutorSrvResponse(1)
+def raw_action_executor(req):
+    actionName = req.actionName
+    args = req.argVals
+    params = req.params 
+
+    # sets params
+    actionInfo = actionInfoProxy(actionName).actionInfo
+    argNames = actionInfo.executableArgNames
+    paramNames = actionInfo.paramNames
+
+    assert(len(argNames) == len(args))
+    assert(len(paramNames) == len(params))
+
+    action_executor(Action(actionName, argNames, paramNames, args, params))
+
+
+# This just takes in one action, pulls param values, and sends to the 
+# Appropriate srv, which takes care of the hardcodings call. 
+def pddl_action_executor(req):
+    actionName = req.actionName
+    args = req.argVals
+
+    # sets params
+    actionInfo = actionInfoProxy(actionName).actionInfo
+    argNames = actionInfo.executableArgNames
+    paramNames = actionInfo.paramNames
+    paramDefaults = actionInfo.paramDefaults
+
+    assert(len(argNames) == len(args))
+
+    action_executor(Action(actionName, argNames, paramNames, args, paramDefaults))
 
 ################################################################################
 ## UTIL 
@@ -176,15 +204,6 @@ def close_gripper(req):
 def approach(req):
     return ApproachSrvResponse(pa.approach(req.pose))
 
-# def arg_list_to_hash(argNames, argValues):
-#     args = {}
-#     for i in range(len(argValues)):
-#         name = argNames[i]
-#         val = argValues[i]
-#         if not(val == 0.0 or val == None or val == 0):
-#             args[name] = val
-#     return args
-
 ################################################################################
 
 def main():
@@ -194,19 +213,21 @@ def main():
     global pa
     pa = PhysicalAgent()
 
-    s_1 = rospy.Service("move_to_start_srv", MoveToStartSrv, move_to_start)
-    s_2 = rospy.Service("open_gripper_srv", OpenGripperSrv, open_gripper)
-    s_2 = rospy.Service("close_gripper_srv", CloseGripperSrv, close_gripper)
-    s_3 = rospy.Service("approach_srv", ApproachSrv, approach)
+    rospy.Service("move_to_start_srv", MoveToStartSrv, move_to_start)
+    rospy.Service("open_gripper_srv", OpenGripperSrv, open_gripper)
+    rospy.Service("close_gripper_srv", CloseGripperSrv, close_gripper)
+    rospy.Service("approach_srv", ApproachSrv, approach)
 
     # Action Primitives
-    s_4 = rospy.Service("push_srv", PushSrv, push)
-    s_5 = rospy.Service("grasp_srv", GraspSrv, grasp)
-    s_6 = rospy.Service("shake_srv", ShakeSrv, shake)
-    s_7 = rospy.Service("press_srv", PressSrv, press)
-    s_8 = rospy.Service("drop_srv", DropSrv, drop)
-    s_9 = rospy.Service("action_executor_srv", ActionExecutorSrv, action_executor)
-    s_10 = rospy.Service("pddl_action_executor_srv", ActionExecutorSrv, action_executor)
+    # rospy.Service("push_srv", PushSrv, push)
+    # rospy.Service("grasp_srv", GraspSrv, grasp)
+    # rospy.Service("shake_srv", ShakeSrv, shake)
+    # rospy.Service("press_srv", PressSrv, press)
+    # rospy.Service("drop_srv", DropSrv, drop)
+
+    rospy.Service("action_executor_srv", ActionExecutorSrv, action_executor)
+    rospy.Service("pddl_action_executor_srv", PddlExecutorSrv, pddl_action_executor)
+    rospy.Service("raw_action_executor_srv", RawActionExecutorSrv, raw_action_executor)
 
     rospy.spin()
 

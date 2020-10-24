@@ -31,9 +31,8 @@ moveToStartProxy = rospy.ServiceProxy('move_to_start_srv', MoveToStartSrv)
 instatiatedPDDLBindings = rospy.ServiceProxy('get_pddl_instatiations_srv', GetActionPDDLBindingSrv)
 
 
-pushProxy = rospy.ServiceProxy('push_srv', PushSrv)
-shakeProxy = rospy.ServiceProxy('shake_srv', ShakeSrv)
-pressProxy = rospy.ServiceProxy('press_srv', PressSrv)
+pddlActionExecutionProxy = rospy.ServiceProxy('pddl_action_executor_srv', PddlExecutorSrv)
+rawActionExecutionProxy = rospy.ServiceProxy('raw_action_executor_srv', RawActionExecutorSrv)
 
 
 def test_action_settings(req):
@@ -58,13 +57,17 @@ def test_action_settings(req):
         #
         # print("----Push Action")
         
+        actionName = 'push'
         gripper = 'left_gripper'
         objectName = 'cover'
-        movementMagnitude = 0.4
-        rate = 10.0
+        args = [gripper, objectName]
+        movementMagnitude = '0.4'
+        rate = '10.0'
         orientation = 'left'
+        # controller = [movementMagnitude, rate, orientation]
+        controller = [rate]
 
-        pushProxy(gripper, objectName, movementMagnitude, rate, orientation)
+        rawActionExecutionProxy(actionName, args, controller)
         # envProxy('restart', 'default')     
         ####################################################################
 
@@ -100,20 +103,17 @@ def test_action_settings(req):
         # envProxy('restart', 'default') 
         ####################################################################
 
-        return TestActionSrvResponse(True) 
+        return True 
     
     except rospy.ServiceException, e:
         print("Service call failed: %s"%e)
-        return TestActionSrvResponse(False) 
+        return False 
 
 def main():
     rospy.init_node("test_action_settings")
-
-    s = rospy.Service("test_action_settings_srv", EmptyTestSrv, test_action_settings)
+    rospy.Service("test_action_settings_srv", EmptyTestSrv, test_action_settings)
     rospy.spin()
-
     return 0 
-
 
 if __name__ == "__main__":
     main()
