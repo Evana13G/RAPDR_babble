@@ -180,14 +180,12 @@ def pddl_action_executor(req):
     actionName = req.actionName
     args = req.argVals
 
-    # sets params
     actionInfo = actionInfoProxy(actionName).actionInfo
     argNames = actionInfo.executableArgNames
     paramNames = actionInfo.paramNames
     paramDefaults = actionInfo.paramDefaults
 
     assert(len(argNames) == len(args))
-
     action_executor(Action(actionName, argNames, paramNames, args, paramDefaults))
 
 ################################################################################
@@ -214,18 +212,6 @@ def main():
     pa = PhysicalAgent()
 
     rospy.Service("move_to_start_srv", MoveToStartSrv, move_to_start)
-    rospy.Service("open_gripper_srv", OpenGripperSrv, open_gripper)
-    rospy.Service("close_gripper_srv", CloseGripperSrv, close_gripper)
-    rospy.Service("approach_srv", ApproachSrv, approach)
-
-    # Action Primitives
-    # rospy.Service("push_srv", PushSrv, push)
-    # rospy.Service("grasp_srv", GraspSrv, grasp)
-    # rospy.Service("shake_srv", ShakeSrv, shake)
-    # rospy.Service("press_srv", PressSrv, press)
-    # rospy.Service("drop_srv", DropSrv, drop)
-
-    rospy.Service("action_executor_srv", ActionExecutorSrv, action_executor)
     rospy.Service("pddl_action_executor_srv", PddlExecutorSrv, pddl_action_executor)
     rospy.Service("raw_action_executor_srv", RawActionExecutorSrv, raw_action_executor)
 

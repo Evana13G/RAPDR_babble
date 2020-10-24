@@ -49,7 +49,7 @@ from environment.msg import *
 from environment.srv import *
 
 objLocProxy = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
-actionExecutorProxy = rospy.ServiceProxy('action_executor_srv', ActionExecutorSrv)
+actionExecutorProxy = rospy.ServiceProxy('raw_action_executor_srv', RawActionExecutorSrv)
 visSrvProxy = rospy.ServiceProxy('record_limb_data_srv', RecordLimbDataSrv) 
 addBreakptSrvProxy = rospy.ServiceProxy('add_action_breakpt_srv', AddActionBreakptSrv) 
 actionInfoProxy = rospy.ServiceProxy('get_KB_action_info_srv', GetKBActionInfoSrv)
@@ -102,15 +102,16 @@ def handle_APV(req):
     for paramAssignment in paramVals:
         paramSettings = copy.deepcopy(paramDefaults)
         paramSettings[i_paramToVary] = paramAssignment
+        paramSettings = [str(x) for x in paramSettings]
         print('Action: ' + str(actionToVary) + ', Param: ' + str(paramToVary) + ', ' + str(paramAssignment))
-        actionExecutorProxy(actionToVary, argNames, args, paramNames, paramSettings)
+        actionExecutorProxy(actionToVary, args, paramSettings)
         envResetProxy('restart', 'heavy')
     return APVSrvResponse([])
 
 
 def main():
     rospy.init_node("APV_node")
-    rospy.wait_for_service('/action_executor_srv')
+    rospy.wait_for_service('/raw_action_executor_srv')
     s = rospy.Service("APV_srv", APVSrv, handle_APV)
     rospy.spin()
     return 0

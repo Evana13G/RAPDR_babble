@@ -9,8 +9,10 @@ class ActionRequest:
         for i in range(0, len(args)):
             setattr(self, args[i], argVals[i])
         for i in range(0, len(params)):
-            setattr(self, params[i], paramVals[i])
-
+            if params[i] == 'orientation':
+                setattr(self, params[i], paramVals[i])
+            else:
+                setattr(self, params[i], float(paramVals[i]))
     def defaults_setter(self):
         return
 
