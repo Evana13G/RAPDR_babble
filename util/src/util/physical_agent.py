@@ -84,19 +84,23 @@ class PhysicalAgent(object):
     #     self._retract("left")
     #     return 1
 
-    def push(self, startPose, endPose, rate=10):
-        self._gripper_close("left")
-        self._hover_approach("left", startPose)
-        self._approach("left", startPose)
+    def push(self, gripper, startPose, endPose, rate=10):
+        gripper_name = gripper.replace('_gripper', '')
+        limb = self.translateLimb(gripper_name)
+        self._gripper_close(gripper_name)
+        self._hover_approach(gripper_name, startPose)
+        self._approach(gripper_name, startPose)
 
         ########### Add code here 
-        gripperName = "left"
-        joint_angles_start = self.ik_request(gripperName, startPose)
-        joint_angles_end = self.ik_request(gripperName, endPose)
+        joint_angles_start = self.ik_request(gripper_name, startPose)
+        joint_angles_end = self.ik_request(gripper_name, endPose)
 
         joint_movement_amounts = {}
         T = 1.0/float(rate)
-        joints = ['left_w0','left_w1','left_w2','left_e0','left_e1','left_s0','left_s1']
+        if gripper_name == 'left':
+            joints = ['left_w0','left_w1','left_w2','left_e0','left_e1','left_s0','left_s1']
+        else:
+            joints = ['right_w0','right_w1','right_w2','right_e0','right_e1','right_s0','right_s1']
 
         for joint in joints: 
             diff = joint_angles_end[joint] - joint_angles_start[joint]
@@ -105,35 +109,37 @@ class PhysicalAgent(object):
         _rate = 10000.0
         missed_cmds = 20.0
         control_rate = rospy.Rate(_rate)
-        self._left_limb.set_command_timeout((1.0 / _rate) * missed_cmds)
+        limb.set_command_timeout((1.0 / _rate) * missed_cmds)
 
         i = 0
         while i<1000:
-            self._left_limb.set_joint_velocities(joint_movement_amounts) 
+            limb.set_joint_velocities(joint_movement_amounts) 
             control_rate.sleep()
             i = i + 1
         
         rospy.sleep(3)
-        # self._retract("left")
+        self._retract(gripper_name)
         return 1
 
-    def grasp(self, objPose):
-        self._gripper_open("left")
-        self._hover_approach("left", objPose)
-        self._approach("left", objPose)
-        self._gripper_close("left")
+    def grasp(self, gripper, objPose, orientation='left'):
+        gripper_name = gripper.replace(gripper_name, '')
+        self._gripper_open(gripper_name)
+        self._hover_approach(gripper_name, objPose)
+        self._approach(gripper_name, objPose)
+        self._gripper_close(gripper_name)
         return 1
 
-    def shake(self, objPose, twist_range=1, rate=0.3):
+    def shake(self, gripper, objPose, twist_range=1, rate=0.3):
         # For now, assume left gripper is moving (change to an argument)
         # Number of times to shake can be adjusted by the for loop 
 
         # twist_range tells you how much to move in each direction (delta)
         # speed has to do with the duration of the sleep between the two positions (frequency)
 
+        gripper_name = gripper.replace('_gripper', '')
+        limb = self.translateLimb(gripper_name)
         time_steps = 20
-        lj = self._left_limb.joint_names()
-        gripper_name = "left"
+        lj = limb.joint_names()
         joint_name= lj[6] # gripper twist, left_w2
 
         # GRIP OBJECT 
@@ -143,40 +149,42 @@ class PhysicalAgent(object):
         self._gripper_close(gripper_name)
         self._hover_approach(gripper_name, objPose)
 
-        begin_position = self._left_limb.joint_angle(joint_name) # pose robot will move to at the end
+        begin_position = limb.joint_angle(joint_name) # pose robot will move to at the end
 
         # Gripper moves in between two positions
         for i in range(time_steps):
-            current_position = self._left_limb.joint_angle(joint_name)
+            current_position = limb.joint_angle(joint_name)
             joint_command = {joint_name: current_position + twist_range}
-            self._left_limb.set_joint_positions(joint_command)
+            limb.set_joint_positions(joint_command)
             time.sleep(rate)
-            current_position = self._left_limb.joint_angle(joint_name)
+            current_position = limb.joint_angle(joint_name)
             joint_command = {joint_name: current_position - twist_range}
-            self._left_limb.set_joint_positions(joint_command)
+            limb.set_joint_positions(joint_command)
             time.sleep(rate)
             
         joint_command = {joint_name: begin_position}
-        self._left_limb.set_joint_positions(joint_command)
+        limb.set_joint_positions(joint_command)
         self._approach(gripper_name, objPose)
         self._gripper_open(gripper_name)
         self._hover_approach(gripper_name, objPose)
         return 1
 
-    def press(self, startPose, endPose, rate=100): 
-        self._gripper_close("left")
-        self._approach("left", startPose)
-        self._approach("left", endPose, rate=rate)
-        self._retract("left")
+    def press(self, gripper, startPose, endPose, rate=100): 
+        gripper_name = gripper.replace('_gripper', '')
+        self._gripper_close(gripper_name)
+        self._approach(gripper_name, startPose)
+        self._approach(gripper_name, endPose, rate=rate)
+        self._retract(gripper_name)
         return 1
 
-    def drop(self, objPose, dropPose):
-        self._gripper_open("left")
-        self._hover_approach("left", objPose)
-        self._approach("left", objPose)
-        self._gripper_close("left")
-        self._approach("left", dropPose)
-        self._gripper_open("left")
+    def drop(self, gripper, objPose, dropPose):
+        gripper_name = gripper.replace('_gripper', '')
+        self._gripper_open(gripper_name)
+        self._hover_approach(gripper_name, objPose)
+        self._approach(gripper_name, objPose)
+        self._gripper_close(gripper_name)
+        self._approach(gripper_name, dropPose)
+        self._gripper_open(gripper_name)
         return 1
 
 ###################################################################################################
@@ -203,9 +211,11 @@ class PhysicalAgent(object):
     ####### ADDED by Amel 
     def _set_joint_velocity(self, limb='both'):
         velocities_l = {'left_w0' :  4.067311133343405e-050,
-                'left_w1' : 1.6401705346185865e-080,
-                'left_w2' : 5.840094167063631e-060}
-        velocities_r = {'right_w0' : 100.0}
+                        'left_w1' : 1.6401705346185865e-080,
+                        'left_w2' : 5.840094167063631e-060}
+        velocities_r = {'right_w0' :  4.067311133343405e-050,
+                        'right_w1' : 1.6401705346185865e-080,
+                        'right_w2' : 5.840094167063631e-060}
 
         try:
             if limb == 'left_gripper':

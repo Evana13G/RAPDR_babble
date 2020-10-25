@@ -58,15 +58,16 @@ def test_action_settings(req):
         #
         # print("----Push Action")
         # actionName = 'push'
-        # gripper = 'left_gripper'
+        # gripper = 'right_gripper'
         # objectName = 'cover'
-        # args = [gripper, objectName]
         # rate = '10.0'
         # movementMagnitude = '0.4'
-        # orientation = 'left'
-        # controller = [rate, movementMagnitude, orientation]
+        # orientation = 'right'
+
+        # args = [gripper, objectName]
         # controllerNames = ['rate', 'movementMagnitude', 'orientation']
-        # rawActionExecutionProxy(actionName, args, controller)
+        # controller = [rate, movementMagnitude, orientation]
+        
         # paramActionExecutionProxy(actionName, args, controllerNames, controller)
         # envProxy('restart', 'default')     
         ####################################################################
@@ -83,18 +84,18 @@ def test_action_settings(req):
         # ORIGINAL ACTION CALL
         # shakeProxy(objectName, twistRange, speed)
         #
-        # print("----Shake Action")
-        # actionName = 'shake'
-        # gripper = 'left_gripper'
-        # objectName = 'cover'
-        # args = [gripper, objectName]
-        # rate = '0.3'
-        # movementMagnitude = '1.0'
-        # orientation = 'left'
-        # controller = [rate, movementMagnitude, orientation]
-        # controllerNames = ['rate', 'movementMagnitude', 'orientation']
-        # paramActionExecutionProxy(actionName, args, controllerNames, controller)
-        # envProxy('restart', 'default')
+        print("----Shake Action")
+        actionName = 'shake'
+        gripper = 'left_gripper'
+        objectName = 'cover'
+        args = [gripper, objectName]
+        rate = '0.3'
+        movementMagnitude = '1.0'
+        orientation = 'right'
+        controller = [rate, movementMagnitude, orientation]
+        controllerNames = ['rate', 'movementMagnitude', 'orientation']
+        paramActionExecutionProxy(actionName, args, controllerNames, controller)
+        envProxy('restart', 'default')
         ####################################################################
 
 
@@ -109,7 +110,7 @@ def test_action_settings(req):
         # ORIGINAL ACTION CALL
         # pressProxy(objectName, hoverDistance, pressAmount, rate)
         #
-        # print("----Press Action")
+        print("----Press Action")
         actionName = 'press'
         gripper = 'left_gripper'
         objectName = 'cover'
@@ -120,8 +121,10 @@ def test_action_settings(req):
         controller = [rate, movementMagnitude, orientation]
         controllerNames = ['rate', 'movementMagnitude', 'orientation']
         paramActionExecutionProxy(actionName, args, controllerNames, controller)
-        # envProxy('restart', 'default') 
+        envProxy('restart', 'default') 
         ####################################################################
+
+
 
         return True 
     

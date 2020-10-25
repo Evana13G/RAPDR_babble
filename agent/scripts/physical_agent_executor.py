@@ -57,42 +57,52 @@ def getCorrectAction(action_name):
 
 #### PUSH ######################################################################
 def push(req):
+    gripper = req.gripper
     objPose = getObjectPose(req.objectName)
-
-    start_offset = 0.1
     rate = req.rate
+    
+    start_offset = 0.1
     ending_offset = req.movementMagnitude
     orientation = req.orientation
 
     # Process args
-    obj_y_val = copy.deepcopy(objPose.pose.position.y)  
     startPose = copy.deepcopy(objPose)
     endPose = copy.deepcopy(objPose)
-    startPose.pose.position.y = (obj_y_val - start_offset)
-    endPose.pose.position.y = (obj_y_val + ending_offset)
+
+    if orientation == 'left':
+        obj_y_val = copy.deepcopy(objPose.pose.position.y)  
+        startPose.pose.position.y = (obj_y_val - start_offset)
+        endPose.pose.position.y = (obj_y_val + ending_offset)
+    elif orientation == 'right':
+        obj_y_val = copy.deepcopy(objPose.pose.position.y)  
+        startPose.pose.position.y = (obj_y_val + start_offset)
+        endPose.pose.position.y = (obj_y_val - ending_offset)
+
 
     # Put args into hash object
-    argNames = ['startPose', 'endPose', 'rate']
-    argVals = [startPose, endPose, rate]
+    argNames = ['gripper', 'startPose', 'endPose', 'rate']
+    argVals = [gripper, startPose, endPose, rate]
     args = arg_list_to_hash(argNames, argVals)
 
-    return ActionExecutorSrvResponse(pa.push(**args))
+    return pa.push(**args)
 
 #### SHAKE #####################################################################
 def shake(req):
+    gripper = req.gripper
     objPose = getObjectPose(req.objectName)
     rate = req.rate
     twist_range = req.movementMagnitude
     orientation = req.orientation
 
-    argNames = ['objPose', 'twist_range', 'rate']
-    argVals = [objPose, twist_range, rate]
+    argNames = ['gripper', 'objPose', 'twist_range', 'rate']
+    argVals = [gripper, objPose, twist_range, rate]
     args = arg_list_to_hash(argNames, argVals)
 
-    return ActionExecutorSrvResponse(pa.shake(**args))
+    return pa.shake(**args)
 
 #### PRESS #####################################################################
 def press(req):
+    gripper = req.gripper
     objPose = getObjectPose(req.objectName)
     rate = req.rate
     press_amount = req.movementMagnitude
@@ -108,16 +118,17 @@ def press(req):
     endPose.pose.position.z = (obj_z_val + hover_distance - press_amount)
 
     # Put args into hash object
-    argNames = ['startPose', 'endPose', 'rate']
-    argVals = [startPose, endPose, rate]
+    argNames = ['gripper', 'startPose', 'endPose', 'rate']
+    argVals = [gripper, startPose, endPose, rate]
     args = arg_list_to_hash(argNames, argVals)
 
-    return ActionExecutorSrvResponse(pa.press(**args))
+    return pa.press(**args)
 
 
 #### DROP ######################################################################
 # def drop(req):
 #     # Pull args
+#     gripper = req.gripper
 #     objPose = getObjectPose(req.objectName)
 #     drop_height = req.dropHeight
 #     # Process args
@@ -132,6 +143,7 @@ def press(req):
 
 # #### GRASP #####################################################################
 # def grasp(req):
+#     gripper = req.gripper
 #     objPose = getObjectPose(req.objectName)
 #     return ActionExecutorSrvResponse(pa.grasp(objPose))
 
@@ -150,7 +162,7 @@ def action_executor(req):
                                    req.args, 
                                    req.paramNames, 
                                    req.params)
-    return a(zipped_request)
+    a(zipped_request)
 
 def raw_action_executor(req):
     actionName = req.actionName
@@ -166,6 +178,7 @@ def raw_action_executor(req):
     assert(len(paramNames) == len(params))
 
     action_executor(Action(actionName, argNames, paramNames, args, params))
+    return RawActionExecutorSrvResponse(1)
 
 def param_action_executor(req):
     actionName = req.actionName
@@ -188,7 +201,7 @@ def param_action_executor(req):
         paramVals[i_pToSet] = pValToSet
 
     action_executor(Action(actionName, argNames, paramNames, argValues, paramVals))
-    return 
+    return ParamActionExecutorSrvResponse(1)
 
 # This just takes in one action, pulls param values, and sends to the 
 # Appropriate srv, which takes care of the hardcodings call. 
@@ -203,6 +216,7 @@ def pddl_action_executor(req):
 
     assert(len(argNames) == len(args))
     action_executor(Action(actionName, argNames, paramNames, args, paramDefaults))
+    return PddlExecutorSrvResponse(1)
 
 ################################################################################
 ## UTIL 
