@@ -46,10 +46,10 @@ def getObjectPose(object_name, pose_only=False):
 def getCorrectAction(action_name):
     action = action_name.split('_')[0]
     actions = {'push' : push,
-               'grasp' : grasp, 
+               # 'grasp' : grasp, 
                'shake' : shake,
-               'press' : press, 
-               'drop' : drop}
+               'press' : press}
+               # 'drop' : drop}
     return actions[action]
 
 ################################################################################
@@ -58,14 +58,11 @@ def getCorrectAction(action_name):
 #### PUSH ######################################################################
 def push(req):
     objPose = getObjectPose(req.objectName)
-    
-    # These need to be in a dict, and depend on the object 
-    # start_offset = float(req.startOffset) #FLOAT
-    # ending_offset = float(req.endOffset) #FLOAT
 
     start_offset = 0.1
-    ending_offset = 0.4
     rate = req.rate
+    ending_offset = req.movementMagnitude
+    orientation = req.orientation
 
     # Process args
     obj_y_val = copy.deepcopy(objPose.pose.position.y)  
@@ -84,8 +81,9 @@ def push(req):
 #### SHAKE #####################################################################
 def shake(req):
     objPose = getObjectPose(req.objectName)
-    twist_range = req.twistRange
     rate = req.rate
+    twist_range = req.movementMagnitude
+    orientation = req.orientation
 
     argNames = ['objPose', 'twist_range', 'rate']
     argVals = [objPose, twist_range, rate]
@@ -93,17 +91,13 @@ def shake(req):
 
     return ActionExecutorSrvResponse(pa.shake(**args))
 
-#### GRASP #####################################################################
-def grasp(req):
-    objPose = getObjectPose(req.objectName)
-    return ActionExecutorSrvResponse(pa.grasp(objPose))
-
 #### PRESS #####################################################################
 def press(req):
     objPose = getObjectPose(req.objectName)
     hover_distance = req.hoverDistance
-    press_amount = req.pressAmount
     rate = req.rate
+    press_amount = req.movementMagnitude
+    orientation = req.orientation
 
     # Process args
     obj_z_val = copy.deepcopy(objPose.pose.position.z)  
@@ -119,24 +113,26 @@ def press(req):
 
     return ActionExecutorSrvResponse(pa.press(**args))
 
+
 #### DROP ######################################################################
-def drop(req):
-    # Pull args
-    objPose = getObjectPose(req.objectName)
-    drop_height = req.dropHeight
+# def drop(req):
+#     # Pull args
+#     objPose = getObjectPose(req.objectName)
+#     drop_height = req.dropHeight
+#     # Process args
+#     obj_z_val = copy.deepcopy(objPose.pose.position.z)  
+#     dropPose = copy.deepcopy(objPose)
+#     dropPose.pose.position.z = (obj_z_val + drop_height)
+#     # Put args into hash object
+#     argNames = ['objPose', 'dropPose']
+#     argVals = [objPose, dropPose]
+#     args = arg_list_to_hash(argNames, argVals)
+#     return ActionExecutorSrvResponse(pa.drop(**args))
 
-
-    # Process args
-    obj_z_val = copy.deepcopy(objPose.pose.position.z)  
-    dropPose = copy.deepcopy(objPose)
-    dropPose.pose.position.z = (obj_z_val + drop_height)
-
-    # Put args into hash object
-    argNames = ['objPose', 'dropPose']
-    argVals = [objPose, dropPose]
-    args = arg_list_to_hash(argNames, argVals)
-
-    return ActionExecutorSrvResponse(pa.drop(**args))
+# #### GRASP #####################################################################
+# def grasp(req):
+#     objPose = getObjectPose(req.objectName)
+#     return ActionExecutorSrvResponse(pa.grasp(objPose))
 
 ################################################################################
 ################################################################################
@@ -144,18 +140,15 @@ def drop(req):
 ## To call for any general action to be executed
 # Performs checks and send to the appropriate srv
 def action_executor(req):
-
-    actionName = req.actionName
-    argNames = req.argNames
-    args = req.args # list of strings, should be compatible with action. 
-    paramNames = req.paramNames
-    paramSettings = req.params # list of floats, should be compatible with action
-
     assert(len(req.argNames) == len(req.args))
     assert(len(req.paramNames) == len(req.params))
 
-    a = getCorrectAction(actionName)
-    zipped_request = ActionRequest(actionName, argNames, args, paramNames, paramSettings)
+    a = getCorrectAction(req.actionName)
+    zipped_request = ActionRequest(req.actionName, 
+                                   req.argNames, 
+                                   req.args, 
+                                   req.paramNames, 
+                                   req.params)
     return a(zipped_request)
 
 def raw_action_executor(req):
@@ -163,8 +156,8 @@ def raw_action_executor(req):
     args = req.argVals
     params = req.params 
 
-    # sets params
     actionInfo = actionInfoProxy(actionName).actionInfo
+    # sets params
     argNames = actionInfo.executableArgNames
     paramNames = actionInfo.paramNames
 
@@ -173,6 +166,28 @@ def raw_action_executor(req):
 
     action_executor(Action(actionName, argNames, paramNames, args, params))
 
+def param_action_executor(req):
+    actionName = req.actionName
+    argValues = req.argVals
+    paramNamesToSet = req.paramNames 
+    paramValsToSet = req.paramVals 
+
+    actionInfo = actionInfoProxy(actionName).actionInfo
+    argNames = actionInfo.executableArgNames
+    paramNames = actionInfo.paramNames
+    paramVals = actionInfo.paramDefaults
+
+    assert(len(argNames) == len(argValues))
+    assert(len(paramNamesToSet) == len(paramValsToSet))
+
+    for i in range(len(paramValsToSet)):
+        pNameToSet = paramNamesToSet[i]
+        pValToSet = paramValsToSet[i]
+        i_pToSet = paramNames.index(pNameToSet)
+        paramVals[i_pToSet] = pValToSet
+
+    action_executor(Action(actionName, argNames, paramNames, argValues, paramVals))
+    return 
 
 # This just takes in one action, pulls param values, and sends to the 
 # Appropriate srv, which takes care of the hardcodings call. 
@@ -214,6 +229,7 @@ def main():
     rospy.Service("move_to_start_srv", MoveToStartSrv, move_to_start)
     rospy.Service("pddl_action_executor_srv", PddlExecutorSrv, pddl_action_executor)
     rospy.Service("raw_action_executor_srv", RawActionExecutorSrv, raw_action_executor)
+    rospy.Service("param_action_executor_srv", ParamActionExecutorSrv, param_action_executor)
 
     rospy.spin()
 

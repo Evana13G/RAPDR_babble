@@ -37,9 +37,10 @@ from baxter_core_msgs.msg import (
     EndpointState,
 )
 
-from tf.transformations import *
+# from tf.transformations import *
 
-import baxter_interface
+# import baxter_interface
+
 from util.file_io import *
 from util.general_vis import *
 from action_primitive_variation.srv import *
@@ -48,12 +49,13 @@ from agent.srv import *
 from environment.msg import *
 from environment.srv import *
 
-objLocProxy = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
-actionExecutorProxy = rospy.ServiceProxy('raw_action_executor_srv', RawActionExecutorSrv)
-visSrvProxy = rospy.ServiceProxy('record_limb_data_srv', RecordLimbDataSrv) 
-addBreakptSrvProxy = rospy.ServiceProxy('add_action_breakpt_srv', AddActionBreakptSrv) 
+# objLocProxy = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
+# rawActionExecutorProxy = rospy.ServiceProxy('raw_action_executor_srv', RawActionExecutorSrv)
+# visSrvProxy = rospy.ServiceProxy('record_limb_data_srv', RecordLimbDataSrv) 
+# addBreakptSrvProxy = rospy.ServiceProxy('add_action_breakpt_srv', AddActionBreakptSrv) 
 actionInfoProxy = rospy.ServiceProxy('get_KB_action_info_srv', GetKBActionInfoSrv)
 envResetProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
+paramActionExecutionProxy = rospy.ServiceProxy('param_action_executor_srv', ParamActionExecutorSrv)
 
 def getObjectPose(object_name, pose_only=False):
     loc_pStamped = obj_location_srv(object_name)
@@ -62,9 +64,6 @@ def getObjectPose(object_name, pose_only=False):
     return loc_pStamped.location
 
 def handle_APV(req):
-    # if '_' in req.actionName:
-    #     change the action name to have just the original action
-
     actionToVary = req.actionName
     args = req.args
     paramToVary = req.param
@@ -77,19 +76,14 @@ def handle_APV(req):
     actionInfo = actionInfoProxy(actionToVary).actionInfo
     argNames = actionInfo.executableArgNames
     paramNames = actionInfo.paramNames
-    paramDefaults = list(actionInfo.paramDefaults)
     paramMins = list(actionInfo.paramMins)
     paramMaxs = list(actionInfo.paramMaxs)
     
-    # preconditions = actionInfo.preconditions
-    # effects = actionInfo.effects
-    
     assert(len(argNames) == len(args))
-    assert(len(paramNames) == len(paramDefaults) == len(paramMins) == len(paramMaxs))
-
+    
     i_paramToVary = paramNames.index(paramToVary)
-    paramMin = paramMins[i_paramToVary]
-    paramMax = paramMaxs[i_paramToVary]
+    paramMin = float(paramMins[i_paramToVary])
+    paramMax = float(paramMaxs[i_paramToVary])
     I = (paramMax - paramMin)/T
 
     ## Process parameter values 
@@ -100,11 +94,8 @@ def handle_APV(req):
     paramVals.append(paramMax)
 
     for paramAssignment in paramVals:
-        paramSettings = copy.deepcopy(paramDefaults)
-        paramSettings[i_paramToVary] = paramAssignment
-        paramSettings = [str(x) for x in paramSettings]
         print('Action: ' + str(actionToVary) + ', Param: ' + str(paramToVary) + ', ' + str(paramAssignment))
-        actionExecutorProxy(actionToVary, args, paramSettings)
+        paramActionExecutionProxy(actionToVary, args, [paramToVary], [str(paramAssignment)])
         envResetProxy('restart', 'heavy')
     return APVSrvResponse([])
 
@@ -119,17 +110,3 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
-
-    # # visSrvProxy('start', '')
-    # for paramAssignment in paramVals:
-    #     # addBreakptSrvProxy() 
-    #     # envResetProxy('restart', 'default') # action, environment setting
-    #     paramSettings = copy.deepcopy(paramDefaults)
-    #     paramSettings[i_paramToVary] = paramAssignment
-    #     print('Action: ' + str(actionToVary) + ', Param: ' + str(paramToVary) + ', ' + str(paramAssignment))
-    #     actionExecutorProxy(actionToVary, argNames, args, paramNames, paramSettings)
-        
-    #     envResetProxy('restart', 'default')
-    #     # addBreakptSrvProxy() 
-    # # visSrvProxy('end', 'endejeje')
-    # return APVSrvResponse([])

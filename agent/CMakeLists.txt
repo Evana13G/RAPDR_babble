@@ -25,6 +25,7 @@ GetHardcodedOffsetSrv.srv
 EmptyTestSrv.srv
 PddlExecutorSrv.srv
 RawActionExecutorSrv.srv
+ParamActionExecutorSrv.srv
 )
 
 catkin_python_setup()

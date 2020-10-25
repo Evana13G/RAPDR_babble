@@ -33,6 +33,7 @@ instatiatedPDDLBindings = rospy.ServiceProxy('get_pddl_instatiations_srv', GetAc
 
 pddlActionExecutionProxy = rospy.ServiceProxy('pddl_action_executor_srv', PddlExecutorSrv)
 rawActionExecutionProxy = rospy.ServiceProxy('raw_action_executor_srv', RawActionExecutorSrv)
+paramActionExecutionProxy = rospy.ServiceProxy('param_action_executor_srv', ParamActionExecutorSrv)
 
 
 def test_action_settings(req):
@@ -61,13 +62,14 @@ def test_action_settings(req):
         gripper = 'left_gripper'
         objectName = 'cover'
         args = [gripper, objectName]
-        movementMagnitude = '0.4'
         rate = '10.0'
+        movementMagnitude = '0.4'
         orientation = 'left'
-        controller = [movementMagnitude, rate, orientation]
-        # controller = [rate]
+        controller = [rate, movementMagnitude, orientation]
+        controllerNames = ['rate', 'movementMagnitude', 'orientation']
+        # rawActionExecutionProxy(actionName, args, controller)
+        paramActionExecutionProxy(actionName, args, controllerNames, controller)
 
-        rawActionExecutionProxy(actionName, args, controller)
         # envProxy('restart', 'default')     
         ####################################################################
 
