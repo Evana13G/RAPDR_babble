@@ -94,7 +94,7 @@ class KnowledgeBase(object):
         press.addArg(Variable('?g', 'gripper'))
         press.addArg(Variable('?o', 'obj'))
         press_p1 = Parameter('rate', 100.0, 50.0, 1000.0)
-        press_p2 = Parameter('movementMagnitude', 0.01, 0.03, 0.3)
+        press_p2 = Parameter('movementMagnitude', 0.1, 0.03, 0.3)
         press_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front'])
         press.addParam(press_p1)
         press.addParam(press_p2)

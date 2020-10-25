@@ -94,11 +94,12 @@ def shake(req):
 #### PRESS #####################################################################
 def press(req):
     objPose = getObjectPose(req.objectName)
-    hover_distance = req.hoverDistance
     rate = req.rate
     press_amount = req.movementMagnitude
     orientation = req.orientation
 
+    hover_distance = 0.1
+    
     # Process args
     obj_z_val = copy.deepcopy(objPose.pose.position.z)  
     startPose = copy.deepcopy(objPose)
