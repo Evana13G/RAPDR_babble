@@ -1,5 +1,0 @@
-string objectName
-float64 twistRange
-float64 speed
----
-int64 success_bool

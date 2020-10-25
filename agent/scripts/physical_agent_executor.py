@@ -26,6 +26,8 @@ from std_msgs.msg import (
 
 
 from agent.srv import *
+from pddl.srv import *
+from pddl.msg import *
 from environment.srv import ObjectLocationSrv
 from util.physical_agent import PhysicalAgent
 from util.action_request import ActionRequest
@@ -33,6 +35,7 @@ from util.data_conversion import arg_list_to_hash
 
 pa = None
 obj_location_srv = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
+actionInfoProxy = rospy.ServiceProxy('get_KB_action_info_srv', GetKBActionInfoSrv)
 
 def getObjectPose(object_name, pose_only=False):
     loc_pStamped = obj_location_srv(object_name)
@@ -43,71 +46,70 @@ def getObjectPose(object_name, pose_only=False):
 def getCorrectAction(action_name):
     action = action_name.split('_')[0]
     actions = {'push' : push,
-               'grasp' : grasp, 
+               # 'grasp' : grasp, 
                'shake' : shake,
-               'press' : press, 
-               'drop' : drop}
+               'press' : press}
+               # 'drop' : drop}
     return actions[action]
 
 ################################################################################
+################################################################################
+
 #### PUSH ######################################################################
 def push(req):
-    # Pull args
+    gripper = req.gripper
     objPose = getObjectPose(req.objectName)
-    
-    # These need to be in a dict, and depend on the object 
-    # start_offset = float(req.startOffset) #FLOAT
-    # ending_offset = float(req.endOffset) #FLOAT
-
-    start_offset = 0.1
-    ending_offset = 0.4
     rate = req.rate
+    
+    start_offset = 0.1
+    ending_offset = req.movementMagnitude
+    orientation = req.orientation
 
     # Process args
-    obj_y_val = copy.deepcopy(objPose.pose.position.y)  
     startPose = copy.deepcopy(objPose)
     endPose = copy.deepcopy(objPose)
-    startPose.pose.position.y = (obj_y_val - start_offset)
-    endPose.pose.position.y = (obj_y_val + ending_offset)
+
+    if orientation == 'left':
+        obj_y_val = copy.deepcopy(objPose.pose.position.y)  
+        startPose.pose.position.y = (obj_y_val - start_offset)
+        endPose.pose.position.y = (obj_y_val + ending_offset)
+    elif orientation == 'right':
+        obj_y_val = copy.deepcopy(objPose.pose.position.y)  
+        startPose.pose.position.y = (obj_y_val + start_offset)
+        endPose.pose.position.y = (obj_y_val - ending_offset)
+
 
     # Put args into hash object
-    argNames = ['startPose', 'endPose', 'rate']
-    argVals = [startPose, endPose, rate]
+    argNames = ['gripper', 'startPose', 'endPose', 'rate']
+    argVals = [gripper, startPose, endPose, rate]
     args = arg_list_to_hash(argNames, argVals)
 
-    return PushSrvResponse(pa.push(**args))
+    return pa.push(**args)
 
-################################################################################
 #### SHAKE #####################################################################
 def shake(req):
-    # Pull args
+    gripper = req.gripper
     objPose = getObjectPose(req.objectName)
-    twist_range = req.twistRange
-    rate = req.speed
+    rate = req.rate
+    twist_range = req.movementMagnitude
+    orientation = req.orientation
 
-    # Put args into hash object
-    argNames = ['objPose', 'twist_range', 'rate']
-    argVals = [objPose, twist_range, rate]
+    argNames = ['gripper', 'objPose', 'twist_range', 'rate']
+    argVals = [gripper, objPose, twist_range, rate]
     args = arg_list_to_hash(argNames, argVals)
 
-    return ShakeSrvResponse(pa.shake(**args))
+    return pa.shake(**args)
 
-################################################################################
-#### GRASP #####################################################################
-def grasp(req):
-    # Pull args
-    objPose = getObjectPose(req.objectName)
-    return GraspSrvResponse(pa.grasp(objPose))
-
-################################################################################
 #### PRESS #####################################################################
 def press(req):
-    # Pull args
+    gripper = req.gripper
     objPose = getObjectPose(req.objectName)
-    hover_distance = req.hoverDistance
-    press_amount = req.pressAmount
     rate = req.rate
+    press_amount = req.movementMagnitude
+    orientation = req.orientation
 
+    hover_distance = 0.1
+    
     # Process args
     obj_z_val = copy.deepcopy(objPose.pose.position.z)  
     startPose = copy.deepcopy(objPose)
@@ -116,51 +118,105 @@ def press(req):
     endPose.pose.position.z = (obj_z_val + hover_distance - press_amount)
 
     # Put args into hash object
-    argNames = ['startPose', 'endPose', 'rate']
-    argVals = [startPose, endPose, rate]
+    argNames = ['gripper', 'startPose', 'endPose', 'rate']
+    argVals = [gripper, startPose, endPose, rate]
     args = arg_list_to_hash(argNames, argVals)
 
-    return PressSrvResponse(pa.press(**args))
+    return pa.press(**args)
 
-################################################################################
+
 #### DROP ######################################################################
-def drop(req):
-    # Pull args
-    objPose = getObjectPose(req.objectName)
-    drop_height = req.dropHeight
+# def drop(req):
+#     # Pull args
+#     gripper = req.gripper
+#     objPose = getObjectPose(req.objectName)
+#     drop_height = req.dropHeight
+#     # Process args
+#     obj_z_val = copy.deepcopy(objPose.pose.position.z)  
+#     dropPose = copy.deepcopy(objPose)
+#     dropPose.pose.position.z = (obj_z_val + drop_height)
+#     # Put args into hash object
+#     argNames = ['objPose', 'dropPose']
+#     argVals = [objPose, dropPose]
+#     args = arg_list_to_hash(argNames, argVals)
+#     return ActionExecutorSrvResponse(pa.drop(**args))
 
-
-    # Process args
-    obj_z_val = copy.deepcopy(objPose.pose.position.z)  
-    dropPose = copy.deepcopy(objPose)
-    dropPose.pose.position.z = (obj_z_val + drop_height)
-
-    # Put args into hash object
-    argNames = ['objPose', 'dropPose']
-    argVals = [objPose, dropPose]
-    args = arg_list_to_hash(argNames, argVals)
-
-    return DropSrvResponse(pa.drop(**args))
+# #### GRASP #####################################################################
+# def grasp(req):
+#     gripper = req.gripper
+#     objPose = getObjectPose(req.objectName)
+#     return ActionExecutorSrvResponse(pa.grasp(objPose))
 
 ################################################################################
-def action_executor(req):
-    ## To call for any general action to be executed
+################################################################################
 
+## To call for any general action to be executed
+# Performs checks and send to the appropriate srv
+def action_executor(req):
+    assert(len(req.argNames) == len(req.args))
+    assert(len(req.paramNames) == len(req.params))
+
+    a = getCorrectAction(req.actionName)
+    zipped_request = ActionRequest(req.actionName, 
+                                   req.argNames, 
+                                   req.args, 
+                                   req.paramNames, 
+                                   req.params)
+    a(zipped_request)
+
+def raw_action_executor(req):
     actionName = req.actionName
-    argNames = req.argNames
-    args = req.args # list of strings, should be compatible with action. 
-    paramNames = req.paramNames
-    paramSettings = req.params # list of floats, should be compatible with action
+    args = req.argVals
+    params = req.params 
+
+    actionInfo = actionInfoProxy(actionName).actionInfo
+    # sets params
+    argNames = actionInfo.executableArgNames
+    paramNames = actionInfo.paramNames
 
     assert(len(argNames) == len(args))
-    assert(len(paramNames) == len(paramSettings))
+    assert(len(paramNames) == len(params))
 
-    ## Just do push for now setExecutionArgNames
-    a = getCorrectAction(actionName)
-    request = ActionRequest(actionName, argNames, args, paramNames, paramSettings)
+    action_executor(Action(actionName, argNames, paramNames, args, params))
+    return RawActionExecutorSrvResponse(1)
 
-    a(request)
-    return ActionExecutorSrvResponse(1)
+def param_action_executor(req):
+    actionName = req.actionName
+    argValues = req.argVals
+    paramNamesToSet = req.paramNames 
+    paramValsToSet = req.paramVals 
+
+    actionInfo = actionInfoProxy(actionName).actionInfo
+    argNames = actionInfo.executableArgNames
+    paramNames = actionInfo.paramNames
+    paramVals = actionInfo.paramDefaults
+
+    assert(len(argNames) == len(argValues))
+    assert(len(paramNamesToSet) == len(paramValsToSet))
+
+    for i in range(len(paramValsToSet)):
+        pNameToSet = paramNamesToSet[i]
+        pValToSet = paramValsToSet[i]
+        i_pToSet = paramNames.index(pNameToSet)
+        paramVals[i_pToSet] = pValToSet
+
+    action_executor(Action(actionName, argNames, paramNames, argValues, paramVals))
+    return ParamActionExecutorSrvResponse(1)
+
+# This just takes in one action, pulls param values, and sends to the 
+# Appropriate srv, which takes care of the hardcodings call. 
+def pddl_action_executor(req):
+    actionName = req.actionName
+    args = req.argVals
+
+    actionInfo = actionInfoProxy(actionName).actionInfo
+    argNames = actionInfo.executableArgNames
+    paramNames = actionInfo.paramNames
+    paramDefaults = actionInfo.paramDefaults
+
+    assert(len(argNames) == len(args))
+    action_executor(Action(actionName, argNames, paramNames, args, paramDefaults))
+    return PddlExecutorSrvResponse(1)
 
 ################################################################################
 ## UTIL 
@@ -176,15 +232,6 @@ def close_gripper(req):
 def approach(req):
     return ApproachSrvResponse(pa.approach(req.pose))
 
-# def arg_list_to_hash(argNames, argValues):
-#     args = {}
-#     for i in range(len(argValues)):
-#         name = argNames[i]
-#         val = argValues[i]
-#         if not(val == 0.0 or val == None or val == 0):
-#             args[name] = val
-#     return args
-
 ################################################################################
 
 def main():
@@ -194,19 +241,10 @@ def main():
     global pa
     pa = PhysicalAgent()
 
-    s_1 = rospy.Service("move_to_start_srv", MoveToStartSrv, move_to_start)
-    s_2 = rospy.Service("open_gripper_srv", OpenGripperSrv, open_gripper)
-    s_2 = rospy.Service("close_gripper_srv", CloseGripperSrv, close_gripper)
-    s_3 = rospy.Service("approach_srv", ApproachSrv, approach)
-
-    # Action Primitives
-    s_4 = rospy.Service("push_srv", PushSrv, push)
-    s_5 = rospy.Service("grasp_srv", GraspSrv, grasp)
-    s_6 = rospy.Service("shake_srv", ShakeSrv, shake)
-    s_7 = rospy.Service("press_srv", PressSrv, press)
-    s_8 = rospy.Service("drop_srv", DropSrv, drop)
-    s_9 = rospy.Service("action_executor_srv", ActionExecutorSrv, action_executor)
-    s_10 = rospy.Service("pddl_action_executor_srv", ActionExecutorSrv, action_executor)
+    rospy.Service("move_to_start_srv", MoveToStartSrv, move_to_start)
+    rospy.Service("pddl_action_executor_srv", PddlExecutorSrv, pddl_action_executor)
+    rospy.Service("raw_action_executor_srv", RawActionExecutorSrv, raw_action_executor)
+    rospy.Service("param_action_executor_srv", ParamActionExecutorSrv, param_action_executor)
 
     rospy.spin()
 

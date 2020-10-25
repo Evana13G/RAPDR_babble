@@ -17,20 +17,15 @@ HardcodedOffset.msg
 
 add_service_files(
 FILES 
-ApproachSrv.srv
 MoveToStartSrv.srv
-GraspSrv.srv
-CloseGripperSrv.srv 
-OpenGripperSrv.srv 
-BrainSrv.srv
-PushSrv.srv 
-ShakeSrv.srv
-PressSrv.srv
-DropSrv.srv
 JointVelocitySrv.srv
 ActionExecutorSrv.srv
 CalcGripperOrientationPoseSrv.srv
 GetHardcodedOffsetSrv.srv
+EmptyTestSrv.srv
+PddlExecutorSrv.srv
+RawActionExecutorSrv.srv
+ParamActionExecutorSrv.srv
 )
 
 catkin_python_setup()

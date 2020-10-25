@@ -61,53 +61,59 @@ class KnowledgeBase(object):
         push.addEffect(StaticPredicate('at', ['?o', '?loc1']))
         push.addEffect(StaticPredicate('not', [StaticPredicate('at', ['?o', '?loc0'])]))
         push_p1 = Parameter('rate', 50.0, 50.0, 800.0)
+        push_p2 = Parameter('movementMagnitude', 0.4, 0.1, 0.6)
+        push_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front'])
         push.addParam(push_p1)
+        push.addParam(push_p2)
+        push.addParam(push_p3)
         push.setExecutionArgNames(['gripper', 'objectName'])
 
-        ## GRASP
-        grasp = Action('grasp', [], [], [], [], GraspSrv) # All default, add after 
-        grasp.addArg(Variable('?g', 'gripper'))
-        grasp.addArg(Variable('?o', 'obj'))
-        # grasp_p1 = Parameter('grasp_amount' , None, 1, 0, 5)
-        # grasp.addParam(grasp_p1)
-        grasp.addEffect(StaticPredicate('grasped', ['?o']))
-        grasp.setExecutionArgNames(['gripper', 'objectName'])
+        # ## GRASP
+        # grasp = Action('grasp', [], [], [], [], GraspSrv) # All default, add after 
+        # grasp.addArg(Variable('?g', 'gripper'))
+        # grasp.addArg(Variable('?o', 'obj'))
+        # # grasp_p1 = Parameter('grasp_amount' , None, 1, 0, 5)
+        # # grasp.addParam(grasp_p1)
+        # grasp.addEffect(StaticPredicate('grasped', ['?o']))
+        # grasp.setExecutionArgNames(['gripper', 'objectName'])
 
         ## SHAKE
         shake = Action('shake', [], [], [], [], ShakeSrv) # All default, add after 
         shake.addArg(Variable('?g', 'gripper'))
         shake.addArg(Variable('?o', 'obj'))
-        shake_p1 = Parameter('twistRange', 1.0, 0.0, 5.0)
-        shake_p2 = Parameter('speed', 0.3, 1.5, 0.05)
+        shake_p1 = Parameter('rate', 0.3, 1.5, 0.05)
+        shake_p2 = Parameter('movementMagnitude', 1.0, 0.0, 5.0)
+        shake_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front'])
         shake.addParam(shake_p1)
         shake.addParam(shake_p2)
+        shake.addParam(shake_p3)
         shake.setExecutionArgNames(['gripper', 'objectName'])
 
         ## PRESS
         press = Action('press', [], [], [], [], PressSrv) # All default, add after 
         press.addArg(Variable('?g', 'gripper'))
         press.addArg(Variable('?o', 'obj'))
-        press_p1 = Parameter('hoverDistance', 0.1, 0.03, 0.3)
-        press_p2 = Parameter('pressAmount', 0.01, 0.03, 0.3)
-        press_p3 = Parameter('rate', 100.0, 50.0, 1000.0)
+        press_p1 = Parameter('rate', 100.0, 50.0, 1000.0)
+        press_p2 = Parameter('movementMagnitude', 0.1, 0.03, 0.3)
+        press_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front'])
         press.addParam(press_p1)
         press.addParam(press_p2)
         press.addParam(press_p3)
         press.setExecutionArgNames(['gripper', 'objectName'])
 
-        ## DROP
-        drop = Action('drop', [], [], [], [], DropSrv) # All default, add after 
-        drop.addArg(Variable('?g', 'gripper'))
-        drop.addArg(Variable('?o', 'obj'))
-        drop_p1 = Parameter('dropHeight', 0.1, 0.01, 0.3)
-        drop.addParam(drop_p1)
-        drop.setExecutionArgNames(['gripper', 'objectName'])
+        # ## DROP
+        # drop = Action('drop', [], [], [], [], DropSrv) # All default, add after 
+        # drop.addArg(Variable('?g', 'gripper'))
+        # drop.addArg(Variable('?o', 'obj'))
+        # drop_p1 = Parameter('dropHeight', 0.1, 0.01, 0.3)
+        # drop.addParam(drop_p1)
+        # drop.setExecutionArgNames(['gripper', 'objectName'])
 
         _actions.append(push)
-        _actions.append(grasp)
+        # _actions.append(grasp)
         _actions.append(shake)
         _actions.append(press)
-        _actions.append(drop)
+        # _actions.append(drop)
 
 
         self.domain = _domain

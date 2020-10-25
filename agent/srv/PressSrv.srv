@@ -1,6 +1,0 @@
-string objectName 
-float64 hoverDistance
-float64 pressAmount
-float64 rate
----
-int64 success_bool
