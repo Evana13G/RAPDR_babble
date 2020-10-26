@@ -57,15 +57,9 @@ Each of the following should be run in a separate terminal window:
 
         rosrun action_primitive_variation APV_server.py
 
-6. Spawn the PDDL nodes (each in a seperate terminal window):
+6. Spawn the PDDL node (each in a seperate terminal window):
 
-    1. Service for generating pddl plans
-
-            rosrun pddl plan_generator.py
-
-    2. Service for executing pddl plans
-
-            rosrun pddl plan_executor.py
+        rosrun pddl planner.py
 
 7. Spawn the knowledge base interface node:
 
