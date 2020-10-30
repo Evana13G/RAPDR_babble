@@ -49,7 +49,8 @@ def load_gazebo_models(env='default'):
     right_button_pose=Pose(position=Point(x=0.525, y=-0.2715, z=0.8))
     left_button_pose=Pose(position=Point(x=0.525, y=0.1515, z=0.8))
     block_reference_frame="world"
-    cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
+    cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.8))
+    marble_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
     cover_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
     reference_frame="world"
 
@@ -59,13 +60,15 @@ def load_gazebo_models(env='default'):
 
     table_xml = ''
     cup_xml = ''
-    cover_xml = ''
+    marbleB_xml = ''
+    marbleR_xml = ''
 
 
     moveToStartProxy('both')
 
     with open (model_path + "cafe_table/model.sdf", "r") as table_file:
         table_xml=table_file.read().replace('\n', '')
+
 
 
     ###############################
@@ -97,10 +100,12 @@ def load_gazebo_models(env='default'):
     ###############################
     ########### DEFAULT ########### 
     else:
-        with open (model_path + "cup_with_cover/cup_model.sdf", "r") as cup_file:
+        with open (model_path + "plastic_cup/model.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')
-        with open (model_path + "cup_with_cover/cover_model_high_friction.sdf", "r") as cover_file:
-            cover_xml=cover_file.read().replace('\n', '')
+        with open (model_path + "marble/modelB.sdf", "r") as marble_file:
+            marbleB_xml=marble_file.read().replace('\n', '')
+        with open (model_path + "marble/modelR.sdf", "r") as marble_file:
+            marbleR_xml=marble_file.read().replace('\n', '')
 
     # Spawn Table SDF and other URDFs
     rospy.wait_for_service('/gazebo/spawn_sdf_model')
@@ -111,22 +116,24 @@ def load_gazebo_models(env='default'):
         spawn_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
         resp_sdf = spawn_sdf("cafe_table", table_xml, "/",
                              table_pose, reference_frame)
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         rospy.logerr("Spawn SDF service call failed: {0}".format(e))
 
     try:
         spawn_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
-        resp_sdf = spawn_sdf("cup", cup_xml, "/",
-                               cup_pose, reference_frame)
-    except rospy.ServiceException, e:
+        resp_sdf = spawn_sdf("plastic_cup", cup_xml, "/",
+                                cup_pose, reference_frame)
+    except rospy.ServiceException as e:
         rospy.logerr("Spawn URDF service call failed: {0}".format(e))
         
     try:
-        spawn_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
-        resp_sdf = spawn_sdf("cover", cover_xml, "/",
-                               cover_pose, reference_frame)
-    except rospy.ServiceException, e:
+        num_marbles = 5
+        for i in range(num_marbles):
+            resp_sdf = spawn_sdf("marbleB_"+ str(i), marbleB_xml, "/",
+                                marble_pose, reference_frame)
+    except rospy.ServiceException as e:
         rospy.logerr("Spawn URDF service call failed: {0}".format(e))
+        
 
     pub_all.publish(True)
 
@@ -136,14 +143,14 @@ def delete_gazebo_models():
     # Do not wait for the Gazebo Delete Model service, since
     # Gazebo should already be running. If the service is not
     # available since Gazebo has been killed, it is fine to error out
+    num_marbles = 5
     try:
         pub_all.publish(False)
         delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
-        resp_delete = delete_model("cafe_table")
-        resp_delete = delete_model("cup")
-        resp_delete = delete_model("cover")
-
-    except rospy.ServiceException, e:
+        resp_delete = delete_model("plastic_cup")
+        for i in range(num_marbles):         
+            resp_delete = delete_model("marbleB_"+str(i))
+    except rospy.ServiceException as e:
         rospy.loginfo("Delete Model service call failed: {0}".format(e))
 
 
@@ -154,7 +161,7 @@ def handle_environment_request(req):
         try:
             load_gazebo_models(environment)
             return HandleEnvironmentSrvResponse(1)
-        except rospy.ServiceException, e:
+        except rospy.ServiceException as e:
             rospy.logerr("Init environment call failed: {0}".format(e))
             return HandleEnvironmentSrvResponse(0)
 
@@ -162,7 +169,7 @@ def handle_environment_request(req):
         try:
             delete_gazebo_models()
             return HandleEnvironmentSrvResponse(1)
-        except rospy.ServiceException, e:
+        except rospy.ServiceException as e:
             rospy.logerr("Destroy environment call failed: {0}".format(e))
             return HandleEnvironmentSrvResponse(0)
 
@@ -174,7 +181,7 @@ def handle_environment_request(req):
             rospy.sleep(5)
             return HandleEnvironmentSrvResponse(1)
 
-        except rospy.ServiceException, e:
+        except rospy.ServiceException as e:
             rospy.logerr("Destroy environment call failed: {0}".format(e))
             return HandleEnvironmentSrvResponse(0)
     else:

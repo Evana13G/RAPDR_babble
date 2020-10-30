@@ -55,7 +55,7 @@ predicatesPublisher = rospy.Publisher('predicate_values', PredicateList, queue_s
 imageConverter = ImageConverter()
 
 CupPose = None
-CoverPose = None
+MarblePose = None
 LeftGripperPose = None
 RightGripperPose = None
 TablePose = None
@@ -66,12 +66,12 @@ predicates_list = []
 def setPoseCup(data):
     global CupPose
     CupPose = data
-    updatePredicates("cup", data)
+    updatePredicates("plastic_cup", data)
 
 def setPoseCover(data):
-    global CoverPose
-    CoverPose = data
-    updatePredicates("cover", data)
+    global MarblePose
+    MarblePose = data
+    updatePredicates("marble_1_5cm", data)
 
 def setPoseGripperLeft(data):
     global LeftGripperPose
@@ -114,9 +114,9 @@ def updateVisionBasedPredicates():
 
     # Need to update the image converter to deal with more objects and to be more sophisticated. 
     # For the image recognition part, every object MUST have a different color to identify it  
-    if (imageConverter.getObjectPixelCount('cup') > 0):
+    if (imageConverter.getObjectPixelCount('plastic_cup') > 0):
         new_predicates.append(Predicate(operator="is_visible", objects=["cup"], locationInformation=None)) 
-    if (imageConverter.getObjectPixelCount('cover') > 0):
+    if (imageConverter.getObjectPixelCount('marble_1_5cm') > 0):
         new_predicates.append(Predicate(operator="is_visible", objects=["cover"], locationInformation=None)) 
     predicates_list = new_predicates
 
@@ -136,13 +136,13 @@ def updatePhysicalStateBasedPredicates():
         new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'table'], locationInformation=None)) 
     if is_touching(CupPose, TablePose):
         new_predicates.append(Predicate(operator="touching", objects=['cup', 'table'], locationInformation=None)) 
-    if is_touching(CoverPose, TablePose):
+    if is_touching(MarblePose, TablePose):
         new_predicates.append(Predicate(operator="touching", objects=['cover', 'table'], locationInformation=None)) 
-    if is_touching(CoverPose, CupPose, 0.235):
+    if is_touching(MarblePose, CupPose, 0.235):
         new_predicates.append(Predicate(operator="touching", objects=['cover', 'cup'], locationInformation=None)) 
-    if is_touching(LeftGripperPose, CoverPose, 1.1):
+    if is_touching(LeftGripperPose, MarblePose, 1.1):
         new_predicates.append(Predicate(operator="touching", objects=['left_gripper', 'cover'], locationInformation=None)) 
-    if is_touching(RightGripperPose, CoverPose, 1.1):
+    if is_touching(RightGripperPose, MarblePose, 1.1):
         new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'cover'], locationInformation=None)) 
 
     predicates_list = new_predicates
@@ -157,7 +157,7 @@ def getObjectLocation(data):
     obj = data.obj
     obj_choices = {
         'cup': CupPose,
-        'cover': CoverPose,
+        'marble_1_5cm': MarblePose,
         'left_gripper': LeftGripperPose,
         'right_gripper': RightGripperPose, 
         'table': TablePose
@@ -168,7 +168,7 @@ def main():
     rospy.init_node("scenario_data_node")
 
     rospy.Subscriber("cup_pose", PoseStamped, setPoseCup)
-    rospy.Subscriber("cover_pose", PoseStamped, setPoseCover)
+    rospy.Subscriber("marble_1_5cm", PoseStamped, setPoseCover)
     rospy.Subscriber("left_gripper_pose", PoseStamped, setPoseGripperLeft)
     rospy.Subscriber("right_gripper_pose", PoseStamped, setPoseGripperRight)
     rospy.Subscriber("cafe_table_pose", PoseStamped, setPoseTable)
