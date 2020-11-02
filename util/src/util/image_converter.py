@@ -1,63 +1,16 @@
 #!/usr/bin/env python
 
-import roslib
-import sys
-import math
-import time
+import rospy
 
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from cv_bridge import CvBridge, CvBridgeError
 
-import argparse
-import struct
-import sys
-import copy
-import rospy
-import rospkg
-
-from gazebo_msgs.srv import (
-    SpawnModel,
-    DeleteModel,
-    GetLinkState,
-)
-
-from gazebo_msgs.msg import (
-    LinkState,
-)
-
-from geometry_msgs.msg import (
-    PoseStamped,
-    Pose,
-    PoseArray,
-    PoseWithCovarianceStamped,
-    Point,
-    Quaternion
-)
-
 from sensor_msgs.msg import (
     Image,
     PointCloud2
 )
-
-from geometry_msgs.msg import (
-    PoseStamped,
-    Pose,
-    Point,
-    Quaternion,
-)
-from std_msgs.msg import (
-    Header,
-    Empty,
-)
-from baxter_core_msgs.srv import (
-    SolvePositionIK,
-    SolvePositionIKRequest,
-)
-from tf.transformations import *
-import baxter_interface
-from environment.srv import * 
 
 HUE_RANGE = 20
 WHITE_THRESH = 15
@@ -161,23 +114,22 @@ class ImageConverter:
     def count_segmented_areas(self, mask):
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
         opening = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=1)
-
         counts = cv2.findContours(opening, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
         counts = counts[0] if len(counts) == 2 else counts[1]
-
-        # area = 0
-        # for c in counts:
-        #     area += cv2.contourArea(c)
-
         return len(counts)
 
+    def is_visible(self, obj):
+        if (obj == 'cover'):
+            return self.green_pixels > 0
+        elif (obj == 'cup'):
+            return self.blue_pixels > 0
+        else:
+            return False
 
-    def getObjectPixelCount(self, object):
-        if (object == 'cover'):
+    def getObjectPixelCount(self, obj):
+        if (obj == 'cover'):
             return self.green_pixels
-        elif (object == 'cup'):
-            return self.blue_pixels
+        elif (obj == 'cup'):
+            return self.blue_pixels 
         else:
             return 0
-

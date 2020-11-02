@@ -75,10 +75,10 @@ def compileResults(brainRunDirectory, runName):
 
 def generateAllCombos():
     APVtrials = []
-    # APVtrials.append(['push', ['left_gripper', 'cover'], 'rate']) 
+    APVtrials.append(['push', ['left_gripper', 'cover'], 'rate']) 
     # APVtrials.append(['grasp', ['left_gripper', 'cover'], None]) 
     # APVtrials.append(['shake', ['left_gripper', 'cover'], 'twistRange']) 
-    APVtrials.append(['shake', ['left_gripper', 'cover'], 'rate']) 
+    # APVtrials.append(['shake', ['left_gripper', 'cover'], 'rate']) 
     # APVtrials.append(['press', ['left_gripper', 'cover'], 'hoverDistance']) 
     # APVtrials.append(['press', ['left_gripper', 'cover'], 'pressAmount']) 
     # APVtrials.append(['press', ['left_gripper', 'cover'], 'rate']) 
