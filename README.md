@@ -50,64 +50,23 @@ Each of the following should be run in a separate terminal window:
 3. Call the brain service:
 
         rosservice call /brain_srv [tab complete for args]
-        
-#### DEVELOPMENT Run instructions
-[FOR DEVELOPMENT MODE] Each of the following should be run in a separate terminal window:
 
-1. Launch baxter sim:
-
-        roslaunch baxter_gazebo baxter_world.launch
-
-2. Spawn the data conversion module:
-
-        rosrun environment scenario_data.py
-
-3. Spawn the agent proxy:
-
-        rosrun agent physical_agent_executor.py
-        
-4. Spawn the vision system proxy:
-
-        rosrun agent vision.py
-
-5. Spawn the environment elements:
-
-        rosrun environment publish_environment.py
-        rosrun environment load_environment.py
-
-6. Spawn action primitive variation tool:
-
-        rosrun action_primitive_variation APV_server.py
-
-7. Spawn the PDDL node (each in a seperate terminal window):
-
-        rosrun pddl planner.py
-
-8. Spawn the knowledge base interface node:
-
-            rosrun pddl knowledge_base.py
-            
-9. Run the agent reasoning node:
-
-        rosrun agent brain.py
-        
-10. Call the brain service:
-
-        rosservice call /brain_srv [tab complete for args]
   
-To run testing files, replace steps 9 and 10 with the following:
+To run test scripts:
 
-        rosrun agent <test_file_name>
         rosservice call /test_service_name [tab complete for args]
 
 Examples:
 
-        rosrun agent test_actions.py   
         rosservice call /test_actions_srv [No Args]
         
-        rosrun agent test_action_settings.py   
         rosservice call /test_action_settings_srv [No Args]
         
+For more instructions on writing/running test nodes, see below which will redirect to the developers wiki. 
+
+#### DEVELOPMENT Run instructions
+[FOR DEVELOPMENT MODE] See https://github.com/Evana13G/RAPDR_babble/wiki/Developers-Instructions
+
 #### Other Info
 The URDF models are inside the baxter_simulation package in a folder that I believe is called baxter_sim_examples/models. The URDF model for the table and the wall is called cafe_table. 
 
