@@ -104,9 +104,11 @@ def publish(environment='default'):
 
     pose_lglf = None
     pose_lgrf = None
+    pose_rglf = None
+    pose_rgrf = None
+
     hdr = Header(frame_id=frameid_var)
 
-        
     try:
         lglf_link_state = rospy.ServiceProxy('/gazebo/get_link_state', GetLinkState)
         resp_lglf_link_state = lglf_link_state('l_gripper_l_finger', 'world')
@@ -122,18 +124,18 @@ def publish(environment='default'):
     except rospy.ServiceException, e:
         rospy.logerr("get_link_state for l_gripper_r_finger: {0}".format(e))
 
-    leftGripperPose = Pose()
-    leftGripperPose.position.x = (pose_lglf.position.x + pose_lgrf.position.x)/2
-    leftGripperPose.position.y = (pose_lglf.position.y + pose_lgrf.position.y)/2
-    leftGripperPose.position.z = (pose_lglf.position.z + pose_lgrf.position.z)/2
+    try:
+        leftGripperPose = Pose()
+        leftGripperPose.position.x = (pose_lglf.position.x + pose_lgrf.position.x)/2
+        leftGripperPose.position.y = (pose_lglf.position.y + pose_lgrf.position.y)/2
+        leftGripperPose.position.z = (pose_lglf.position.z + pose_lgrf.position.z)/2
 
-    leftGripperPose.orientation = pose_lglf.orientation # TODO get the actual gripper orientation
+        leftGripperPose.orientation = pose_lglf.orientation # TODO get the actual gripper orientation
         
-    poseStamped_left_gripper = PoseStamped(header=hdr, pose=leftGripperPose)
-    pub_left_gripper_pose.publish(poseStamped_left_gripper)
-
-    pose_rglf = None
-    pose_rgrf = None
+        poseStamped_left_gripper = PoseStamped(header=hdr, pose=leftGripperPose)
+        pub_left_gripper_pose.publish(poseStamped_left_gripper)
+    except rospy.ServiceException, e:
+        rospy.logerr("Unable to calculate calibrated position: {0}".format(e))
 
     try:
         lglf_link_state = rospy.ServiceProxy('/gazebo/get_link_state', GetLinkState)
@@ -150,14 +152,18 @@ def publish(environment='default'):
     except rospy.ServiceException, e:
         rospy.logerr("get_link_state for r_gripper_r_finger: {0}".format(e))
 
-    rightGripperPose = Pose()
-    rightGripperPose.position.x = (pose_rglf.position.x + pose_rgrf.position.x)/2
-    rightGripperPose.position.y = (pose_rglf.position.y + pose_rgrf.position.y)/2
-    rightGripperPose.position.z = (pose_rglf.position.z + pose_rgrf.position.z)/2
-    rightGripperPose.orientation = pose_rgrf.orientation # TODO get the actual gripper orientation
+    try:
+        rightGripperPose = Pose()
+        rightGripperPose.position.x = (pose_rglf.position.x + pose_rgrf.position.x)/2
+        rightGripperPose.position.y = (pose_rglf.position.y + pose_rgrf.position.y)/2
+        rightGripperPose.position.z = (pose_rglf.position.z + pose_rgrf.position.z)/2
+        rightGripperPose.orientation = pose_rgrf.orientation # TODO get the actual gripper orientation
     
-    poseStamped_right_gripper = PoseStamped(header=hdr, pose=rightGripperPose)
-    pub_right_gripper_pose.publish(poseStamped_right_gripper)
+        poseStamped_right_gripper = PoseStamped(header=hdr, pose=rightGripperPose)
+        pub_right_gripper_pose.publish(poseStamped_right_gripper)
+    except rospy.ServiceException, e:
+        rospy.logerr("Unable to calculate calibrated position: {0}".format(e))
+
 
 ####### END: Gripper pose processing
 ######################################################################################
@@ -171,7 +177,6 @@ def main():
 
     rate = rospy.Rate(10) # 10hz
 
-    # rospy.Subscriber("models_loaded", Bool, setPubAll)
     rospy.wait_for_message("/models_loaded", Bool)
     
     while not rospy.is_shutdown():
