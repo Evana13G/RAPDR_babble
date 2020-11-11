@@ -1,15 +1,7 @@
 #!/usr/bin/env python
-# import roslib
-# import sys
-# import cv2
-# import math
-# import time
-# import argparse
-# import struct
-# import copy
-# import numpy as np
+
 import rospy
-# import rospkg
+
 
 from gazebo_msgs.msg import (
     LinkState,

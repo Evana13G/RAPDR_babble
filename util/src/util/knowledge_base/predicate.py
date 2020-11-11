@@ -21,16 +21,20 @@ class TemplatedPredicate(object):
 class StaticPredicate(object):
     def __init__(self, _operator, _args):
         self.operator = _operator
-        self.vars = _args
+        self.args = _args
 
     def get_instatiated_str(self, mapping):
         args = ''
-        for var in self.vars:
-            args = args + ' ' + str(mapping[var])
+        for arg in self.args:
+            if type(arg) is StaticPredicate:
+                val = arg.get_instatiated_str(mapping)
+            else:
+                val = str(mapping[arg])
+            args = args + ' ' + val
         return "(" + self.operator + args + ")"
 
     def __str__(self):
         args = ''
-        for v in self.vars:
-            args = args + ' ' + str(v)
+        for arg in self.args:
+            args = args + ' ' + str(arg)
         return "(" + self.operator + args + ")"

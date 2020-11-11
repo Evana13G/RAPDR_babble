@@ -76,9 +76,11 @@ def handle_get_pddl_instatiations(req):
     # info = executionInfo('cover', 'left')
     # info2 = orientationSolver('left_gripper', 'cover', 'left')
 
-    locs = [poseStampedToString(getObjLoc(x).location) for x in args]
+    # This is not a correct assumption to make
+    # locs = [poseStampedToString(getObjLoc(x).location) for x in args]
+    locs = ['A', 'B']
     preConds = action.get_instatiated_preconditions(args, locs)
-    effects = action.get_instatiated_preconditions(args, locs)
+    effects = action.get_instatiated_effects(args, locs)
 
     return ActionPDDLBinding(name, preConds, effects)
 
@@ -87,11 +89,11 @@ def handle_get_pddl_instatiations(req):
 def main():
     rospy.init_node("knowledge_base_node")
 
-    s1 = rospy.Service("get_KB_domain_srv", GetKBDomainSrv, handle_domain_req)
-    s2 = rospy.Service("get_KB_action_info_srv", GetKBActionInfoSrv, get_action_info)
-    s3 = rospy.Service("get_KB_action_locs", GetKBActionLocsSrv, handle_action_locs_req)
-    s4 = rospy.Service("get_KB_pddl_locs", GetKBPddlLocsSrv, handle_pddlLocs_req)
-    s5 = rospy.Service("get_pddl_instatiations_srv", GetActionPDDLBindingSrv, handle_get_pddl_instatiations)
+    rospy.Service("get_KB_domain_srv", GetKBDomainSrv, handle_domain_req)
+    rospy.Service("get_KB_action_info_srv", GetKBActionInfoSrv, get_action_info)
+    rospy.Service("get_KB_action_locs", GetKBActionLocsSrv, handle_action_locs_req)
+    rospy.Service("get_KB_pddl_locs", GetKBPddlLocsSrv, handle_pddlLocs_req)
+    rospy.Service("get_pddl_instatiations_srv", GetActionPDDLBindingSrv, handle_get_pddl_instatiations)
 
     rospy.spin()
 
