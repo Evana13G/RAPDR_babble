@@ -122,9 +122,10 @@ def scenario_settings(req):
     scenario = req.scenario
     if scenario == 'discover_strike':
         coverLoc = getObjLoc('cover').location
-        coverLoc.pose.position.y = coverLoc.pose.position.x + 0.1 # Get this from action movement mag default? 
+        # coverLoc.pose.position.y = coverLoc.pose.position.x + 0.1 # Get this from action movement mag default? 
         goalLoc = poseStampedToString(coverLoc)                   # ... on second thought, its not necessary. 
         goal = ['(at cover ' + goalLoc + ')']
+        goal = ['(not (at cover '+ poseStampedToString(coverLoc) + '))']
         orig_scenario = 'default'
         novel_scenario = 'heavy'
         T = 3

@@ -51,7 +51,7 @@ def handle_trial(req):
     mode = ['diffsOnly', 'noLoc']
     algoMode = 'APV'
     newPrims = []
-    gripperExecutingNewPrim = 'left'
+    gripperExecutingNewPrim = 'left_gripper'
     # gripperExecutionValidity = True
 
     try:
@@ -62,8 +62,7 @@ def handle_trial(req):
         print("#### ---- OS Execution Success: " + str(success_bool))
     except rospy.ServiceException, e:
         print("Service call failed: %s"%e)
-
-    return BrainSrvResponse([1], 1)
+        return BrainSrvResponse([1], 1)
 
     try:
         print("#### ---- Novel Scenario (NS): ")
@@ -74,7 +73,7 @@ def handle_trial(req):
         while(goalAccomplished(goal, currentState.init) == False):
             
             trialStart = rospy.get_time()
-            executionSuccess = single_attempt_execution(task, goal, orig_env, attempt, additionalDomainLocs)
+            executionSuccess = single_attempt_execution(task, goal, novel_env, attempt, additionalDomainLocs)
             if (executionSuccess == 1):
                 print(' -- Plan execution complete')
                 currentState = scenarioData()
@@ -230,8 +229,10 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', additional_lo
 
         initStateInfo = scenarioData()
         initObjsIncludingLoc = extendInitLocs(initStateInfo, additional_locs)
+        initObjsIncludingLoc['gripper'] = ['left_gripper']
         objs = pddlObjectsStringFormat_fromDict(initObjsIncludingLoc)
         init = initStateInfo.init
+        init = [x for x in init if 'right_gripper' not in x]
         problem = Problem(task_name, KBDomainProxy().domain.name, objs, init, goal)
         plan = planGenerator(problem, filename)
 
@@ -244,7 +245,7 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', additional_lo
             if (goalAccomplished(goal, endStateInfo.init) == True):
                 print(' ---- Goal COMPLETE ')
             return True
-            
+
         else:
             print(' -- Plan execution failed')
             moveToStartProxy() #maybe this should be reset environment proxy...

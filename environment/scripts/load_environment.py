@@ -125,7 +125,6 @@ def delete_gazebo_models():
     # Gazebo should already be running. If the service is not
     # available since Gazebo has been killed, it is fine to error out
     try:
-        rospy.wait_for_service('/gazebo/delete_model', timeout=60)
         pub_all.publish(False)
         
         delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
@@ -177,6 +176,7 @@ def main():
     rospy.init_node("load_environment_node")
     rospy.on_shutdown(delete_gazebo_models)
     rospy.wait_for_service('move_to_start_srv', timeout=60)
+    rospy.wait_for_service('/gazebo/delete_model', timeout=60)
     
     s = rospy.Service("load_environment", HandleEnvironmentSrv, handle_environment_request)
     load_gazebo_models()

@@ -4,8 +4,13 @@ import os
 def goalAccomplished(goalList, currentState):
     numGoalsAccomplished = 0
     for goal in goalList:
+
         if goal in currentState:
             numGoalsAccomplished = numGoalsAccomplished + 1
+        elif 'not' in goal:
+            goal = goal[5:-1] # strip out the not operation (should abstract this)
+            if goal not in currentState:
+                numGoalsAccomplished = numGoalsAccomplished + 1
     if numGoalsAccomplished == len(goalList):
         return True
     return False
