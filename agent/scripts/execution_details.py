@@ -123,15 +123,15 @@ def scenario_settings(req):
     if scenario == 'discover_strike':
         coverLoc = getObjLoc('cover').location
         # coverLoc.pose.position.y = coverLoc.pose.position.x + 0.1 # Get this from action movement mag default? 
-        goalLoc = poseStampedToString(coverLoc)                   # ... on second thought, its not necessary. 
-        goal = ['(at cover ' + goalLoc + ')']
-        goal = ['(not (at cover '+ poseStampedToString(coverLoc) + '))']
+        # goalLoc = poseStampedToString(coverLoc)                   # ... on second thought, its not necessary. 
+        # goal = ['(at cover ' + goalLoc + ')']
+        goal = ['(at cover '+ poseStampedToString(coverLoc) + ')']
         orig_scenario = 'default'
         novel_scenario = 'heavy'
         T = 3
-        additional_domain_locs = [goalLoc]
+        additional_domain_locs = []
     elif scenario == 'discover_pour':
-        goal = ['(not (touching cup cover))']
+        goal = ['not (touching cup cover)']
         orig_scenario = 'default'
         novel_scenario = 'high_friction'
         T = 3

@@ -244,8 +244,9 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', additional_lo
 
             if (goalAccomplished(goal, endStateInfo.init) == True):
                 print(' ---- Goal COMPLETE ')
-            return True
-
+                return True
+            return False
+            
         else:
             print(' -- Plan execution failed')
             moveToStartProxy() #maybe this should be reset environment proxy...

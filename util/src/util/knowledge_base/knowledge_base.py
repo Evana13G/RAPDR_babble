@@ -46,6 +46,7 @@ class KnowledgeBase(object):
 
         ## Types of predicates available, templated
         _preds.append(TemplatedPredicate('at', [Variable('?e', 'entity'), Variable('?loc', 'cartesian')]))
+        # _preds.append(TemplatedPredicate('not', [TemplatedPredicate('at', [Variable('?e', 'entity'), Variable('?loc', 'cartesian')])]))
         _preds.append(TemplatedPredicate('touching', [Variable('?e', 'entity'), Variable('?e', 'entity')]))
         _preds.append(TemplatedPredicate('is_visible', [Variable('?e', 'entity')]))
         _preds.append(TemplatedPredicate('grasped', [Variable('?o', 'obj')]))
