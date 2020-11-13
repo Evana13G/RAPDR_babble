@@ -33,7 +33,7 @@ from parameter import Parameter
 class KnowledgeBase(object):
     def __init__(self):
         _domain = 'rapdr'
-        _reqs = ['strips', 'typing', 'fluents', 'disjunctive-preconditions']
+        _reqs = ['strips', 'typing']
         _types = []
         _preds = []
         _actions = []

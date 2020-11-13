@@ -29,7 +29,7 @@
  <!-- ###################################################### -->
  <!-- ####### Start PDDL Nodes ####### -->
     <!--Start PDDL Nodes-->
-    <!-- <node name="planner" pkg="pddl" type="planner.py"/> -->
+    <node name="planner" pkg="pddl" type="planner.py"/>
     <!--Start Knowledge Base Interface Node-->
     <node name="knowledge_base" pkg="pddl" type="knowledge_base.py"/>
 

@@ -339,3 +339,14 @@ def extendInitLocs(currentState, additionalLocations):
     initObjs = pddlObjects(currentState.predicateList.predicates, False)      
     initObjs['cartesian'].extend(additionalLocations)     
     return initObjs
+
+
+def getPlanFromPDDLactionList(action_list):
+    plan = []
+    for full_action in action_list:
+        action = {}
+        params = []
+        action['actionName'] = full_action.name
+        action['args'] = full_action.parameters
+        plan.append(action)
+    return plan
