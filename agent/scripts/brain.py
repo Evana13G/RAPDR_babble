@@ -143,6 +143,9 @@ def handle_trial(req):
                         #### Find variations for this combo choice
                         resp = APVproxy(*comboToExecute)
 
+                        ## I think APV should respond with actions 
+                        ## to add to the knowledge base
+
         #                 print(' ---- ' + str(len(resp.endEffectorInfo)) + " total change points found")
         #                 print("Trying partial plan execution on segmentations")
         #                 #### Iterate across segmentations

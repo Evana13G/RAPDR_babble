@@ -1,86 +1,32 @@
 #!/usr/bin/env python
 
-import argparse
-import struct
-import sys
-import copy
-import numpy as np
-
-import copy
-
 import rospy
-import rospkg
-import rosbag
-import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
 
-from geometry_msgs.msg import (
-    PoseStamped,
-    Pose,
-    Point,
-    Quaternion,
-)
-from std_msgs.msg import (
-    Header,
-    Empty,
-)
-from sensor_msgs.msg import (
-    JointState
-)
-from baxter_core_msgs.srv import (
-    SolvePositionIK,
-    SolvePositionIKRequest,
-)
-
-from baxter_core_msgs.msg import (
-    JointCommand,
-    EndpointState,
-)
-
-# from tf.transformations import *
-
-# import baxter_interface
-
-from util.file_io import *
-from util.general_vis import *
 from action_primitive_variation.srv import *
 from pddl.srv import *
 from agent.srv import * 
-from environment.msg import *
 from environment.srv import *
+from util.goal_management import *
 
-# objLocProxy = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
-# rawActionExecutorProxy = rospy.ServiceProxy('raw_action_executor_srv', RawActionExecutorSrv)
-# visSrvProxy = rospy.ServiceProxy('record_limb_data_srv', RecordLimbDataSrv) 
-# addBreakptSrvProxy = rospy.ServiceProxy('add_action_breakpt_srv', AddActionBreakptSrv) 
 actionInfoProxy = rospy.ServiceProxy('get_KB_action_info_srv', GetKBActionInfoSrv)
 envResetProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
 paramActionExecutionProxy = rospy.ServiceProxy('param_action_executor_srv', ParamActionExecutorSrv)
+scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
+pddlInstatiations = rospy.ServiceProxy('get_pddl_instatiations_srv', GetActionPDDLBindingSrv)
 
+#### Access functions
 def getObjectPose(object_name, pose_only=False):
     loc_pStamped = obj_location_srv(object_name)
     if pose_only == True:
         return loc_pStamped.location.pose
     return loc_pStamped.location
 
-def handle_APV(req):
-    actionToVary = req.actionName
-    args = req.args
-    paramToVary = req.param
-    T = req.T 
-
-    if paramToVary == None or paramToVary == '':
-        return APVSrvResponse([])
-
-    # This is where you should pull the param names and args from KB
-    actionInfo = actionInfoProxy(actionToVary).actionInfo
-    argNames = actionInfo.executableArgNames
+#### Helper functions
+def process_intervals(actionInfo, paramToVary, T):
     paramNames = actionInfo.paramNames
     paramMins = list(actionInfo.paramMins)
     paramMaxs = list(actionInfo.paramMaxs)
-    
-    assert(len(argNames) == len(args))
-    
+
     i_paramToVary = paramNames.index(paramToVary)
     paramMin = float(paramMins[i_paramToVary])
     paramMax = float(paramMaxs[i_paramToVary])
@@ -93,17 +39,62 @@ def handle_APV(req):
         paramVals.append(paramMin + addition)
     paramVals.append(paramMax)
 
-    for paramAssignment in paramVals:
-        print('Action: ' + str(actionToVary) + ', Param: ' + str(paramToVary) + ', ' + str(paramAssignment))
-        paramActionExecutionProxy(actionToVary, args, [paramToVary], [str(paramAssignment)])
-        envResetProxy('restart', 'heavy')
-    return APVSrvResponse([])
+    return paramVals
 
+def novel_effect(actual_preconds, actual_effects, expected_effects):
+    actual_preconds = [x for x in actual_preconds if 'at' not in x]
+    actual_effects = [x for x in actual_effects if 'at' not in x]
+    expected_effects = [x for x in expected_effects if 'at' not in x] 
+
+    for pre in actual_preconds:
+        if pre not in actual_effects:
+            actual_effects.append('(not (' + pre + ')')
+
+    for pred in actual_effects:
+        if pred not in expected_effects:
+            if pred not in actual_preconds:
+                return True
+    return False 
+
+def execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment):
+    envResetProxy('restart', 'default')
+    print("*****************************************")
+    print('Action: ' + str(actionToVary) + ', Param: ' + str(paramToVary) + ', ' + str(paramAssignment))
+    preconds = scenarioData().init
+    paramActionExecutionProxy(actionToVary, args, [paramToVary], [str(paramAssignment)])
+    effects = scenarioData().init
+    expectation = pddlInstatiations(actionToVary, args).pddlBindings 
+    return(novel_effect(preconds, effects, expectation.effects))
+
+#### Call-back functions
+def set_up_variations(req):
+    
+    #### Extract Info
+    actionToVary = req.actionName
+    args = req.args
+    paramToVary = req.param
+    T = req.T     
+
+    if paramToVary == None or paramToVary == '':
+        return APVSrvResponse([])
+
+    actionInfo = actionInfoProxy(actionToVary).actionInfo
+    argNames = actionInfo.executableArgNames
+    assert(len(argNames) == len(args))
+
+    paramVals = process_intervals(actionInfo, paramToVary, T)
+    
+    for paramAssignment in paramVals:
+        validity = execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment)
+        if validity == True:
+            print("Add to Knowledge Base")
+
+    return APVSrvResponse([])
 
 def main():
     rospy.init_node("APV_node")
     rospy.wait_for_service('/raw_action_executor_srv')
-    s = rospy.Service("APV_srv", APVSrv, handle_APV)
+    s = rospy.Service("APV_srv", APVSrv, set_up_variations)
     rospy.spin()
     return 0
 

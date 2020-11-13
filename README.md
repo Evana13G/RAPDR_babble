@@ -34,45 +34,39 @@ Setup each of the following, in order:
         source devel/setup.bash
 
 #### Run instructions
+
+To run the code, use the following:
+
 Each of the following should be run in a separate terminal window:
 
 1. Launch baxter sim:
 
         roslaunch baxter_gazebo baxter_world.launch
 
-2. Spawn the data conversion module:
+2. Spawn RAPDR Nodes:
 
-        rosrun environment scenario_data.py
-
-3. Spawn the agent proxy:
-
-        rosrun agent physical_agent_executor.py
-
-4. Spawn the environment elements:
-
-        rosrun environment publish_environment.py
-        rosrun environment load_environment.py
-
-5. Spawn action primitive variation tool:
-
-        rosrun action_primitive_variation APV_server.py
-
-6. Spawn the PDDL node (each in a seperate terminal window):
-
-        rosrun pddl planner.py
-
-7. Spawn the knowledge base interface node:
-
-            rosrun pddl knowledge_base.py
-            
-8. Run the agent brain (creepy). All configs are set here.
-
-        rosrun agent brain.py
+        roslaunch agent RAPDR.launch
         
-9. Call the brain service [dev]:
+3. Call the brain service:
 
         rosservice call /brain_srv [tab complete for args]
+
+  
+To run test scripts:
+
+        rosservice call /test_service_name [tab complete for args]
+
+Examples:
+
+        rosservice call /test_actions_srv [No Args]
         
+        rosservice call /test_action_settings_srv [No Args]
+        
+For more instructions on writing/running test nodes, see below which will redirect to the developers wiki. 
+
+#### DEVELOPMENT Run instructions
+[FOR DEVELOPMENT MODE] See https://github.com/Evana13G/RAPDR_babble/wiki/Developers-Instructions
+
 #### Other Info
 The URDF models are inside the baxter_simulation package in a folder that I believe is called baxter_sim_examples/models. The URDF model for the table and the wall is called cafe_table. 
 

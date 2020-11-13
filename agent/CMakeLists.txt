@@ -26,6 +26,7 @@ EmptyTestSrv.srv
 PddlExecutorSrv.srv
 RawActionExecutorSrv.srv
 ParamActionExecutorSrv.srv
+IsVisibleSrv.srv
 )
 
 catkin_python_setup()

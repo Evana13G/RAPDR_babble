@@ -1,21 +1,8 @@
 #!/usr/bin/env python
-import roslib
-import sys
-import cv2
-import math
-import time
-import argparse
-import struct
-import copy
-import numpy as np
-import rospy
-import rospkg
 
-from gazebo_msgs.srv import (
-    SpawnModel,
-    DeleteModel,
-    GetLinkState,
-)
+import rospy
+
+
 from gazebo_msgs.msg import (
     LinkState,
 )
@@ -28,22 +15,7 @@ from geometry_msgs.msg import (
     Quaternion,
     
 )
-from sensor_msgs.msg import (
-    Image,
-)
-from gazebo_msgs.srv import (
-    ApplyJointEffort,
-    JointRequest,
-)
-from std_msgs.msg import (
-    Header,
-    Empty,
-)
-from baxter_core_msgs.srv import (
-    SolvePositionIK,
-    SolvePositionIKRequest,
-)
-from tf.transformations import *
+
 import baxter_interface
 
 from environment.srv import *
@@ -53,6 +25,7 @@ from util.data_conversion import *
 
 predicatesPublisher = rospy.Publisher('predicate_values', PredicateList, queue_size = 10)
 imageConverter = ImageConverter()
+# isVisible = rospy.ServiceProxy('is_visible_srv', IsVisibleSrv)
 
 CupPose = None
 MarblePose = None
@@ -114,9 +87,18 @@ def updateVisionBasedPredicates():
 
     # Need to update the image converter to deal with more objects and to be more sophisticated. 
     # For the image recognition part, every object MUST have a different color to identify it  
+<<<<<<< HEAD
     if (imageConverter.getObjectPixelCount('plastic_cup') > 0):
         new_predicates.append(Predicate(operator="is_visible", objects=["cup"], locationInformation=None)) 
     if (imageConverter.getObjectPixelCount('marble_1_5cm') > 0):
+=======
+    
+    # if (imageConverter.getObjectPixelCount('cup') > 0):
+    if (imageConverter.is_visible('cup') == True):
+        new_predicates.append(Predicate(operator="is_visible", objects=["cup"], locationInformation=None)) 
+    # if (imageConverter.getObjectPixelCount('cover') > 0):
+    if (imageConverter.is_visible('cover') == True):
+>>>>>>> 76f96f72725437586d99ae5a1f8560a3d162eb84
         new_predicates.append(Predicate(operator="is_visible", objects=["cover"], locationInformation=None)) 
     predicates_list = new_predicates
 
@@ -166,15 +148,16 @@ def getObjectLocation(data):
 
 def main():
     rospy.init_node("scenario_data_node")
-
+    rospy.wait_for_service('is_visible_srv', timeout=60)
+   
     rospy.Subscriber("cup_pose", PoseStamped, setPoseCup)
     rospy.Subscriber("marble_1_5cm", PoseStamped, setPoseCover)
     rospy.Subscriber("left_gripper_pose", PoseStamped, setPoseGripperLeft)
     rospy.Subscriber("right_gripper_pose", PoseStamped, setPoseGripperRight)
     rospy.Subscriber("cafe_table_pose", PoseStamped, setPoseTable)
 
-    s1 = rospy.Service("scenario_data_srv", ScenarioDataSrv, getPredicates)
-    s2 = rospy.Service("object_location_srv", ObjectLocationSrv, getObjectLocation)
+    rospy.Service("scenario_data_srv", ScenarioDataSrv, getPredicates)
+    rospy.Service("object_location_srv", ObjectLocationSrv, getObjectLocation)
 
     rospy.spin()
     
