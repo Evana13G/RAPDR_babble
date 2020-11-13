@@ -335,3 +335,7 @@ def arg_list_to_hash(argNames, argValues):
             args[name] = val
     return args
 
+def extendInitLocs(currentState, additionalLocations):
+    initObjs = pddlObjects(currentState.predicateList.predicates, False)    
+    initObjs['cartesian'].extend(additionalLocations)     
+    return initObjs

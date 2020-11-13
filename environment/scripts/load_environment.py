@@ -169,6 +169,7 @@ def handle_environment_request(req):
             return HandleEnvironmentSrvResponse(0)
     else:
         print('No Action')
+        return HandleEnvironmentSrvResponse(0)
 
 
 def main():

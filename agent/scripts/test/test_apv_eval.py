@@ -19,10 +19,9 @@ def test(req):
     print("----- TESTING APV EVAL -----")
 
     try:
-        # APVtrials = generateAllCombos()
-        resp = APVproxy('push', ['left_gripper', 'cover'], 'rate', 3)
-        # test = ['(at cup 10)', '(touching cup cover)']
-        # test = [x for x in test if 'at' not in x]
+        
+        resp = APVproxy('push', ['left_gripper', 'cover'], 'rate', 3, 'heavy')
+
         return True 
     
     except rospy.ServiceException, e:

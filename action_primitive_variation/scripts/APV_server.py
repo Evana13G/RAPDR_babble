@@ -58,13 +58,14 @@ def novel_effect(actual_preconds, actual_effects, expected_effects):
 
 def execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment):
     envResetProxy('restart', 'default')
-    print("*****************************************")
     print('Action: ' + str(actionToVary) + ', Param: ' + str(paramToVary) + ', ' + str(paramAssignment))
     preconds = scenarioData().init
     paramActionExecutionProxy(actionToVary, args, [paramToVary], [str(paramAssignment)])
     effects = scenarioData().init
     expectation = pddlInstatiations(actionToVary, args).pddlBindings 
-    return(novel_effect(preconds, effects, expectation.effects))
+    novelty = novel_effect(preconds, effects, expectation.effects) 
+    
+    return(novelty)
 
 #### Call-back functions
 def set_up_variations(req):
@@ -73,7 +74,8 @@ def set_up_variations(req):
     actionToVary = req.actionName
     args = req.args
     paramToVary = req.param
-    T = req.T     
+    T = req.T  
+    env = req.environment
 
     if paramToVary == None or paramToVary == '':
         return APVSrvResponse([])

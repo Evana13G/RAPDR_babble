@@ -1,4 +1,5 @@
 string runName
+string scenario
 ---
 int64[] timePerAttempt
 int64 totalTime
