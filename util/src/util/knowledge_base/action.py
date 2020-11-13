@@ -80,7 +80,6 @@ class Action(object):
             else:
                 bound_vars[pddl_arg] = args[i_args]
                 i_args += 1
-
         return bound_vars        
         
     def get_instatiated_preconditions(self, args, locs):

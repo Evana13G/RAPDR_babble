@@ -51,58 +51,68 @@ def test_all_actions(req):
 
 
         #### PUSH ##########################################################
-        # print("----LOW mass, LOW friction, LOW velocity")
-        # paramActionExecutionProxy('push', ['left_gripper', 'cover'], ['rate'], ['10.0'])
+        print("Testing PUSH Scenario")
+        print("----Original Environment: Cup and Cover")
+        paramActionExecutionProxy('push', ['left_gripper', 'cover'], ['rate'], ['10.0'])
         
-        # envProxy('restart', 'HH')     
-        # print("----HIGH mass, HIGH friction, LOW velocity")
-        # paramActionExecutionProxy('push', ['left_gripper', 'cover'], ['rate'], ['10.0'])
+        envProxy('restart', 'HH')     
+        print("----New Environment: Cup and HEAVY/HIGH FRICTION Cover")
+        paramActionExecutionProxy('push', ['left_gripper', 'cover'], ['rate'], ['10.0'])
 
-        # envProxy('restart', 'HH')
-        # print("----HIGH mass, HIGH friction, HIGH velocity")
-        # paramActionExecutionProxy('push', ['left_gripper', 'cover'], ['rate'], ['100.0'])
+        envProxy('restart', 'HH')
+        print("----New Environment: Increased Rate for PUSH")
+        paramActionExecutionProxy('push', ['left_gripper', 'cover'], ['rate'], ['100.0'])
 
-        # envProxy('restart', 'default')    
-        # print("----LOW mass, LOW friction, HIGH velocity")
-        # paramActionExecutionProxy('push', ['left_gripper', 'cover'], ['rate'], ['100.0'])
+        envProxy('restart', 'default')    
+        print("----Original Environment: Increased Rate for PUSH")
+        paramActionExecutionProxy('push', ['left_gripper', 'cover'], ['rate'], ['100.0'])
         ####################################################################
 
 
         #### SHAKE #########################################################
+        print("Testing SHAKE Scenario")
         envProxy('restart', 'default')
-        print("----LOW mass, LOW friction")
+        print("----Original Environment: Cup and Cover")
         pddlActionExecutionProxy('shake', ['left_gripper', 'cup'])
 
         envProxy('restart', 'high_friction')
-        print("----Testing DEFAULT")
+        print("----New Environment: Cup and HIGH FRICTION Cover")
         pddlActionExecutionProxy('shake', ['left_gripper', 'cup'])
 
         envProxy('restart', 'high_friction')
-        print("----Testing twistRange: 3")
-        paramActionExecutionProxy('shake', ['left_gripper', 'cover'], ['movementMagnitude'], ['3.0'])
+        print("----New Environment: Decreased Twist Range")
+        paramActionExecutionProxy('shake', ['left_gripper', 'cup'], ['movementMagnitude'], ['3.0'])
 
         envProxy('restart', 'high_friction')
-        print("----Testing twistRange: 0.5")
-        paramActionExecutionProxy('shake', ['left_gripper', 'cover'], ['movementMagnitude'], ['0.5'])
+        print("----New Environment: Increased Twist Range")
+        paramActionExecutionProxy('shake', ['left_gripper', 'cup'], ['movementMagnitude'], ['0.5'])
 
         envProxy('restart', 'high_friction')
-        print("----Testing speed: 0.1")
-        paramActionExecutionProxy('shake', ['left_gripper', 'cover'], ['rate'], ['0.1'])
+        print("----New Environment: Decreased Rate")
+        paramActionExecutionProxy('shake', ['left_gripper', 'cup'], ['rate'], ['0.1'])
 
         envProxy('restart', 'high_friction')
-        print("----Testing speed: 2.0")
-        paramActionExecutionProxy('shake', ['left_gripper', 'cover'], ['rate'], ['2.0'])
+        print("----New Environment: Decreased Rate")
+        paramActionExecutionProxy('shake', ['left_gripper', 'cup'], ['rate'], ['2.0'])
+
+        ### Test newly found action on the original scenario
         ####################################################################
 
         #### PRESS #########################################################        
-        paramActionExecutionProxy('press', ['left_gripper', 'cover'], ['rate', 'movementMagnitude'], ['0.2', '0.1'])
-        envProxy('restart', 'heavy') 
+        # print("Testing PRESS Scenario")
+        # envProxy('restart', 'default')
 
-        pddlActionExecutionProxy('press', ['left_gripper', 'cover'])
-        envProxy('restart', 'default')
+        ## COME BACK TO THIS
+
+        # print("----Original Environment: Cup and Cover")
+        # paramActionExecutionProxy('press', ['left_gripper', 'cover'], ['rate', 'movementMagnitude'], ['0.2', '0.1'])
+
+        # envProxy('restart', 'heavy') 
+        # pddlActionExecutionProxy('press', ['left_gripper', 'cover'])
+        # envProxy('restart', 'default')
         
-        paramActionExecutionProxy('press', ['left_gripper', 'cover'], ['rate', 'movementMagnitude'], ['0.2', '500.0'])
-        envProxy('restart', 'default')  
+        # paramActionExecutionProxy('press', ['left_gripper', 'cover'], ['rate', 'movementMagnitude'], ['0.2', '500.0'])
+        # envProxy('restart', 'default')  
         ####################################################################
 
         return True  

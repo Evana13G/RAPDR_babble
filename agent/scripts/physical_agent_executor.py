@@ -249,12 +249,12 @@ def approach(req):
 
 def main():
     rospy.init_node("physical_agent_node")
-    rospy.wait_for_service('/object_location_srv')
 
     global pa
     pa = PhysicalAgent()
 
     rospy.Service("move_to_start_srv", MoveToStartSrv, move_to_start)
+    
     rospy.Service("pddl_action_executor_srv", PddlExecutorSrv, pddl_action_executor)
     rospy.Service("raw_action_executor_srv", RawActionExecutorSrv, raw_action_executor)
     rospy.Service("param_action_executor_srv", ParamActionExecutorSrv, param_action_executor)
