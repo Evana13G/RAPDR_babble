@@ -125,6 +125,7 @@ def getPlanFromSolutionFile(filePath):
             plan.append(action)
     return plan
 
+
 def saveFigureToImage(fig, filename, loc):
     if loc == 'APV':
         fig.savefig(str(APVimage_Filepath) + str(filename))

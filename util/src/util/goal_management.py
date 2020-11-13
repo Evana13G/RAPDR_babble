@@ -4,23 +4,16 @@ import os
 def goalAccomplished(goalList, currentState):
     numGoalsAccomplished = 0
     for goal in goalList:
+
         if goal in currentState:
             numGoalsAccomplished = numGoalsAccomplished + 1
+        elif 'not' in goal:
+            goal = goal[5:-1] # strip out the not operation (should abstract this)
+            if goal not in currentState:
+                numGoalsAccomplished = numGoalsAccomplished + 1
     if numGoalsAccomplished == len(goalList):
         return True
     return False
-
-def isViable(action):
-    if action.getEffects() == []:
-        return False
-    return True
-
-# def novel_effect(actual_preconds, actual_effects, expected_effects):
-#     for pred in actual_effects:
-#         if 'at' not in pred:
-#             if (pred not in expected_effects) and (pred not in actual_preconds):
-#                 return True
-#     return False 
 
 # def generateResultsDir(brainRunDirectory, resultsName):
 #     resultsDir = brainRunDirectory + '/../../results/' + resultsName 
@@ -58,16 +51,34 @@ def compileResults(brainRunDirectory, runName):
         logData.append(("Unable to compile results: %s"%e))
 
 
-def generateAllCombos():
+# def get_scenario_settings(scenario):
+#     if scenario == 'discover_strike':
+#         goal = ['(touching left_gripper cover)']
+#         orig_scenario = 'default'
+#         novel_scenario = 'heavy'
+#         T = 3
+#     elif scenario == 'discover_pour':
+#         goal = ['(not (touching left_gripper cover))']
+#         orig_scenario = 'default'
+#         novel_scenario = 'high_friction'
+#         T = 3
+#     else:
+#         goal = []
+#         orig_scenario = ''
+#         novel_scenario = ''
+#         T = 0
+#     return goal, orig_scenario, novel_scenario, T
+ 
+def generateAllCombos(T):
     APVtrials = []
-    APVtrials.append(['push', ['left_gripper', 'cover'], 'rate']) 
-    # APVtrials.append(['grasp', ['left_gripper', 'cover'], None]) 
-    # APVtrials.append(['shake', ['left_gripper', 'cover'], 'twistRange']) 
-    # APVtrials.append(['shake', ['left_gripper', 'cover'], 'rate']) 
-    # APVtrials.append(['press', ['left_gripper', 'cover'], 'hoverDistance']) 
-    # APVtrials.append(['press', ['left_gripper', 'cover'], 'pressAmount']) 
-    # APVtrials.append(['press', ['left_gripper', 'cover'], 'rate']) 
-    # APVtrials.append(['drop', ['left_gripper', 'cover'], 'dropHeight']) 
+    APVtrials.append(['push', ['left_gripper', 'cover'], 'rate', T]) 
+    # APVtrials.append(['grasp', ['left_gripper', 'cover'], None, T]) 
+    # APVtrials.append(['shake', ['left_gripper', 'cover'], 'twistRange', T]) 
+    # APVtrials.append(['shake', ['left_gripper', 'cover'], 'rate', T]) 
+    # APVtrials.append(['press', ['left_gripper', 'cover'], 'hoverDistance', T]) 
+    # APVtrials.append(['press', ['left_gripper', 'cover'], 'pressAmount', T]) 
+    # APVtrials.append(['press', ['left_gripper', 'cover'], 'rate', T]) 
+    # APVtrials.append(['drop', ['left_gripper', 'cover'], 'dropHeight', T]) 
 
 
     return APVtrials  

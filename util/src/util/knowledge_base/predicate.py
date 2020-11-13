@@ -8,12 +8,18 @@ class TemplatedPredicate(object):
     def get_instatiated_str(self, mapping):
         args = ''
         for var in self.vars:
-            args = args + ' ' + str(mapping[var])
+            if type(var) is TemplatedPredicate:
+                val = var.get_instatiated_str(mapping)
+            else:
+                val = str(mapping[var])
+            args = args + ' ' + val
         return "(" + self.operator + args + ")"
         
     def __str__(self):
         args = ''
         for v in self.vars:
+            # if type(v) is TemplatedPredicate:
+                
             args = args + ' ' + str(v)
         return "(" + self.operator + args + ")"
 
