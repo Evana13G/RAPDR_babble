@@ -38,6 +38,7 @@ add_service_files(
   GetKBPddlLocsSrv.srv
   GetKBActionInfoSrv.srv
   GetActionPDDLBindingSrv.srv
+  AddActionToKBSrv.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs gazebo_msgs)
