@@ -86,6 +86,25 @@ def handle_get_pddl_instatiations(req):
 
     return ActionPDDLBinding(name, preConds, effects)
 
+
+def add_action_to_KB(req):    
+    new_name = req.new_action_name
+    param_names = req.param_names
+    param_assignments = req.param_assignments
+    new_effects = req.new_effects
+    
+    try: 
+        assert(len(param_names) == len(param_assignments))
+        new_action = copy.deepcopy(KB.getAction(req.orig_action_name))
+        new_action.setName(new_name)
+        new_action.setEffects(effects)
+        for i in range(len(param_names)):
+            new_action.setParam(param_names[i], param_assignments[i])
+        KB.addAction(new_action)
+        return AddActionToKBSrvResponse(True)
+    except:
+        return AddActionToKBSrvResponse(False)
+
 ################################################################################
 
 def main():
@@ -96,7 +115,7 @@ def main():
     rospy.Service("get_KB_action_locs", GetKBActionLocsSrv, handle_action_locs_req)
     rospy.Service("get_KB_pddl_locs", GetKBPddlLocsSrv, handle_pddlLocs_req)
     rospy.Service("get_pddl_instatiations_srv", GetActionPDDLBindingSrv, handle_get_pddl_instatiations)
-
+    rospy.ServiceProxy("add_action_to_KB_srv", AddActionToKBSrv, add_action_to_KB)
     rospy.spin()
 
     return 0 
@@ -104,3 +123,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+

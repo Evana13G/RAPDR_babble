@@ -68,7 +68,7 @@ def handle_trial(req):
         print("#### ---- Novel Scenario (NS): ")
         attempt = 1
         totalTimeStart = rospy.get_time()
-        currentState = scenarioData()
+        # currentState = scenarioData()
 
         while(goalAccomplished(goal, currentState.init) == False):
             
