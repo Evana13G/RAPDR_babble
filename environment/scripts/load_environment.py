@@ -112,7 +112,6 @@ def load_gazebo_models(env='default'):
     spawn_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
 
     try:
-<<<<<<< HEAD
         spawn_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
         resp_sdf = spawn_sdf("cafe_table", table_xml, "/",
                              table_pose, reference_frame)
@@ -132,15 +131,13 @@ def load_gazebo_models(env='default'):
             resp_sdf = spawn_sdf("marbleB_"+ str(i), marbleB_xml, "/",
                                 marble_pose, reference_frame)
     except rospy.ServiceException as e:
-=======
         spawn_sdf("cafe_table", table_xml, "/", table_pose, reference_frame)
         spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
         spawn_sdf("cover", cover_xml, "/", cover_pose, reference_frame)
         # spawn_sdf("cover2", cover_xml, "/", left_button_pose, reference_frame)
         # spawn_sdf("cover3", cover_xml, "/", right_button_pose, reference_frame)
 
-    except rospy.ServiceException, e:
->>>>>>> 76f96f72725437586d99ae5a1f8560a3d162eb84
+    except rospy.ServiceException as e:
         rospy.logerr("Spawn URDF service call failed: {0}".format(e))
         
 
@@ -158,18 +155,11 @@ def delete_gazebo_models():
         pub_all.publish(False)
         
         delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
-<<<<<<< HEAD
-        resp_delete = delete_model("plastic_cup")
-        for i in range(num_marbles):         
-            resp_delete = delete_model("marbleB_"+str(i))
-    except rospy.ServiceException as e:
-=======
         delete_model("cafe_table")
         delete_model("cup")
         delete_model("cover")
 
-    except rospy.ServiceException, e:
->>>>>>> 76f96f72725437586d99ae5a1f8560a3d162eb84
+    except rospy.ServiceException as e:
         rospy.loginfo("Delete Model service call failed: {0}".format(e))
 
 

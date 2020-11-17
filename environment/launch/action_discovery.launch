@@ -1,6 +1,9 @@
 <launch>
 	
 	<!-- Baxter world launch  -->
+	
+	<!-- <arg name="model" default="$(find baxter_description)/urdf/baxter.urdf.xacro"/> -->
+
 	<node name="scenario_data_node" pkg="environment" type="scenario_data_node" />
 	<node name="physical_agent_node" pkg="agent" type="physical_agent_node" />
 

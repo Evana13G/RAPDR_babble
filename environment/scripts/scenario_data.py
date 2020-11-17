@@ -87,18 +87,15 @@ def updateVisionBasedPredicates():
 
     # Need to update the image converter to deal with more objects and to be more sophisticated. 
     # For the image recognition part, every object MUST have a different color to identify it  
-<<<<<<< HEAD
     if (imageConverter.getObjectPixelCount('plastic_cup') > 0):
         new_predicates.append(Predicate(operator="is_visible", objects=["cup"], locationInformation=None)) 
     if (imageConverter.getObjectPixelCount('marble_1_5cm') > 0):
-=======
     
     # if (imageConverter.getObjectPixelCount('cup') > 0):
     if (imageConverter.is_visible('cup') == True):
         new_predicates.append(Predicate(operator="is_visible", objects=["cup"], locationInformation=None)) 
     # if (imageConverter.getObjectPixelCount('cover') > 0):
     if (imageConverter.is_visible('cover') == True):
->>>>>>> 76f96f72725437586d99ae5a1f8560a3d162eb84
         new_predicates.append(Predicate(operator="is_visible", objects=["cover"], locationInformation=None)) 
     predicates_list = new_predicates
 

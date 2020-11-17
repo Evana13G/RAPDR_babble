@@ -49,7 +49,6 @@ pub_marble_pose = rospy.Publisher('marble_pose', PoseStamped, queue_size = 10)
 
 
 
-<<<<<<< HEAD
 def setPubAll(data):
     global pub_all
     pub_all = data.data
@@ -129,11 +128,9 @@ def delete_gazebo_models():
     except rospy.ServiceException as e:
         pub = True
         rospy.loginfo("Delete Model service call failed: {0}".format(e))
-=======
 # def setPubAll(data):
 #     global pub_all
 #     pub_all = data.data
->>>>>>> 76f96f72725437586d99ae5a1f8560a3d162eb84
         
 def poseFromPoint(poseVar):
     newPose = poseVar.pose
@@ -160,7 +157,6 @@ def publish(environment='default'):
     except rospy.ServiceException, e:
         rospy.logerr("get_model_state for cafe_table service call failed: {0}".format(e))
 
-<<<<<<< HEAD
     num_marbles = 5
 
     # print(pub_all)
@@ -223,7 +219,6 @@ def publish(environment='default'):
             pose_lgrf = resp_lgrf_link_state.link_state.pose
         except rospy.ServiceException as e:
             rospy.logerr("get_link_state for l_gripper_r_finger: {0}".format(e))
-=======
     try:
         cover_ms = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
         resp_cover_ms = cover_ms("cover", "");
@@ -234,7 +229,6 @@ def publish(environment='default'):
         pub_cover_pose.publish(poseFromPoint(poseStamped_cover))
     except rospy.ServiceException, e:
         rospy.logerr("get_model_state for block service call failed: {0}".format(e))
->>>>>>> 76f96f72725437586d99ae5a1f8560a3d162eb84
 
     try:
         cup_ms = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
@@ -286,7 +280,6 @@ def publish(environment='default'):
     except rospy.ServiceException, e:
         rospy.logerr("Unable to calculate calibrated position: {0}".format(e))
 
-<<<<<<< HEAD
         pose_rglf = None
         pose_rgrf = None
 
@@ -304,7 +297,6 @@ def publish(environment='default'):
             pose_rgrf = resp_rgrf_link_state.link_state.pose
         except rospy.ServiceException as e:
             rospy.logerr("get_link_state for r_gripper_r_finger: {0}".format(e))
-=======
     try:
         lglf_link_state = rospy.ServiceProxy('/gazebo/get_link_state', GetLinkState)
         resp_rglf_link_state = lglf_link_state('r_gripper_l_finger', 'world')
@@ -319,7 +311,6 @@ def publish(environment='default'):
         pose_rgrf = resp_rgrf_link_state.link_state.pose
     except rospy.ServiceException, e:
         rospy.logerr("get_link_state for r_gripper_r_finger: {0}".format(e))
->>>>>>> 76f96f72725437586d99ae5a1f8560a3d162eb84
 
     try:
         rightGripperPose = Pose()
