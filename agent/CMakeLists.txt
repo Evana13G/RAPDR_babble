@@ -27,6 +27,8 @@ PddlExecutorSrv.srv
 RawActionExecutorSrv.srv
 ParamActionExecutorSrv.srv
 IsVisibleSrv.srv
+BrainSrv.srv
+GetScenarioSettingsSrv.srv
 )
 
 catkin_python_setup()

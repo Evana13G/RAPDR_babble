@@ -22,8 +22,9 @@ from agent.msg import *
 from environment.srv import ObjectLocationSrv
 from util.action_request import ActionRequest
 from util.data_conversion import arg_list_to_hash
+from util.data_conversion import * 
 
-obj_location_srv = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
+getObjLoc = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
 
 ################################################################################
 #### LOCAL INFORMATION #########################################################
@@ -40,7 +41,7 @@ offsets = {'cup' : {'left': {'x' : 0, 'y' : 0.13, 'z' : 0},
 ################################################################################
 #### ACCESS FUNCTIONS ##########################################################
 def getObjectPose(object_name, pose_only=False):
-    loc_pStamped = obj_location_srv(object_name)
+    loc_pStamped = getObjLoc(object_name)
     if pose_only == True:
         return loc_pStamped.location.pose
     return loc_pStamped.location
@@ -117,12 +118,40 @@ def get_offset(req):
     vals = offsets[objectName][orientation]
     return HardcodedOffset(vals['x'], vals['y'], vals['z'])
 
+def scenario_settings(req):
+    scenario = req.scenario
+    if scenario == 'discover_strike':
+        coverLoc = getObjLoc('cover').location
+        goal = ['(not (at cover '+ poseStampedToString(coverLoc) + '))']
+        orig_scenario = 'default'
+        novel_scenario = 'heavy'
+        T = 3
+        additional_domain_locs = []
+    elif scenario == 'discover_pour':
+        goal = ['not (touching cup cover)']
+        orig_scenario = 'default'
+        novel_scenario = 'high_friction'
+        T = 3
+        additional_domain_locs = []
+    else:
+        goal = []
+        orig_scenario = ''
+        novel_scenario = ''
+        T = 0
+        additional_domain_locs = []
+    return GetScenarioSettingsSrvResponse(goal, 
+                                          orig_scenario, 
+                                          novel_scenario, 
+                                          T, 
+                                          additional_domain_locs)
+
 ################################################################################
 
 def main():
     rospy.init_node("execution_info_node")
     rospy.Service("get_offset", GetHardcodedOffsetSrv, get_offset)
     rospy.Service("calc_gripper_orientation_pose", CalcGripperOrientationPoseSrv, orientation_solver)
+    rospy.Service("scenario_settings_srv", GetScenarioSettingsSrv, scenario_settings)
     rospy.spin()
 
     return 0 

@@ -1,34 +1,36 @@
 #!/usr/bin/env python
 
-import argparse
-import struct
-import sys
-import copy
-import numpy as np
-
 import rospy
-import rospkg
 
-from gazebo_msgs.srv import (
-    SpawnModel,
-    DeleteModel,
-)
-from geometry_msgs.msg import (
-    PoseStamped,
-    Pose,
-    Point,
-    Quaternion,
-)
-from std_msgs.msg import (
-    Header,
-    Empty,
-)
+# import argparse
+# import struct
+# import sys
+# import copy
+# import numpy as np
 
-from util.data_conversion import *
+# import rospkg
+
+# from gazebo_msgs.srv import (
+#     SpawnModel,
+#     DeleteModel,
+# )
+# from geometry_msgs.msg import (
+#     PoseStamped,
+#     Pose,
+#     Point,
+#     Quaternion,
+# )
+# from std_msgs.msg import (
+#     Header,
+#     Empty,
+# )
+
+# from util.data_conversion import *
 from environment.srv import * 
 from pddl.srv import *
 from pddl.msg import *
 from agent.srv import *
+
 from util.knowledge_base.knowledge_base import KnowledgeBase
 
 KB = KnowledgeBase()

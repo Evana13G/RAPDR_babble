@@ -149,6 +149,9 @@ def press(req):
 
 ################################################################################
 ################################################################################
+def strip_pddl_call(arg_list):
+    new_args = [x for x in arg_list if ',' not in x]
+    return new_args 
 
 ## To call for any general action to be executed
 # Performs checks and send to the appropriate srv
@@ -214,7 +217,10 @@ def pddl_action_executor(req):
     paramNames = actionInfo.paramNames
     paramDefaults = actionInfo.paramDefaults
 
+    if len(argNames) != len(args):
+        args = strip_pddl_call(args) 
     assert(len(argNames) == len(args))
+    
     action_executor(Action(actionName, argNames, paramNames, args, paramDefaults))
     return PddlExecutorSrvResponse(1)
 
