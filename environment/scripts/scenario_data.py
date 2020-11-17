@@ -27,8 +27,8 @@ predicatesPublisher = rospy.Publisher('predicate_values', PredicateList, queue_s
 imageConverter = ImageConverter()
 # isVisible = rospy.ServiceProxy('is_visible_srv', IsVisibleSrv)
 
-CupPose = None
-CoverPose = None
+Breakable_Obj_Pose = None
+
 LeftGripperPose = None
 RightGripperPose = None
 TablePose = None
@@ -36,15 +36,11 @@ TablePose = None
 predicates_list = []
 
 ########################################################
-def setPoseCup(data):
-    global CupPose
-    CupPose = data
-    updatePredicates("cup", data)
+def setPoseBreakable_Obj(data):
+    global Breakable_Obj_Pose
+    Breakable_Obj_Pose = data
+    updatePredicates("breakable_obj", data)
 
-def setPoseCover(data):
-    global CoverPose
-    CoverPose = data
-    updatePredicates("cover", data)
 
 def setPoseGripperLeft(data):
     global LeftGripperPose
@@ -88,13 +84,10 @@ def updateVisionBasedPredicates():
     # Need to update the image converter to deal with more objects and to be more sophisticated. 
     # For the image recognition part, every object MUST have a different color to identify it  
     
-    # if (imageConverter.getObjectPixelCount('cup') > 0):
-    if (imageConverter.is_visible('cup') == True):
-        new_predicates.append(Predicate(operator="is_visible", objects=["cup"], locationInformation=None)) 
-    # if (imageConverter.getObjectPixelCount('cover') > 0):
-    if (imageConverter.is_visible('cover') == True):
-        new_predicates.append(Predicate(operator="is_visible", objects=["cover"], locationInformation=None)) 
-    predicates_list = new_predicates
+    # if (imageConverter.getObjectPixelCount('breakable_obj') > 0):
+    if (imageConverter.is_visible('breakable_obj') == True):
+        new_predicates.append(Predicate(operator="is_visible", objects=["breakable_obj"], locationInformation=None)) 
+
 
 def updatePhysicalStateBasedPredicates():
     physical_operators = ['pressed', 'obtained', 'touching'] #grasped?
@@ -110,16 +103,8 @@ def updatePhysicalStateBasedPredicates():
         new_predicates.append(Predicate(operator="touching", objects=['left_gripper', 'table'], locationInformation=None)) 
     if is_touching(RightGripperPose, TablePose):
         new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'table'], locationInformation=None)) 
-    if is_touching(CupPose, TablePose):
-        new_predicates.append(Predicate(operator="touching", objects=['cup', 'table'], locationInformation=None)) 
-    if is_touching(CoverPose, TablePose):
-        new_predicates.append(Predicate(operator="touching", objects=['cover', 'table'], locationInformation=None)) 
-    if is_touching(CoverPose, CupPose, 0.235):
-        new_predicates.append(Predicate(operator="touching", objects=['cover', 'cup'], locationInformation=None)) 
-    if is_touching(LeftGripperPose, CoverPose, 1.1):
-        new_predicates.append(Predicate(operator="touching", objects=['left_gripper', 'cover'], locationInformation=None)) 
-    if is_touching(RightGripperPose, CoverPose, 1.1):
-        new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'cover'], locationInformation=None)) 
+    if is_touching(Breakable_Obj_Pose, TablePose):
+        new_predicates.append(Predicate(operator="touching", objects=['breakable_obj', 'table'], locationInformation=None)) 
 
     predicates_list = new_predicates
 
@@ -132,8 +117,7 @@ def getPredicates(data):
 def getObjectLocation(data):
     obj = data.obj
     obj_choices = {
-        'cup': CupPose,
-        'cover': CoverPose,
+        'breakable_obj': Breakable_Obj_Pose,
         'left_gripper': LeftGripperPose,
         'right_gripper': RightGripperPose, 
         'table': TablePose
@@ -144,8 +128,7 @@ def main():
     rospy.init_node("scenario_data_node")
     rospy.wait_for_service('is_visible_srv', timeout=60)
    
-    rospy.Subscriber("cup_pose", PoseStamped, setPoseCup)
-    rospy.Subscriber("cover_pose", PoseStamped, setPoseCover)
+    rospy.Subscriber("breakable_obj_pose", PoseStamped, setPoseBreakable_Obj)
     rospy.Subscriber("left_gripper_pose", PoseStamped, setPoseGripperLeft)
     rospy.Subscriber("right_gripper_pose", PoseStamped, setPoseGripperRight)
     rospy.Subscriber("cafe_table_pose", PoseStamped, setPoseTable)

@@ -43,8 +43,7 @@ pub_cafe_table_pose = rospy.Publisher('cafe_table_pose', PoseStamped, queue_size
 pub_block_pose = rospy.Publisher('block_pose', PoseStamped, queue_size = 10)
 pub_left_gripper_pose = rospy.Publisher('left_gripper_pose', PoseStamped, queue_size = 10)
 pub_right_gripper_pose = rospy.Publisher('right_gripper_pose', PoseStamped, queue_size = 10)
-pub_cup_pose = rospy.Publisher('cup_pose', PoseStamped, queue_size = 10)
-pub_cover_pose = rospy.Publisher('cover_pose', PoseStamped, queue_size = 10)
+pub_breakable_obj_pose = rospy.Publisher('breakable_obj_pose', PoseStamped, queue_size = 10)
 
 
 # def setPubAll(data):
@@ -73,29 +72,18 @@ def publish(environment='default'):
         poseStamped_cafe_table = PoseStamped(header=header_cafe_table, pose=pose_cafe_table)
         pub_cafe_table_pose.publish(poseFromPoint(poseStamped_cafe_table))
 
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         rospy.logerr("get_model_state for cafe_table service call failed: {0}".format(e))
 
     try:
-        cover_ms = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
-        resp_cover_ms = cover_ms("cover", "");
-        pose_cover = resp_cover_ms.pose
-        header_cover = resp_cover_ms.header
-        header_cover.frame_id = frameid_var
-        poseStamped_cover = PoseStamped(header=header_cover, pose=pose_cover)
-        pub_cover_pose.publish(poseFromPoint(poseStamped_cover))
-    except rospy.ServiceException, e:
-        rospy.logerr("get_model_state for block service call failed: {0}".format(e))
-
-    try:
-        cup_ms = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
-        resp_cup_ms = cup_ms("cup", "");
-        pose_cup = resp_cup_ms.pose
-        header_cup = resp_cup_ms.header
-        header_cup.frame_id = frameid_var
-        poseStamped_cup = PoseStamped(header=header_cup, pose=pose_cup)
-        pub_cup_pose.publish(poseFromPoint(poseStamped_cup))
-    except rospy.ServiceException, e:
+        breakable_obj_ms = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
+        resp_breakable_obj_ms = breakable_obj_ms("breakable_obj", "");
+        pose_breakable_obj = resp_breakable_obj_ms.pose
+        header_breakable_obj = resp_breakable_obj_ms.header
+        header_breakable_obj.frame_id = frameid_var
+        poseStamped_breakable_obj = PoseStamped(header=header_breakable_obj, pose=pose_breakable_obj)
+        pub_breakable_obj_pose.publish(poseFromPoint(poseStamped_breakable_obj))
+    except rospy.ServiceExceptin as e:
         rospy.logerr("get_model_state for block service call failed: {0}".format(e))
 
 
@@ -114,7 +102,7 @@ def publish(environment='default'):
         resp_lglf_link_state = lglf_link_state('l_gripper_l_finger', 'world')
         # lglf_reference = resp_lglf_link_state.link_state.reference_frame
         pose_lglf = resp_lglf_link_state.link_state.pose
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         rospy.logerr("get_link_state for l_gripper_l_finger: {0}".format(e))
     try:
         lgrf_link_state = rospy.ServiceProxy('/gazebo/get_link_state', GetLinkState)
