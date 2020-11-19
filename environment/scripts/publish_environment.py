@@ -44,9 +44,9 @@ pub_cafe_table_pose = rospy.Publisher('cafe_table_pose', PoseStamped, queue_size
 pub_block_pose = rospy.Publisher('block_pose', PoseStamped, queue_size = 10)
 pub_left_gripper_pose = rospy.Publisher('left_gripper_pose', PoseStamped, queue_size = 10)
 pub_right_gripper_pose = rospy.Publisher('right_gripper_pose', PoseStamped, queue_size = 10)
-pub_cup_pose = rospy.Publisher('cup_pose', PoseStamped, queue_size = 10)
-pub_marble_pose = rospy.Publisher('marble_pose', PoseStamped, queue_size = 10)
-
+pub_plastic_cup_pose = rospy.Publisher('plastic_cup_pose', PoseStamped, queue_size = 10)
+pub_marbleB_pose = rospy.Publisher('marbleB_pose', PoseStamped, queue_size = 10)
+pub_marbleR_pose = rospy.Publisher('marbleR_pose', PoseStamped, queue_size = 10)
 
 
 def setPubAll(data):
@@ -59,8 +59,7 @@ def load_gazebo_models(table_pose=Pose(position=Point(x=0.78, y=0.0, z=0.0)),
                        right_button_pose=Pose(position=Point(x=0.525, y=-0.2715, z=0.8)),
                        left_button_pose=Pose(position=Point(x=0.525, y=0.1515, z=0.8)),
                        block_reference_frame="world", 
-                       cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.8)),
-                       cover_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9)),
+                       plastic_cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.8)),
                        marble_pose=Pose(position=Point(x=0.5, y=0.0 + random.uniform(0.1,0.3), z=0.9)),
                        reference_frame="world"):
 
@@ -71,12 +70,12 @@ def load_gazebo_models(table_pose=Pose(position=Point(x=0.78, y=0.0, z=0.0)),
     with open (model_path + "cafe_table/model.sdf", "r") as table_file:
         table_xml=table_file.read().replace('\n', '')
 
-    cup_xml = ''
-    with open (model_path + "plastic_cup/model.sdf", "r") as cup_file:
-        cup_xml=cup_file.read().replace('\n', '')
+    plastic_cup_xml = ''
+    with open (model_path + "plastic_cup/model.sdf", "r") as plastic_cup_file:
+        plastic_cup_xml=plastic_cup_file.read().replace('\n', '')
 
     marbleB_xml = ''
-    with open (model_path + "marble/model.sdf", "r") as marble_file:
+    with open (model_path + "marble/modelB.sdf", "r") as marble_file:
         marble_xml=marble_file.read().replace('\n', '')
 
     marbleR_xml = ''
@@ -96,8 +95,8 @@ def load_gazebo_models(table_pose=Pose(position=Point(x=0.78, y=0.0, z=0.0)),
 
     try:
         spawn_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
-        resp_sdf = spawn_sdf("plastic_cup", cup_xml, "/",
-                               cup_pose, reference_frame)
+        resp_sdf = spawn_sdf("plastic_cup", plastic_cup_xml, "/",
+                               plastic_cup_pose, reference_frame)
     except rospy.ServiceException as e:
         rospy.logerr("Spawn URDF service call failed: {0}".format(e))
         
@@ -105,7 +104,16 @@ def load_gazebo_models(table_pose=Pose(position=Point(x=0.78, y=0.0, z=0.0)),
         spawn_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
         num_marbles = 5
         for i in range(num_marbles):
-            resp_sdf = spawn_sdf("marbleB_"+ str(i), marble_xml, "/",
+            resp_sdf = spawn_sdf("marbleB_"+ str(i), marbleR_xml, "/",
+                                marble_pose, reference_frame)
+        
+    except rospy.ServiceException as e:
+        rospy.logerr("Spawn URDF service call failed: {0}".format(e))
+    try:
+        spawn_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
+        num_marbles = 5
+        for i in range(num_marbles):
+            resp_sdf = spawn_sdf("marbleR_"+ str(i), marbleR_xml, "/",
                                 marble_pose, reference_frame)
         
     except rospy.ServiceException as e:
@@ -125,6 +133,8 @@ def delete_gazebo_models():
         resp_delete = delete_model("plastic_cup")
         for i in range(num_marbles):         
             resp_delete = delete_model("marbleB_"+str(i))
+        for i in range(num_marbles):         
+            resp_delete = delete_model("marbleR_"+str(i))
     except rospy.ServiceException as e:
         pub = True
         rospy.loginfo("Delete Model service call failed: {0}".format(e))
@@ -154,7 +164,7 @@ def publish(environment='default'):
         poseStamped_cafe_table = PoseStamped(header=header_cafe_table, pose=pose_cafe_table)
         pub_cafe_table_pose.publish(poseFromPoint(poseStamped_cafe_table))
 
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         rospy.logerr("get_model_state for cafe_table service call failed: {0}".format(e))
 
     num_marbles = 5
@@ -174,25 +184,37 @@ def publish(environment='default'):
             rospy.logerr("get_model_state for cafe_table service call failed: {0}".format(e))
 
         try:
-            marble_ms = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
+            marbleB_ms = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
             for i in range(num_marbles):
-                resp_marble_ms = marble_ms("marbleB_"+str(i), "")
-            pose_marble = resp_marble_ms.pose
-            header_marble = resp_marble_ms.header
-            header_marble.frame_id = frameid_var
-            poseStamped_marble = PoseStamped(header=header_marble, pose=pose_marble)
-            pub_marble_pose.publish(poseFromPoint(poseStamped_marble))
+                resp_marbleB_ms = marbleB_ms("marbleB_"+str(i), "")
+            pose_marbleB = resp_marbleB_ms.pose
+            header_marbleB = resp_marbleB_ms.header
+            header_marbleB.frame_id = frameid_var
+            poseStamped_marbleB = PoseStamped(header=header_marbleB, pose=pose_marbleB)
+            pub_marbleB_pose.publish(poseFromPoint(poseStamped_marbleB))
         except rospy.ServiceException as e:
             rospy.logerr("get_model_state for block service call failed: {0}".format(e))
 
         try:
-            cup_ms = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
-            resp_cup_ms = cup_ms("plastic_cup", "");
-            pose_cup = resp_cup_ms.pose
-            header_cup = resp_cup_ms.header
-            header_cup.frame_id = frameid_var
-            poseStamped_cup = PoseStamped(header=header_cup, pose=pose_cup)
-            pub_cup_pose.publish(poseFromPoint(poseStamped_cup))
+            marbleR_ms = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
+            for i in range(num_marbles):
+                resp_marbleR_ms = marbleR_ms("marbleB_"+str(i), "")
+            pose_marbleR = resp_marbleR_ms.pose
+            header_marbleR = resp_marbleR_ms.header
+            header_marbleR.frame_id = frameid_var
+            poseStamped_marbleR = PoseStamped(header=header_marbleR, pose=pose_marbleR)
+            pub_marbleR_pose.publish(poseFromPoint(poseStamped_marbleR))
+        except rospy.ServiceException as e:
+            rospy.logerr("get_model_state for block service call failed: {0}".format(e))
+
+        try:
+            plastic_cup_ms = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
+            resp_plastic_cup_ms = plastic_cup_ms("plastic_cup", "");
+            pose_plastic_cup = resp_plastic_cup_ms.pose
+            header_plastic_cup = resp_plastic_cup_ms.header
+            header_plastic_cup.frame_id = frameid_var
+            poseStamped_plastic_cup = PoseStamped(header=header_plastic_cup, pose=pose_plastic_cup)
+            pub_plastic_cup_pose.publish(poseFromPoint(poseStamped_plastic_cup))
         except rospy.ServiceException as e:
             rospy.logerr("get_model_state for block service call failed: {0}".format(e))
 
@@ -219,26 +241,16 @@ def publish(environment='default'):
             pose_lgrf = resp_lgrf_link_state.link_state.pose
         except rospy.ServiceException as e:
             rospy.logerr("get_link_state for l_gripper_r_finger: {0}".format(e))
-    try:
-        cover_ms = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
-        resp_cover_ms = cover_ms("cover", "");
-        pose_cover = resp_cover_ms.pose
-        header_cover = resp_cover_ms.header
-        header_cover.frame_id = frameid_var
-        poseStamped_cover = PoseStamped(header=header_cover, pose=pose_cover)
-        pub_cover_pose.publish(poseFromPoint(poseStamped_cover))
-    except rospy.ServiceException, e:
-        rospy.logerr("get_model_state for block service call failed: {0}".format(e))
 
     try:
-        cup_ms = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
-        resp_cup_ms = cup_ms("cup", "");
-        pose_cup = resp_cup_ms.pose
-        header_cup = resp_cup_ms.header
-        header_cup.frame_id = frameid_var
-        poseStamped_cup = PoseStamped(header=header_cup, pose=pose_cup)
-        pub_cup_pose.publish(poseFromPoint(poseStamped_cup))
-    except rospy.ServiceException, e:
+        plastic_cup_ms = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
+        resp_plastic_cup_ms = plastic_cup_ms("plastic_cup", "");
+        pose_plastic_cup = resp_plastic_cup_ms.pose
+        header_plastic_cup = resp_plastic_cup_ms.header
+        header_plastic_cup.frame_id = frameid_var
+        poseStamped_plastic_cup = PoseStamped(header=header_plastic_cup, pose=pose_plastic_cup)
+        pub_plastic_cup_pose.publish(poseFromPoint(poseStamped_plastic_cup))
+    except rospy.ServiceException as e:
         rospy.logerr("get_model_state for block service call failed: {0}".format(e))
 
 
@@ -257,14 +269,14 @@ def publish(environment='default'):
         resp_lglf_link_state = lglf_link_state('l_gripper_l_finger', 'world')
         # lglf_reference = resp_lglf_link_state.link_state.reference_frame
         pose_lglf = resp_lglf_link_state.link_state.pose
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         rospy.logerr("get_link_state for l_gripper_l_finger: {0}".format(e))
     try:
         lgrf_link_state = rospy.ServiceProxy('/gazebo/get_link_state', GetLinkState)
         resp_lgrf_link_state = lgrf_link_state('l_gripper_r_finger', 'world')
         # lgrf_reference = resp_lgrf_link_state.link_state.reference_frame
         pose_lgrf = resp_lgrf_link_state.link_state.pose
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         rospy.logerr("get_link_state for l_gripper_r_finger: {0}".format(e))
 
     try:
@@ -277,7 +289,7 @@ def publish(environment='default'):
         
         poseStamped_left_gripper = PoseStamped(header=hdr, pose=leftGripperPose)
         pub_left_gripper_pose.publish(poseStamped_left_gripper)
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         rospy.logerr("Unable to calculate calibrated position: {0}".format(e))
 
         pose_rglf = None
@@ -302,14 +314,14 @@ def publish(environment='default'):
         resp_rglf_link_state = lglf_link_state('r_gripper_l_finger', 'world')
         lglf_reference = resp_lglf_link_state.link_state.reference_frame
         pose_rglf = resp_rglf_link_state.link_state.pose
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         rospy.logerr("get_link_state for r_gripper_l_finger: {0}".format(e))
     try:
         rgrf_link_state = rospy.ServiceProxy('/gazebo/get_link_state', GetLinkState)
         resp_rgrf_link_state = rgrf_link_state('r_gripper_r_finger', 'world')
         # lgrf_reference = resp_lgrf_link_state.link_state.reference_frame
         pose_rgrf = resp_rgrf_link_state.link_state.pose
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         rospy.logerr("get_link_state for r_gripper_r_finger: {0}".format(e))
 
     try:
@@ -321,7 +333,7 @@ def publish(environment='default'):
     
         poseStamped_right_gripper = PoseStamped(header=hdr, pose=rightGripperPose)
         pub_right_gripper_pose.publish(poseStamped_right_gripper)
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         rospy.logerr("Unable to calculate calibrated position: {0}".format(e))
 
 

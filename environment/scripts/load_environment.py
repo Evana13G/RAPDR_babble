@@ -49,9 +49,10 @@ def load_gazebo_models(env='default'):
     right_button_pose=Pose(position=Point(x=0.525, y=-0.2715, z=0.8))
     left_button_pose=Pose(position=Point(x=0.525, y=0.1515, z=0.8))
     block_reference_frame="world"
-    cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.8))
-    marble_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
-    cover_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
+
+    plastic_cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.8))
+    marbleB_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
+    marbleR_pose=Pose(position=Point(x=0.5, y=0,  z=0.9))
     reference_frame="world"
 
 
@@ -59,7 +60,7 @@ def load_gazebo_models(env='default'):
     model_path = rospkg.RosPack().get_path('environment')+"/models/"
 
     table_xml = ''
-    cup_xml = ''
+    plastic_cup_xml = ''
     marbleB_xml = ''
     marbleR_xml = ''
 
@@ -100,8 +101,8 @@ def load_gazebo_models(env='default'):
     ###############################
     ########### DEFAULT ########### 
     else:
-        with open (model_path + "plastic_cup/model.sdf", "r") as cup_file:
-            cup_xml=cup_file.read().replace('\n', '')
+        with open (model_path + "plastic_cup/model.sdf", "r") as plastic_cup_file:
+            plastic_cup_xml=plastic_cup_file.read().replace('\n', '')
         with open (model_path + "marble/modelB.sdf", "r") as marble_file:
             marbleB_xml=marble_file.read().replace('\n', '')
         with open (model_path + "marble/modelR.sdf", "r") as marble_file:
@@ -120,26 +121,26 @@ def load_gazebo_models(env='default'):
 
     try:
         spawn_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
-        resp_sdf = spawn_sdf("plastic_cup", cup_xml, "/",
-                                cup_pose, reference_frame)
+        resp_sdf = spawn_sdf("plastic_cup", plastic_cup_xml, "/",
+                                plastic_cup_pose, reference_frame)
     except rospy.ServiceException as e:
-        rospy.logerr("Spawn URDF service call failed: {0}".format(e))
-        
+        rospy.logerr("Spawn URDF service call failed: {0}".format(e))\
+
     try:
         num_marbles = 5
         for i in range(num_marbles):
             resp_sdf = spawn_sdf("marbleB_"+ str(i), marbleB_xml, "/",
-                                marble_pose, reference_frame)
-    except rospy.ServiceException as e:
-        spawn_sdf("cafe_table", table_xml, "/", table_pose, reference_frame)
-        spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
-        spawn_sdf("cover", cover_xml, "/", cover_pose, reference_frame)
-        # spawn_sdf("cover2", cover_xml, "/", left_button_pose, reference_frame)
-        # spawn_sdf("cover3", cover_xml, "/", right_button_pose, reference_frame)
-
+                                marbleB_pose, reference_frame)
     except rospy.ServiceException as e:
         rospy.logerr("Spawn URDF service call failed: {0}".format(e))
-        
+
+    try:
+        num_marbles = 5
+        for i in range(num_marbles):
+            resp_sdf = spawn_sdf("marbleR_"+ str(i), marbleR_xml, "/",
+                                marbleR_pose, reference_frame)
+    except rospy.ServiceException as e:
+        rospy.logerr("Spawn URDF service call failed: {0}".format(e))   
 
     pub_all.publish(True)
 
@@ -155,9 +156,11 @@ def delete_gazebo_models():
         
         delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
         delete_model("cafe_table")
-        delete_model("cup")
-        delete_model("cover")
-
+        delete_model("plastic_cup")
+        for i in range(num_marbles):
+            delete_model("marbleB_"+ str(i))
+        for i in range(num_marbles):
+            delete_model("marbleR_"+ str(i))
     except rospy.ServiceException as e:
         rospy.loginfo("Delete Model service call failed: {0}".format(e))
 

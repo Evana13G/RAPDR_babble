@@ -27,8 +27,9 @@ predicatesPublisher = rospy.Publisher('predicate_values', PredicateList, queue_s
 imageConverter = ImageConverter()
 # isVisible = rospy.ServiceProxy('is_visible_srv', IsVisibleSrv)
 
-CupPose = None
-MarblePose = None
+PlasticCupPose = None
+MarbleRPose = None
+MarbleBPose = None
 LeftGripperPose = None
 RightGripperPose = None
 TablePose = None
@@ -36,15 +37,20 @@ TablePose = None
 predicates_list = []
 
 ########################################################
-def setPoseCup(data):
-    global CupPose
-    CupPose = data
+def setPosePlasticCup(data):
+    global PlasticCupPose
+    PlasticCupPose = data
     updatePredicates("plastic_cup", data)
 
-def setPoseCover(data):
-    global MarblePose
-    MarblePose = data
-    updatePredicates("marble_1_5cm", data)
+def setPoseMarbleB(data):
+    global MarbleBPose
+    MarbleBPose = data
+    updatePredicates("marbleB", data)
+
+def setPoseMarbleR(data):
+    global MarbleRPose
+    MarbleRPose = data
+    updatePredicates("marbleR", data)
 
 def setPoseGripperLeft(data):
     global LeftGripperPose
@@ -88,15 +94,16 @@ def updateVisionBasedPredicates():
     # Need to update the image converter to deal with more objects and to be more sophisticated. 
     # For the image recognition part, every object MUST have a different color to identify it  
     if (imageConverter.getObjectPixelCount('plastic_cup') > 0):
-        new_predicates.append(Predicate(operator="is_visible", objects=["cup"], locationInformation=None)) 
-    if (imageConverter.getObjectPixelCount('marble_1_5cm') > 0):
-    
-    # if (imageConverter.getObjectPixelCount('cup') > 0):
-    if (imageConverter.is_visible('cup') == True):
-        new_predicates.append(Predicate(operator="is_visible", objects=["cup"], locationInformation=None)) 
-    # if (imageConverter.getObjectPixelCount('cover') > 0):
+        new_predicates.append(Predicate(operator="is_visible", objects=["plastic_cup"], locationInformation=None)) 
+    if (imageConverter.getObjectPixelCount('marbleB') > 0):
+        new_predicates.append(Predicate(operator="is_visible", objects=["marbleB"], locationInformation=None))
+    if (imageConverter.getObjectPixelCount('marbleR') > 0):
+        new_predicates.append(Predicate(operator="is_visible", objects=["marbleR"], locationInformation=None)) 
+    if (imageConverter.is_visible('plastic_cup') == True):
+        new_predicates.append(Predicate(operator="is_visible", objects=["plastic_cup"], locationInformation=None)) 
     if (imageConverter.is_visible('cover') == True):
         new_predicates.append(Predicate(operator="is_visible", objects=["cover"], locationInformation=None)) 
+
     predicates_list = new_predicates
 
 def updatePhysicalStateBasedPredicates():
@@ -113,16 +120,24 @@ def updatePhysicalStateBasedPredicates():
         new_predicates.append(Predicate(operator="touching", objects=['left_gripper', 'table'], locationInformation=None)) 
     if is_touching(RightGripperPose, TablePose):
         new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'table'], locationInformation=None)) 
-    if is_touching(CupPose, TablePose):
-        new_predicates.append(Predicate(operator="touching", objects=['cup', 'table'], locationInformation=None)) 
-    if is_touching(MarblePose, TablePose):
-        new_predicates.append(Predicate(operator="touching", objects=['cover', 'table'], locationInformation=None)) 
-    if is_touching(MarblePose, CupPose, 0.235):
-        new_predicates.append(Predicate(operator="touching", objects=['cover', 'cup'], locationInformation=None)) 
-    if is_touching(LeftGripperPose, MarblePose, 1.1):
+    if is_touching(PlasticCupPose, TablePose):
+        new_predicates.append(Predicate(operator="touching", objects=['plastic_cup', 'table'], locationInformation=None)) 
+    if is_touching(MarbleBPose, TablePose):
+        new_predicates.append(Predicate(operator="touching", objects=['marbleB', 'table'], locationInformation=None)) 
+    if is_touching(MarbleBPose, PlasticCupPose, 0.235):
+        new_predicates.append(Predicate(operator="touching", objects=['marbleB', 'plastic_cup'], locationInformation=None)) 
+    if is_touching(LeftGripperPose, MarbleBPose, 1.1):
         new_predicates.append(Predicate(operator="touching", objects=['left_gripper', 'cover'], locationInformation=None)) 
-    if is_touching(RightGripperPose, MarblePose, 1.1):
+    if is_touching(RightGripperPose, MarbleBPose, 1.1):
         new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'cover'], locationInformation=None)) 
+    if is_touching(MarbleRPose, TablePose):
+        new_predicates.append(Predicate(operator="touching", objects=['marbleR', 'table'], locationInformation=None)) 
+    if is_touching(MarbleRPose, PlasticCupPose, 0.235):
+        new_predicates.append(Predicate(operator="touching", objects=['marbleR', 'plastic_cup'], locationInformation=None)) 
+    if is_touching(LeftGripperPose, MarbleRPose, 1.1):
+        new_predicates.append(Predicate(operator="touching", objects=['left_gripper', 'marbleR'], locationInformation=None)) 
+    if is_touching(RightGripperPose, MarbleRPose, 1.1):
+        new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'marbleR'], locationInformation=None))        
 
     predicates_list = new_predicates
 
@@ -135,8 +150,9 @@ def getPredicates(data):
 def getObjectLocation(data):
     obj = data.obj
     obj_choices = {
-        'cup': CupPose,
-        'marble_1_5cm': MarblePose,
+        'plastic_cup': PlasticCupPose,
+        'marbleB': MarbleBPose,
+        'marbleR': MarbleRPose,
         'left_gripper': LeftGripperPose,
         'right_gripper': RightGripperPose, 
         'table': TablePose
@@ -147,8 +163,9 @@ def main():
     rospy.init_node("scenario_data_node")
     rospy.wait_for_service('is_visible_srv', timeout=60)
    
-    rospy.Subscriber("cup_pose", PoseStamped, setPoseCup)
-    rospy.Subscriber("marble_1_5cm", PoseStamped, setPoseCover)
+    rospy.Subscriber("plastic_cup_pose", PoseStamped, setPosePlasticCup)
+    rospy.Subscriber("marbleB", PoseStamped, setPoseMarbleB)
+    rospy.Subscriber("marbleR", PoseStamped, setPoseMarbleR)
     rospy.Subscriber("left_gripper_pose", PoseStamped, setPoseGripperLeft)
     rospy.Subscriber("right_gripper_pose", PoseStamped, setPoseGripperRight)
     rospy.Subscriber("cafe_table_pose", PoseStamped, setPoseTable)
