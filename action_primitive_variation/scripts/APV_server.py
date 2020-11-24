@@ -31,7 +31,7 @@ def process_intervals(actionInfo, paramToVary, T):
     i_paramToVary = paramNames.index(paramToVary)
     paramMin = float(paramMins[i_paramToVary])
     paramMax = float(paramMaxs[i_paramToVary])
-    I = (paramMax - paramMin)/T
+    I = (paramMax - paramMin)/(T-1)
 
     ## Process parameter values 
     paramVals = []
@@ -42,47 +42,42 @@ def process_intervals(actionInfo, paramToVary, T):
 
     return paramVals
 
-# def novel_effect(actual_preconds, actual_effects, expected_effects):
-#     actual_preconds = [x for x in actual_preconds if 'at' not in x]
-#     actual_effects = [x for x in actual_effects if 'at' not in x]
-#     expected_effects = [x for x in expected_effects if 'at' not in x] 
+def detect_loc_changing_objects(actual_preconds, actual_effects, expected_effects):
+    actual_preconds = [x for x in actual_preconds if 'at' in x]
+    actual_effects = [x for x in actual_effects if 'at' in x]
+    expected_effects = [x for x in expected_effects if 'at' in x]
 
-#     for pre in actual_preconds:
-#         if pre not in actual_effects:
-#             actual_effects.append('(not (' + pre + ')')
+    negativeLoc_objs = [x[9:].split()[0] for x in expected_effects if '(not ' in x]
+    positiveLoc_objs = [x[4:].split()[0] for x in expected_effects if '(not ' not in x]
 
-#     for pred in actual_effects:
-#         if pred not in expected_effects:
-#             if pred not in actual_preconds:
-#                 return True
-#     return False 
+    expected_loc_changing_objects = [x for x in positiveLoc_objs if x in negativeLoc_objs]
+    actual_loc_changing_objects = [pred[4:].split()[0] for pred in actual_effects if pred not in actual_preconds]
+
+    print(expected_loc_changing_objects)
+    print(actual_loc_changing_objects)
+
+    if expected_loc_changing_objects == actual_loc_changing_objects:
+        return []
+    return actual_loc_changing_objects 
 
 def novel_effect(actual_preconds, actual_effects, expected_effects):
+    # locChange = detect_loc_changing_objects(actual_preconds, actual_effects, expected_effects)
     actual_preconds = [x for x in actual_preconds if 'at' not in x]
     actual_effects = [x for x in actual_effects if 'at' not in x]
     expected_effects = [x for x in expected_effects if 'at' not in x] 
 
     for pre in actual_preconds:
         if pre not in actual_effects:
-            actual_effects.append('(not (' + pre + ')')
+            actual_effects.append('(not ' + pre + ')')
+
+    actual_effects = [x for x in actual_effects if x not in actual_preconds]
 
     for pred in actual_effects:
         if pred not in expected_effects:
-            if pred not in actual_preconds:
-                return True, actual_effects
+            # if locChange == []:
+            return True, actual_effects
 
     return False, actual_effects
-
-# def execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment):
-#     envResetProxy('restart', 'default')
-#     print('Action: ' + str(actionToVary) + ', Param: ' + str(paramToVary) + ', ' + str(paramAssignment))
-#     preconds = scenarioData().init
-#     paramActionExecutionProxy(actionToVary, args, [paramToVary], [str(paramAssignment)])
-#     effects = scenarioData().init
-#     expectation = pddlInstatiations(actionToVary, args).pddlBindings 
-#     novelty = novel_effect(preconds, effects, expectation.effects) 
-    
-#     return(novelty)
 
 def execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment, env):
     envResetProxy('restart', env)
@@ -90,36 +85,9 @@ def execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment
     preconds = scenarioData().init
     paramActionExecutionProxy(actionToVary, args, [paramToVary], [str(paramAssignment)])
     effects = scenarioData().init
-    expectation = pddlInstatiations(actionToVary, args).pddlBindings 
+    expectation = pddlInstatiations(actionToVary, args).pddlBindings
     novelty, new_effects = novel_effect(preconds, effects, expectation.effects) 
     return novelty, new_effects
-
-
-# #### Call-back functions
-# def set_up_variations(req):
-    
-#     #### Extract Info
-#     actionToVary = req.actionName
-#     args = req.args
-#     paramToVary = req.param
-#     T = req.T  
-#     env = req.environment
-
-#     if paramToVary == None or paramToVary == '':
-#         return APVSrvResponse([])
-
-#     actionInfo = actionInfoProxy(actionToVary).actionInfo
-#     argNames = actionInfo.executableArgNames
-#     assert(len(argNames) == len(args))
-
-#     paramVals = process_intervals(actionInfo, paramToVary, T)
-    
-#     for paramAssignment in paramVals:
-#         validity = execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment)
-#         if validity == True:
-#             print("Add to Knowledge Base")
-
-#     return APVSrvResponse([])
 
 #### Call-back functions
 def set_up_variations(req):
@@ -143,8 +111,8 @@ def set_up_variations(req):
     for paramAssignment in paramVals:
         validity, new_effects = execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment, env)
         if validity == True:
-            newName = str(actionToVary) + '_' + str(paramToVary) + ':' + str(paramAssignment)
-            addActionToKB(actionToVary, newName, [paramToVary], [paramAssignment], new_effects)
+            newName = str(actionToVary) + '_' + str(paramToVary) + '_' + str(paramAssignment.split('.')[0])
+            addActionToKB(actionToVary, newName, args, [paramToVary], [str(paramAssignment)], new_effects)
     return APVSrvResponse(validity)
 
 

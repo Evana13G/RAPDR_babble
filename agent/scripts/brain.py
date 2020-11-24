@@ -28,7 +28,7 @@ getScenarioSettings = rospy.ServiceProxy('scenario_settings_srv', GetScenarioSet
 
 def handle_trial(req):
 
-    print("\n#####################################################################################")
+    print("\n#######################################################################################")
     print("#######################################################################################")
     print('## Action Primivitive Discovery in Robotic Agents through Action Parameter Variation ##')
     print('## -- a proof of concept model for knowledge aquisition in intelligent agents        ##')
@@ -62,53 +62,39 @@ def handle_trial(req):
         print('#### ------------------------------------------ ')
         print("#### -- Original Scenario: ")
         success_bool = single_attempt_execution(task, goal, orig_env, additional_locs=additionalDomainLocs)
-        # print("#### ---- Execution Success: " + str(success_bool))
     except rospy.ServiceException, e:
         print("Service call failed: %s"%e)
         return BrainSrvResponse([1], 1)
 
     try:
         print("#### -- Novel Scenario: ")
-        attempt = 1
+        attempt = 0
         totalTimeStart = rospy.get_time()
         # currentState = scenarioData()
 
         while(goalAccomplished(goal, currentState.init) == False):
             
-            trialStart = rospy.get_time()
+            # trialStart = rospy.get_time()
             success_bool = single_attempt_execution(task, goal, novel_env, attempt, additionalDomainLocs)
             if (success_bool == 1): break 
             currentState = scenarioData() #For the while loop (end on resetting this)
 
             #####################################################################################
+            momentOfFailurePreds = scenarioData().predicates
+            APVtrials = generateAllCombos(T)
+            print("#### -- [APV MODE] " + str(len(APVtrials)) + " total combo(s) found:")
 
-            if algoMode == 'APV':
+            trialNo = 1
 
-                momentOfFailurePreds = scenarioData().predicates
-                APVtrials = generateAllCombos(T)
-                print("#### -- [APV MODE] " + str(len(APVtrials)) + " total combo(s) found:")
+            while(len(APVtrials) >= 1): 
+                comboChoice = random.randint(0, len(APVtrials) - 1)
+                comboToExecute = APVtrials[comboChoice]
+                comboToExecute.append(novel_env)
+                print("#### ---- Combo # " + str(trialNo) + ': ' + str(comboToExecute))
+                resp = APVproxy(*comboToExecute)
+                del APVtrials[comboChoice]
+                trialNo = trialNo + 1 
 
-                # for t in APVtrials:
-                #    print("#### ------ " + str(t))
-
-                trialNo = 1
-
-                while(len(APVtrials) >= 1): 
-                    comboChoice = random.randint(0, len(APVtrials) - 1)
-                    comboToExecute = APVtrials[comboChoice]
-                    comboToExecute.append(novel_env)
-                    # print('#### ------------------------------------------ ')
-                    print("#### ---- Combo # " + str(trialNo) + ': ' + str(comboToExecute))
-
-                    try:
-                        resp = APVproxy(*comboToExecute)
-
-                        # break
-                    except rospy.ServiceException, e:
-                        print("Service call failed: %s"%e)
-
-                    del APVtrials[comboChoice]
-                    trialNo = trialNo + 1 
 
         #         # MODE 1: start
         #         algoMode = 'planAndRun'               
@@ -166,7 +152,8 @@ def handle_trial(req):
 def single_attempt_execution(task_name, goal, env, attempt='orig', additional_locs=[]):
     try:
         print('#### ------------------------------------------ ')
-        # print("#### --- [ATTEMPT " + str(attempt)+ "] ") if attempt != 'orig'
+        if (attempt != 'orig' and attempt != 0):
+            print("#### --- [ATTEMPT " + str(attempt)+ "] ") 
         envProxy('restart', env) if attempt != 'orig' else envProxy('no_action', env) 
         totalTimeStart = rospy.get_time()
         filename = task_name + '_' + str(attempt)
@@ -179,7 +166,7 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', additional_lo
         init = [x for x in init if 'right_gripper' not in x]
         problem = Problem(task_name, KBDomainProxy().domain.name, objs, init, goal)
         plan = planGenerator(problem, filename)
-
+        print("Attempting Plan: " + str(plan.plan))
         executionSuccess = planExecutor(plan.plan).success_bool
 
         if (executionSuccess == 1):
