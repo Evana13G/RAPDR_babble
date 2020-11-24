@@ -15,6 +15,9 @@ class Action(object):
         self.executionArgNames = []
 
     #### SETTERS
+    def setName(self, new_name):
+        self.name = new_name
+
     def setExecutionArgNames(self, argNames):
         self.executionArgNames = argNames
         
@@ -31,7 +34,7 @@ class Action(object):
         self.params.append(param)
 
     def setParamDefault(self, param, val):
-        self.paramDefaults[param] = val
+        next((x.setVal(float(val)) for x in self.params if x.getName() == param), None)
 
     #### GETTERS
     def getName(self):
@@ -125,29 +128,3 @@ class Action(object):
             # s = s 
             s = s + '    :effect (and)\n)' 
         return s
-
-######################################################
-# PUSH
-# string objectName 
-# float64 startOffset
-# float64 endOffset
-# int64 rate
-
-# PRESS
-# string objectName 
-# float64 hoverDistance
-# float64 pressAmount
-# float64 rate
-
-# SHAKE
-# string objectName
-# float64 twistRange
-# float64 speed
-
-# DROP
-# string objectName
-# int64 dropHeight
-
-# GRASP
-# string objectName
-

@@ -4,4 +4,4 @@ string param
 int64 T
 string environment
 ---
-geometry_msgs/PoseStamped[] endEffectorInfo
+bool validity

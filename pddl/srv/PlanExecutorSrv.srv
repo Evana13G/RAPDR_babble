@@ -1,3 +1,4 @@
 ActionExecutionInfoList actions
 ---
-int64 success_bool
+bool success_bool
+string failure_action
