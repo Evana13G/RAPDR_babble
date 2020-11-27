@@ -155,12 +155,14 @@ def delete_gazebo_models():
         pub_all.publish(False)
         
         delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
-        delete_model("cafe_table")
-        delete_model("plastic_cup")
+ 
         for i in range(num_marbles):
             delete_model("marbleB_"+ str(i))
+            rospy.sleep(0.2)
         for i in range(num_marbles):
             delete_model("marbleR_"+ str(i))
+            rospy.sleep(0.2)
+        delete_model("plastic_cup")
     except rospy.ServiceException as e:
         rospy.loginfo("Delete Model service call failed: {0}".format(e))
 
