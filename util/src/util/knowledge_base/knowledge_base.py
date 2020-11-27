@@ -53,7 +53,7 @@ class KnowledgeBase(object):
         
 
         ## PUSH 
-        push = Action('push', [], [], [], [], PushSrv) # All default, add after 
+        push = Action('push', [], [], [], []) # All default, add after 
         push.addArg(Variable('?g', 'gripper'))
         push.addArg(Variable('?loc0', 'cartesian'))
         push.addArg(Variable('?o', 'obj'))
@@ -70,7 +70,7 @@ class KnowledgeBase(object):
         push.setExecutionArgNames(['gripper', 'objectName'])
 
         # ## GRASP
-        # grasp = Action('grasp', [], [], [], [], GraspSrv) # All default, add after 
+        # grasp = Action('grasp', [], [], [], []) # All default, add after 
         # grasp.addArg(Variable('?g', 'gripper'))
         # grasp.addArg(Variable('?o', 'obj'))
         # # grasp_p1 = Parameter('grasp_amount' , None, 1, 0, 5)
@@ -79,7 +79,7 @@ class KnowledgeBase(object):
         # grasp.setExecutionArgNames(['gripper', 'objectName'])
 
         ## SHAKE
-        shake = Action('shake', [], [], [], [], ShakeSrv) # All default, add after 
+        shake = Action('shake', [], [], [], []) # All default, add after 
         shake.addArg(Variable('?g', 'gripper'))
         shake.addArg(Variable('?o', 'obj'))
         shake_p1 = Parameter('rate', 0.3, 1.5, 0.05)
@@ -91,7 +91,7 @@ class KnowledgeBase(object):
         shake.setExecutionArgNames(['gripper', 'objectName'])
 
         ## PRESS
-        press = Action('press', [], [], [], [], PressSrv) # All default, add after 
+        press = Action('press', [], [], [], []) # All default, add after 
         press.addArg(Variable('?g', 'gripper'))
         press.addArg(Variable('?o', 'obj'))
         press_p1 = Parameter('rate', 100.0, 50.0, 1000.0)
@@ -103,7 +103,7 @@ class KnowledgeBase(object):
         press.setExecutionArgNames(['gripper', 'objectName'])
 
         # ## DROP
-        # drop = Action('drop', [], [], [], [], DropSrv) # All default, add after 
+        # drop = Action('drop', [], [], [], []) # All default, add after 
         # drop.addArg(Variable('?g', 'gripper'))
         # drop.addArg(Variable('?o', 'obj'))
         # drop_p1 = Parameter('dropHeight', 0.1, 0.01, 0.3)
@@ -167,15 +167,6 @@ class KnowledgeBase(object):
 
         return data
 
-    def getService(self, actionName):
-        for action in self.actions:
-            if action.getName() == actionName:
-                return action.getSrv()
-
-    def getServiceFile(self, actionName):
-        for action in self.actions:
-            if action.getName() == actionName:
-                return action.getSrvFile()
 
     def getAction(self, name):
         for action in self.actions:
@@ -191,13 +182,12 @@ class KnowledgeBase(object):
         #     locBindings.append(LocationBinding(action.getName(), action.getExecutionParams()))
         return LocationBindingList(locBindings)
 
-    def createAction(self, name, origAction, args, preconds, effects, params, srvFile, mode):
+    def createAction(self, name, origAction, args, preconds, effects, params, mode):
         theOGaction = self.getAction(origAction)
         newActionName = name
         newActionVars, newActionPreconds, newActionEffects, pddlLocs = pddlActionKBFormat(theOGaction.getArgs(), args, preconds, effects, mode)
-        newActionSrvFile = srvFile
         newActionParams = params
-        newAction = Action(newActionName, newActionVars, newActionPreconds, newActionEffects, newActionParams, newActionSrvFile)
+        newAction = Action(newActionName, newActionVars, newActionPreconds, newActionEffects, newActionParams)
         return newAction
 
     def addAction(self, newAction):
