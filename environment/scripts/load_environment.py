@@ -131,8 +131,8 @@ def delete_gazebo_models():
         delete_model("cover")
         rospy.sleep(1)
         delete_model("cup")
-        rospy.sleep(1)
-        delete_model("cafe_table")
+        # rospy.sleep(1)
+        # delete_model("cafe_table")
 
     except rospy.ServiceException, e:
         rospy.loginfo("Delete Model service call failed: {0}".format(e))
