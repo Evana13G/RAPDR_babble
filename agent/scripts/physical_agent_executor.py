@@ -73,7 +73,6 @@ def push(req):
     objPose = getObjectPose(req.objectName)
     rate = req.rate
     
-    
     ending_offset = req.movementMagnitude
     orientation = req.orientation
     start_offset = getOffset(req.objectName, orientation).y
