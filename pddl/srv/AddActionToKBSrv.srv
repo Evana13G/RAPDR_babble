@@ -1,0 +1,8 @@
+string orig_action_name
+string new_action_name
+string[] args
+string[] param_names
+string[] param_assignments
+string[] new_effects
+---
+bool success

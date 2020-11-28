@@ -73,7 +73,7 @@ def load_gazebo_models(env='default'):
     if env == 'heavy': 
         with open (model_path + "cup_with_cover/cup_model_heavy.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')
-        with open (model_path + "cup_with_cover/cover_model.sdf", "r") as cover_file:
+        with open (model_path + "cup_with_cover/cover_model_heavy.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
 
     ###############################
@@ -88,7 +88,7 @@ def load_gazebo_models(env='default'):
     ###############################
     ######## HEAVY HIGH FRICTION ##
     elif env == 'HH':
-        with open (model_path + "cup_with_cover/cup_model_heavy.sdf", "r") as cup_file:
+        with open (model_path + "cup_with_cover/cup_model.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')
         with open (model_path + "cup_with_cover/cover_model_heavy_high_friction.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
@@ -125,7 +125,6 @@ def delete_gazebo_models():
     # Gazebo should already be running. If the service is not
     # available since Gazebo has been killed, it is fine to error out
     try:
-        rospy.wait_for_service('/gazebo/delete_model', timeout=60)
         pub_all.publish(False)
         
         delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
@@ -169,6 +168,7 @@ def handle_environment_request(req):
             return HandleEnvironmentSrvResponse(0)
     else:
         print('No Action')
+        return HandleEnvironmentSrvResponse(0)
 
 
 def main():
@@ -176,6 +176,7 @@ def main():
     rospy.init_node("load_environment_node")
     rospy.on_shutdown(delete_gazebo_models)
     rospy.wait_for_service('move_to_start_srv', timeout=60)
+    rospy.wait_for_service('/gazebo/delete_model', timeout=60)
     
     s = rospy.Service("load_environment", HandleEnvironmentSrv, handle_environment_request)
     load_gazebo_models()

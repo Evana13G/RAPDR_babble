@@ -1,35 +1,14 @@
 #!/usr/bin/env python
 
-import argparse
-import struct
-import sys
-import copy
-import numpy as np
-
 import rospy
-import rospkg
+import copy
 
-from gazebo_msgs.srv import (
-    SpawnModel,
-    DeleteModel,
-)
-from geometry_msgs.msg import (
-    PoseStamped,
-    Pose,
-    Point,
-    Quaternion,
-)
-from std_msgs.msg import (
-    Header,
-    Empty,
-)
-
-from util.data_conversion import *
 from environment.srv import * 
 from pddl.srv import *
 from pddl.msg import *
 from agent.srv import *
-from util.knowledge_base.knowledge_base import KnowledgeBase
+
+from util.knowledge_base.knowledge_base import KnowledgeBase, StaticPredicate, Action, Variable
 
 KB = KnowledgeBase()
 getObjLoc = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
@@ -84,6 +63,71 @@ def handle_get_pddl_instatiations(req):
 
     return ActionPDDLBinding(name, preConds, effects)
 
+
+def add_action_to_KB(req):  
+
+    new_name = req.new_action_name
+    args = req.args
+    param_names = req.param_names
+    param_assignments = req.param_assignments
+    new_effects = req.new_effects
+    
+    # try: 
+
+    assert(len(param_names) == len(param_assignments))
+    new_action = copy.deepcopy(KB.getAction(req.orig_action_name))
+    new_action.setName(new_name)
+    pddl_args = [x.getName() for x in new_action.getArgs() if 'loc' not in x.getName()]
+    assert(len(args) == len(pddl_args))
+
+    for i in range(len(new_effects)):
+        effect = new_effects[i]
+
+        # if 'not' not in effect:
+        #     operator = effect[1:].split()[0]
+        #     instatiated_pred_args = effect.replace(operator, '')[:-1].split()
+        #     static_pred_args, new_args = parse_and_map_predicate_args(instatiated_pred_args, args, pddl_args)
+        #     pred = StaticPredicate(operator, static_pred_args)
+        # else:
+        #     operator = effect[6:].split()[0]
+        #     instatiated_pred_args = effect.replace(('(not (' + operator), '')[:-2].split()
+        #     static_pred_args, new_args = parse_and_map_predicate_args(instatiated_pred_args, args, pddl_args)
+        #     pred = StaticPredicate('not', [StaticPredicate(operator, static_pred_args)])
+
+
+        operator = effect[1:].split()[0] if 'not' not in effect else effect[6:].split()[0]
+        instatiated_pred_args = effect.replace(operator, '')[:-1].split() if 'not' not in effect else  effect.replace(('(not (' + operator), '')[:-2].split()
+        static_pred_args, new_args = parse_and_map_predicate_args(instatiated_pred_args, args, pddl_args)
+        pred = StaticPredicate(operator, static_pred_args) if 'not' not in effect else StaticPredicate('not', [StaticPredicate(operator, static_pred_args)])
+
+        new_action.addEffect(pred)
+        for new_arg in new_args:
+            new_action.addArg(Variable(new_arg, 'obj'))
+
+    for i in range(len(param_names)):
+        new_action.setParamDefault(param_names[i], param_assignments[i])
+    
+    KB.addAction(new_action)
+
+    return AddActionToKBSrvResponse(True)
+
+    # except:
+    #     return AddActionToKBSrvResponse(False)
+
+def parse_and_map_predicate_args(instatiated_pred_args, args, pddl_args):            
+    static_pred_args =[]
+    new_args = []
+    for i in range(len(instatiated_pred_args)):
+        arg = instatiated_pred_args[i]
+        try:
+            j = args.index(arg)
+            static_pred_args.append(pddl_args[j])
+        except:
+            new_arg = '?arg' + str(i)
+            new_args.append(new_arg)
+            static_pred_args.append(new_arg)
+    return static_pred_args, new_args
+
 ################################################################################
 
 def main():
@@ -94,7 +138,7 @@ def main():
     rospy.Service("get_KB_action_locs", GetKBActionLocsSrv, handle_action_locs_req)
     rospy.Service("get_KB_pddl_locs", GetKBPddlLocsSrv, handle_pddlLocs_req)
     rospy.Service("get_pddl_instatiations_srv", GetActionPDDLBindingSrv, handle_get_pddl_instatiations)
-
+    rospy.Service("add_action_to_KB_srv", AddActionToKBSrv, add_action_to_KB)
     rospy.spin()
 
     return 0 
@@ -102,3 +146,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+

@@ -19,9 +19,12 @@ from std_msgs.msg import (
 
 
 from util.file_io import * 
+from util.data_conversion import getPlanFromPDDLactionList 
+from util.pddl_parser.planner import Planner 
 from agent.srv import * 
 from pddl.msg import *
 from pddl.srv import *
+
 
 KBDomainProxy = rospy.ServiceProxy('get_KB_domain_srv', GetKBDomainSrv)
 KBActionLocsProxy = rospy.ServiceProxy('get_KB_action_locs', GetKBActionLocsSrv)
@@ -36,7 +39,7 @@ def generate_plan(req):
     dataFilepath = os.path.dirname(os.path.realpath(__file__)) + "/../data/"
     domainFilepath = dataFilepath + domainFile
     problemFilepath = dataFilepath + problemFile
-    solutionFilepath = dataFilepath + solutionFile
+    # solutionFilepath = dataFilepath + solutionFile
 
     domain = KBDomainProxy().domain
     # # write to the files
@@ -54,10 +57,13 @@ def generate_plan(req):
                        req.problem.init, 
                        req.problem.goals)
 
-    pddlDriver = os.path.dirname(os.path.realpath(__file__)) + "/../../../Pyperplan/src/pyperplan.py" 
-    os.system('python3 ' + pddlDriver + ' ' + domainFilepath + ' ' + problemFilepath)
+    # pddlDriver = os.path.dirname(os.path.realpath(__file__)) + "/../../../Pyperplan/src/pyperplan.py" 
+    # os.system('python3 ' + pddlDriver + ' ' + domainFilepath + ' ' + problemFilepath)
 
-    plan = getPlanFromSolutionFile(solutionFilepath)
+    # plan = getPlanFromSolutionFile(solutionFilepath)
+    planner = Planner()
+    solution = planner.solve(domainFilepath, problemFilepath)
+    plan = getPlanFromPDDLactionList(solution)
 
     locBindings = KBActionLocsProxy().locBindings
     bindings = {}
@@ -73,17 +79,25 @@ def generate_plan(req):
 
     return PlanGeneratorSrvResponse(ActionExecutionInfoList(actionList))
 
+# def get_solution(req):
+#     domainFile = os.path.dirname(os.path.realpath(__file__)) + '/../data/test_orig_domain.pddl'
+#     problemFile = os.path.dirname(os.path.realpath(__file__)) + '/../data/test_orig_problem.pddl'
+#     planner = Planner()
+#     solution = planner.solve(domainFile, problemFile)
+#     print(getPlanFromPDDLactionList(solution))
 
+
+### Need to check to see if the effects are met!!! and then return the 'failure' action
 def execute_plan(req):
     try:
         for action in req.actions.actions:
             actionName = action.actionName
             args = action.argVals  
             pddlActionExecutorProxy(actionName, args)
-        return PlanExecutorSrvResponse(1)        
+        return PlanExecutorSrvResponse(True, None)        
     except rospy.ServiceException, e:
         print("Service call failed: %s"%e)
-        return PlanExecutorSrvResponse(0)
+        return PlanExecutorSrvResponse(False, req.action.actions[0])
 
 
 ###########################################################################
@@ -93,6 +107,7 @@ def main():
 
     rospy.Service("plan_generator_srv", PlanGeneratorSrv, generate_plan)
     rospy.Service("plan_executor_srv", PlanExecutorSrv, execute_plan)
+    # rospy.Service("test_pddl_srv", EmptyTestSrv, get_solution)
 
 
     rospy.spin()

@@ -10,8 +10,10 @@
     <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py"/>
     <!--Start Agent Vision Processing Mechanism-->
     <node name="vision" pkg="agent" type="vision.py"/>
+    <!--Start Execution Hardcodings -->
+    <node name="execution_details" pkg="agent" type="execution_details.py"/>
     <!--Start Agent Brain-->
-    <node name="brain" pkg="agent" type="brain.py"/>
+    <!-- <node name="brain" pkg="agent" type="brain.py"/> -->
 
 
  <!-- ###################################################### -->
@@ -29,18 +31,18 @@
     <!--Start PDDL Nodes-->
     <node name="planner" pkg="pddl" type="planner.py"/>
     <!--Start Knowledge Base Interface Node-->
-    <node name="knowledge_base" pkg="pddl" type="knowledge_base.py"/>
+    <!-- <node name="knowledge_base" pkg="pddl" type="knowledge_base.py"/> -->
 
 
  <!-- ###################################################### -->
  <!-- ####### Start Action Primitive Variation Nodes ####### -->
     <!--Start Param Variation Tool-->
-    <node name="APV" pkg="action_primitive_variation" type="APV_server.py"/>
+    <!-- <node name="APV" pkg="action_primitive_variation" type="APV_server.py"/> -->
 
  <!-- ###################################################### -->
  <!-- ####### Start Test Nodes ####### -->
     <!--Start Param Variation Tool-->
-    <node name="test_actions" pkg="agent" type="test_actions.py"/>
-    <node name="test_action_settings" pkg="agent" type="test_action_settings.py"/>
+<!--     <node name="test_actions" pkg="agent" type="test_actions.py"/>
+    <node name="test_action_settings" pkg="agent" type="test_action_settings.py"/> -->
 
 </launch>
