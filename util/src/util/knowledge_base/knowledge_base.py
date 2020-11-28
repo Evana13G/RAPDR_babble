@@ -61,7 +61,7 @@ class KnowledgeBase(object):
         push.addPreCond(StaticPredicate('at', ['?o', '?loc0']))
         push.addEffect(StaticPredicate('at', ['?o', '?loc1']))
         push.addEffect(StaticPredicate('not', [StaticPredicate('at', ['?o', '?loc0'])]))
-        push_p1 = Parameter('rate', 50.0, 50.0, 800.0)
+        push_p1 = Parameter('rate', 7.0, 1.0, 150.0)
         push_p2 = Parameter('movementMagnitude', 0.4, 0.1, 0.6)
         push_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front'])
         push.addParam(push_p1)
@@ -202,8 +202,14 @@ class KnowledgeBase(object):
 
     def addAction(self, newAction):
         self.actions.append(newAction)
-        locs = copy.deepcopy(newAction.getLocs())
-        for loc in newAction.getExecutionParams():
-            locs.append(poseStampedToString(loc))
-        locs = list(set(locs))
-        self.addLocs(locs)
+        # locs = copy.deepcopy(newAction.getLocs())
+        # for loc in newAction.getExecutionParams():
+        #     locs.append(poseStampedToString(loc))
+        # locs = list(set(locs))
+        # self.addLocs(locs)
+
+    def __str__(self):
+        s = ''
+        for a in self.actions:
+            s = s + str(a) + '\n'
+        return s

@@ -124,7 +124,7 @@ def scenario_settings(req):
         coverLoc = getObjLoc('cover').location
         goal = ['(not (at cover '+ poseStampedToString(coverLoc) + '))']
         orig_scenario = 'default'
-        novel_scenario = 'heavy'
+        novel_scenario = 'HH'
         T = 3
         additional_domain_locs = []
     elif scenario == 'discover_pour':

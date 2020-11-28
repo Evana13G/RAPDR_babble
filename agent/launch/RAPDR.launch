@@ -31,13 +31,13 @@
     <!--Start PDDL Nodes-->
     <node name="planner" pkg="pddl" type="planner.py"/>
     <!--Start Knowledge Base Interface Node-->
-    <node name="knowledge_base" pkg="pddl" type="knowledge_base.py"/>
+    <!-- <node name="knowledge_base" pkg="pddl" type="knowledge_base.py"/> -->
 
 
  <!-- ###################################################### -->
  <!-- ####### Start Action Primitive Variation Nodes ####### -->
     <!--Start Param Variation Tool-->
-    <node name="APV" pkg="action_primitive_variation" type="APV_server.py"/>
+    <!-- <node name="APV" pkg="action_primitive_variation" type="APV_server.py"/> -->
 
  <!-- ###################################################### -->
  <!-- ####### Start Test Nodes ####### -->
