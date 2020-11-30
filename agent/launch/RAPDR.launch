@@ -37,7 +37,7 @@
  <!-- ###################################################### -->
  <!-- ####### Start Action Primitive Variation Nodes ####### -->
     <!--Start Param Variation Tool-->
-    <node name="APV" pkg="action_primitive_variation" type="APV_server.py"/>
+    <!-- <node name="APV" pkg="action_primitive_variation" type="APV_server.py"/> -->
 
  <!-- ###################################################### -->
  <!-- ####### Start Test Nodes ####### -->

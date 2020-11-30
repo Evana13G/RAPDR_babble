@@ -20,7 +20,7 @@ from std_msgs.msg import (
 
 from util.file_io import * 
 from util.data_conversion import getPlanFromPDDLactionList 
-from util.pddl_parser.planner import Planner 
+# from util.pddl_parser.planner import Planner 
 from agent.srv import * 
 from pddl.msg import *
 from pddl.srv import *
@@ -86,16 +86,18 @@ def generate_plan(req):
 #     solution = planner.solve(domainFile, problemFile)
 #     print(getPlanFromPDDLactionList(solution))
 
+
+### Need to check to see if the effects are met!!! and then return the 'failure' action
 def execute_plan(req):
     try:
         for action in req.actions.actions:
             actionName = action.actionName
             args = action.argVals  
             pddlActionExecutorProxy(actionName, args)
-        return PlanExecutorSrvResponse(1)        
+        return PlanExecutorSrvResponse(True, None)        
     except rospy.ServiceException, e:
         print("Service call failed: %s"%e)
-        return PlanExecutorSrvResponse(0)
+        return PlanExecutorSrvResponse(False, req.action.actions[0])
 
 
 ###########################################################################

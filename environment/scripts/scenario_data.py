@@ -116,28 +116,28 @@ def updatePhysicalStateBasedPredicates():
         if pred.operator not in physical_operators:
             new_predicates.append(pred)
 
-    if is_touching(LeftGripperPose, TablePose):
-        new_predicates.append(Predicate(operator="touching", objects=['left_gripper', 'table'], locationInformation=None)) 
-    if is_touching(RightGripperPose, TablePose):
-        new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'table'], locationInformation=None)) 
-    if is_touching(PlasticCupPose, TablePose):
-        new_predicates.append(Predicate(operator="touching", objects=['plastic_cup', 'table'], locationInformation=None)) 
-    if is_touching(MarbleBPose, TablePose):
-        new_predicates.append(Predicate(operator="touching", objects=['marbleB', 'table'], locationInformation=None)) 
-    if is_touching(MarbleBPose, PlasticCupPose, 0.235):
-        new_predicates.append(Predicate(operator="touching", objects=['marbleB', 'plastic_cup'], locationInformation=None)) 
-    if is_touching(LeftGripperPose, MarbleBPose, 1.1):
-        new_predicates.append(Predicate(operator="touching", objects=['left_gripper', 'cover'], locationInformation=None)) 
-    if is_touching(RightGripperPose, MarbleBPose, 1.1):
-        new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'cover'], locationInformation=None)) 
-    if is_touching(MarbleRPose, TablePose):
-        new_predicates.append(Predicate(operator="touching", objects=['marbleR', 'table'], locationInformation=None)) 
-    if is_touching(MarbleRPose, PlasticCupPose, 0.235):
-        new_predicates.append(Predicate(operator="touching", objects=['marbleR', 'plastic_cup'], locationInformation=None)) 
-    if is_touching(LeftGripperPose, MarbleRPose, 1.1):
-        new_predicates.append(Predicate(operator="touching", objects=['left_gripper', 'marbleR'], locationInformation=None)) 
-    if is_touching(RightGripperPose, MarbleRPose, 1.1):
-        new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'marbleR'], locationInformation=None))        
+    # if is_touching(LeftGripperPose, TablePose):
+    #     new_predicates.append(Predicate(operator="touching", objects=['left_gripper', 'table'], locationInformation=None)) 
+    # if is_touching(RightGripperPose, TablePose):
+    #     new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'table'], locationInformation=None)) 
+    # if is_touching(CupPose, TablePose):
+    #     new_predicates.append(Predicate(operator="touching", objects=['cup', 'table'], locationInformation=None)) 
+    # if is_touching(CoverPose, TablePose):
+    #     new_predicates.append(Predicate(operator="touching", objects=['cover', 'table'], locationInformation=None)) 
+    # if is_touching(CoverPose, CupPose):
+    #     new_predicates.append(Predicate(operator="touching", objects=['cover', 'cup'], locationInformation=None)) 
+    # if is_touching(LeftGripperPose, CoverPose, 1.1):
+    #     new_predicates.append(Predicate(operator="touching", objects=['left_gripper', 'cover'], locationInformation=None)) 
+    # if is_touching(RightGripperPose, MarbleBPose, 1.1):
+    #     new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'cover'], locationInformation=None)) 
+    # if is_touching(MarbleRPose, TablePose):
+    #     new_predicates.append(Predicate(operator="touching", objects=['marbleR', 'table'], locationInformation=None)) 
+    # if is_touching(MarbleRPose, PlasticCupPose, 0.235):
+    #     new_predicates.append(Predicate(operator="touching", objects=['marbleR', 'plastic_cup'], locationInformation=None)) 
+    # if is_touching(LeftGripperPose, MarbleRPose, 1.1):
+    #     new_predicates.append(Predicate(operator="touching", objects=['left_gripper', 'marbleR'], locationInformation=None)) 
+    # if is_touching(RightGripperPose, MarbleRPose, 1.1):
+    #     new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'marbleR'], locationInformation=None))        
 
     predicates_list = new_predicates
 

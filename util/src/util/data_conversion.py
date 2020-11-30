@@ -42,7 +42,7 @@ def getVisibleObjects(predList):
             obj_list.append(pred.objects[0] + ' ')
     return obj_list
 
-def is_touching(object1_loc, object2_loc, epsilon=0.135):
+def is_touching(object1_loc, object2_loc, epsilon=0.1):
     if ((object1_loc is not None) and (object2_loc is not None)):
         obj1 = np.array((object1_loc.pose.position.x, 
                             object1_loc.pose.position.y,
@@ -350,3 +350,5 @@ def getPlanFromPDDLactionList(action_list):
         action['args'] = full_action.parameters
         plan.append(action)
     return plan
+
+# def seperate_preds_LocationBased(pred_list):
