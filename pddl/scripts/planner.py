@@ -20,7 +20,7 @@ from std_msgs.msg import (
 
 from util.file_io import * 
 from util.data_conversion import getPlanFromPDDLactionList 
-# from util.pddl_parser.planner import Planner 
+from util.pddl_parser.planner import Planner 
 from agent.srv import * 
 from pddl.msg import *
 from pddl.srv import *
