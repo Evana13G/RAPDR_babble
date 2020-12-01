@@ -14,19 +14,23 @@ Setup each of the following, in order:
 4. Baxter Gazebo Simulation (http://sdk.rethinkrobotics.com/wiki/Simulator_Installation)
     a. Note, we are not using the `baxter.sh sim` script
 
-5. PyperPlan (https://bitbucket.org/malte/pyperplan)
-   a. Manually download the code to the src directory and rename it 'pyperplan'
+5. Clone the RAPDR project
 
-6. Clone the RAPDR project
+        git clone https://github.com/Evana13G/RAPDR_babble.git
+        
+6. Download PDDL-Parser (https://github.com/pucrs-automated-planning/pddl-parser)
 
+        git submodule update --init
+   
 ** At this point, the file heirarchy should take the following form:
 
         catkin_ws/
         catkin_ws/src/
         catkin_ws/src/RAPDR_babble/
         catkin_ws/src/*all baxter gazebo packages*
-        catkin_ws/src/pyperplan/
-
+        catkin_ws/src/RAPDR_babble/util/src/util/pddl-parser
+        
+        
 8. Build:
 
         cd ~/catkin_ws
