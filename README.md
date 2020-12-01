@@ -33,7 +33,7 @@ Setup each of the following, in order:
 7. Manual Changes (will eventually write a setup script to do this automatically)
 
     <b>a.</b> Rename 'pddl-parser' directory (filepath: RAPDR_babble/util/src/util/pddl-parser) to 'pddl_parser' <br />
-    <b>b.</b> Add a blank file called '__init__.py' to the pddl_parser directory (See https://docs.python.org/3/tutorial/modules.html#packages for explanatory details. TLDR; this file addition let's Python know that we want to consider it's encapsulating directory a package) <br />
+    <b>b.</b> Add a blank file called <pre>'__init__.py'</pre> to the pddl_parser directory (See https://docs.python.org/3/tutorial/modules.html#packages for explanatory details. TLDR; this file addition let's Python know that we want to consider it's encapsulating directory a package) <br />
     <b>c.</b> Change baxter source code as instructed at https://github.com/Evana13G/RAPDR_babble/wiki/Changing-the-Baxter-Source-Code
     
 8. Build:
