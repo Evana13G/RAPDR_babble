@@ -28,12 +28,12 @@ Setup each of the following, in order:
         catkin_ws/src/
         catkin_ws/src/RAPDR_babble/
         catkin_ws/src/*all baxter gazebo packages*
-        catkin_ws/src/RAPDR_babble/util/src/util/pddl-parser
+        catkin_ws/src/RAPDR_babble/util/src/util/pddl-parser/
         
 7. Manual Changes (will eventually write a setup script to do this automatically)
 
-    a. Rename 'pddl-parser' directory (filepath: RAPDR_babble/util/src/util/pddl-parser) to 'pddl_parser' 
-    b. Add a blank file called '__init__.py' to the pddl_parser directory (See https://docs.python.org/3/tutorial/modules.html#packages for explanatory details. TLDR; this file addition let's Python know that we want to consider it's encapsulating directory a package)
+    a. Rename 'pddl-parser' directory (filepath: RAPDR_babble/util/src/util/pddl-parser) to 'pddl_parser' \n
+    b. Add a blank file called '__init__.py' to the pddl_parser directory (See https://docs.python.org/3/tutorial/modules.html#packages for explanatory details. TLDR; this file addition let's Python know that we want to consider it's encapsulating directory a package) \n
     c. Change baxter source code as instructed at https://github.com/Evana13G/RAPDR_babble/wiki/Changing-the-Baxter-Source-Code
     
 8. Build:
