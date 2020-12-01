@@ -3,14 +3,12 @@
 import copy 
 
 class Action(object):
-    def __init__(self, actionName, _args, _preConds, _effects, _params, _srvFile, _pddlLocs = []):
+    def __init__(self, actionName, _args, _preConds, _effects, _params, _pddlLocs = []):
         self.name = actionName 
         self.args = _args
         self.preconditions = _preConds # list of predicates (recursive)
         self.effects = _effects
-        self.srv = actionName + '_srv'
         self.params = _params
-        self.srvFile = _srvFile
         self.pddlLocs = _pddlLocs
         self.executionArgNames = []
 
@@ -48,12 +46,6 @@ class Action(object):
 
     def getEffects(self):
         return copy.deepcopy(self.effects)
-
-    def getSrv(self):
-        return self.srv
-
-    def getSrvFile(self):
-        return self.srvFile
 
     def getParams(self):
         return self.params
