@@ -1,2 +1,2 @@
 *.pyc
-pddl/data/*
+pddl/data/*.pddl
