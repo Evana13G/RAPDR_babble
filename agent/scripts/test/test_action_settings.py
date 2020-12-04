@@ -84,6 +84,7 @@ def test_action_settings(req):
         # ORIGINAL ACTION CALL
         # shakeProxy(objectName, twistRange, speed)
         #
+        '''
         print("----Shake Action")
         actionName = 'shake'
         gripper = 'left_gripper'
@@ -96,6 +97,7 @@ def test_action_settings(req):
         controllerNames = ['rate', 'movementMagnitude', 'orientation']
         paramActionExecutionProxy(actionName, args, controllerNames, controller)
         envProxy('restart', 'default')
+        '''
         ####################################################################
 
 
