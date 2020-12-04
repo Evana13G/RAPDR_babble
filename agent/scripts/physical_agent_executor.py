@@ -68,7 +68,6 @@ def getCorrectAction(action_name):
 
 
 def push(req):
-    print(req)
     gripper = req.gripper
     objPose = getObjectPose(req.objectName)
     rate = req.rate

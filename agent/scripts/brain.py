@@ -82,7 +82,7 @@ def handle_trial(req):
             #####################################################################################
             momentOfFailurePreds = scenarioData().predicates
             APVtrials = generateAllCombos(T)
-            print("#### -- [APV MODE] " + str(len(APVtrials)) + " total combo(s) found:")
+            print("#### -- APV mode: " + str(len(APVtrials)) + " total combo(s) found")
 
             trialNo = 1
 
@@ -95,6 +95,9 @@ def handle_trial(req):
                 del APVtrials[comboChoice]
                 trialNo = trialNo + 1 
 
+            print("#### -- APV mode: COMPLETE")
+            print('#### ------------------------------------------ ')
+            attempt += 1
 
         #         # MODE 1: start
         #         algoMode = 'planAndRun'               
@@ -151,9 +154,9 @@ def handle_trial(req):
 
 def single_attempt_execution(task_name, goal, env, attempt='orig', additional_locs=[]):
     try:
-        print('#### ------------------------------------------ ')
+        # print('#### ------------------------------------------ ')
         if (attempt != 'orig' and attempt != 0):
-            print("#### --- [ATTEMPT " + str(attempt)+ "] ") 
+            print("#### -- [ATTEMPT " + str(attempt)+ "] ") 
         envProxy('restart', env) if attempt != 'orig' else envProxy('no_action', env) 
         totalTimeStart = rospy.get_time()
         filename = task_name + '_' + str(attempt)
@@ -166,7 +169,7 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', additional_lo
         init = [x for x in init if 'right_gripper' not in x]
         problem = Problem(task_name, KBDomainProxy().domain.name, objs, init, goal)
         plan = planGenerator(problem, filename)
-        print("Attempting Plan: " + str(plan.plan))
+        print("#### -- " + str(plan.plan.actions[0].actionName))
         executionSuccess = planExecutor(plan.plan).success_bool
 
         if (executionSuccess == 1):
