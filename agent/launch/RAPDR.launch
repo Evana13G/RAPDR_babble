@@ -42,7 +42,7 @@
  <!-- ###################################################### -->
  <!-- ####### Start Test Nodes ####### -->
     <!--Start Param Variation Tool-->
-<!--     <node name="test_actions" pkg="agent" type="test_actions.py"/>
-    <node name="test_action_settings" pkg="agent" type="test_action_settings.py"/> -->
+    <node name="test_actions" pkg="test" type="test_actions.py"/>
+    <node name="test_action_settings" pkg="test" type="test_action_settings.py"/>
 
 </launch>
