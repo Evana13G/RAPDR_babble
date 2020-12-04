@@ -14,19 +14,28 @@ Setup each of the following, in order:
 4. Baxter Gazebo Simulation (http://sdk.rethinkrobotics.com/wiki/Simulator_Installation)
     a. Note, we are not using the `baxter.sh sim` script
 
-5. PyperPlan (https://bitbucket.org/malte/pyperplan)
-   a. Manually download the code to the src directory and rename it 'pyperplan'
+5. Clone the RAPDR project
 
-6. Clone the RAPDR project
+        git clone https://github.com/Evana13G/RAPDR_babble.git
+        
+6. Download PDDL-Parser (https://github.com/pucrs-automated-planning/pddl-parser)
 
+        git submodule update --init
+   
 ** At this point, the file heirarchy should take the following form:
 
         catkin_ws/
         catkin_ws/src/
         catkin_ws/src/RAPDR_babble/
         catkin_ws/src/*all baxter gazebo packages*
-        catkin_ws/src/pyperplan/
+        catkin_ws/src/RAPDR_babble/util/src/util/pddl-parser/
+        
+7. Manual Changes (will eventually write a setup script to do this automatically)
 
+    <b>a.</b> Rename 'pddl-parser' directory (filepath: RAPDR_babble/util/src/util/pddl-parser) to 'pddl_parser' <br />
+    <b>b.</b> Add a blank file called ```__init__.py``` to the pddl_parser directory (See https://docs.python.org/3/tutorial/modules.html#packages for explanatory details. TLDR; this file addition let's Python know that we want to consider it's encapsulating directory a package) <br />
+    <b>c.</b> Change baxter source code as instructed at https://github.com/Evana13G/RAPDR_babble/wiki/Changing-the-Baxter-Source-Code
+    
 8. Build:
 
         cd ~/catkin_ws
@@ -64,18 +73,18 @@ Examples:
         
 For more instructions on writing/running test nodes, see below which will redirect to the developers wiki. 
 
-#### DEVELOPMENT Run instructions
+#### DEVELOPMENT Run instructions <br />
 [FOR DEVELOPMENT MODE] See https://github.com/Evana13G/RAPDR_babble/wiki/Developers-Instructions
 
-#### Other Info
+#### Other Info <br />
 The URDF models are inside the baxter_simulation package in a folder that I believe is called baxter_sim_examples/models. The URDF model for the table and the wall is called cafe_table. 
 
 1. For proof of concept scenario #1, we assume the following protocol:
 
-"left_gripper" - left gripper \n
-"right_gripper" - right gripper \n
-"cup" - cup \n
-"cover" - cover \n
+"left_gripper" - left gripper <br />
+"right_gripper" - right gripper <br />
+"cup" - cup <br />
+"cover" - cover <br />
 
 2. Many of the .py files might not be runnable. Navigate to their directories and run:
 

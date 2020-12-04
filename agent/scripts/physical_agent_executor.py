@@ -37,6 +37,15 @@ pa = None
 obj_location_srv = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
 actionInfoProxy = rospy.ServiceProxy('get_KB_action_info_srv', GetKBActionInfoSrv)
 
+def getOffset(object, orientation):
+    rospy.wait_for_service('get_offset')
+    try:
+        query = rospy.ServiceProxy('get_offset', GetHardcodedOffsetSrv)
+        response = query(object, orientation)
+        return response.hardcodings
+    except rospy.ServiceException as e:
+        print("Service call to get_offset failed: %s"%e)
+
 def getObjectPose(object_name, pose_only=False):
     loc_pStamped = obj_location_srv(object_name)
     if pose_only == True:
@@ -56,21 +65,23 @@ def getCorrectAction(action_name):
 ################################################################################
 
 #### PUSH ######################################################################
+
+
 def push(req):
     gripper = req.gripper
     objPose = getObjectPose(req.objectName)
     rate = req.rate
     
-    start_offset = 0.13
     ending_offset = req.movementMagnitude
     orientation = req.orientation
+    start_offset = getOffset(req.objectName, orientation).y
 
     # Process args
     startPose = copy.deepcopy(objPose)
     endPose = copy.deepcopy(objPose)
 
     if orientation == 'left':
-        obj_y_val = copy.deepcopy(objPose.pose.position.y)  
+        obj_y_val = copy.deepcopy(objPose.pose.position.y) 
         startPose.pose.position.y = (obj_y_val - start_offset)
         endPose.pose.position.y = (obj_y_val + ending_offset)
     elif orientation == 'right':
