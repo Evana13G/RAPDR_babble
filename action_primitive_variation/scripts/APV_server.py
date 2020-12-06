@@ -111,7 +111,7 @@ def set_up_variations(req):
     for paramAssignment in paramVals:
         validity, new_effects = execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment, env)
         if validity == True:
-            newName = str(actionToVary) + '_' + str(paramToVary) + '_' + str(paramAssignment.split('.')[0])
+            newName = str(actionToVary) + '_' + str(paramToVary) + '_' + str(paramAssignment).split('.')[0]
             addActionToKB(actionToVary, newName, args, [paramToVary], [str(paramAssignment)], new_effects)
     return APVSrvResponse(validity)
 
