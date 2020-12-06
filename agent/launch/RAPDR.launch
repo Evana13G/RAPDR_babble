@@ -4,40 +4,52 @@
 
 <launch>
 
+   <group name="Gazebo">
+      <include file="$(find baxter_gazebo)/launch/baxter_world.launch"/>
+   </group> 
+
  <!-- ###################################################### -->
  <!-- ####### Start Agent Nodes ####### -->
-    <!--Start Agent Proxy-->
-    <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py"/>
-    <!--Start Agent Vision Processing Mechanism-->
-    <node name="vision" pkg="agent" type="vision.py"/>
-    <!--Start Execution Hardcodings -->
-    <node name="execution_details" pkg="agent" type="execution_details.py"/>
-    <!--Start Agent Brain-->
-    <!-- <node name="brain" pkg="agent" type="brain.py"/> -->
+   <group name="Start Agent Nodes">
+      <!--Start Agent Proxy-->
+      <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py"/>
+      <!--Start Agent Vision Processing Mechanism-->
+      <node name="vision" pkg="agent" type="vision.py"/>
+      <!--Start Execution Hardcodings -->
+      <node name="execution_details" pkg="agent" type="execution_details.py"/>
+      <!--Start Agent Brain-->
+      <!-- <node name="brain" pkg="agent" type="brain.py"/> -->
+   </group>
 
 
  <!-- ###################################################### -->
  <!-- ####### Start Environment Nodes ####### -->
-    <!--Start Loading Environment Elements-->
-    <node name="load_environment" pkg="environment" type="load_environment.py"/>
-    <!--Start Publishing Environment Elements-->
-    <node name="publish_environment" pkg="environment" type="publish_environment.py"/>
-    <!--Start Data Conversion Module-->
-    <node name="scenario_data" pkg="environment" type="scenario_data.py"/>
+   <group name="Loading Environment Elements">
+      <!--Start Loading Environment Elements-->
+      <node name="load_environment" pkg="environment" type="load_environment.py"/>
+      <!--Start Publishing Environment Elements-->
+      <node name="publish_environment" pkg="environment" type="publish_environment.py"/>
+      <!--Start Data Conversion Module-->
+      <node name="scenario_data" pkg="environment" type="scenario_data.py"/>
+   </group>
 
 
  <!-- ###################################################### -->
  <!-- ####### Start PDDL Nodes ####### -->
-    <!--Start PDDL Nodes-->
-    <node name="planner" pkg="pddl" type="planner.py"/>
-    <!--Start Knowledge Base Interface Node-->
-    <node name="knowledge_base" pkg="pddl" type="knowledge_base.py"/>
+   <group name = "PDDL Nodes">
+      <!--Start PDDL Nodes-->
+      <node name="planner" pkg="pddl" type="planner.py"/>
+      <!--Start Knowledge Base Interface Node-->
+      <node name="knowledge_base" pkg="pddl" type="knowledge_base.py"/>
+   </group>
 
 
  <!-- ###################################################### -->
  <!-- ####### Start Action Primitive Variation Nodes ####### -->
-    <!--Start Param Variation Tool-->
-    <node name="APV" pkg="action_primitive_variation" type="APV_server.py"/>
+   <group name = "Action Primitive Variation Nodes">
+      <!--Start Param Variation Tool-->
+      <node name="APV" pkg="action_primitive_variation" type="APV_server.py"/>
+   </group>
 
  <!-- ###################################################### -->
  <!-- ####### Start Test Nodes ####### -->
