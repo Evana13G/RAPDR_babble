@@ -1,21 +1,10 @@
 #!/usr/bin/env python
 
-import argparse
-import struct
 import sys
-import copy
-import numpy as np
 import os 
-import copy
-
 import rospy
-import rospkg
-import rosbag
 
-from std_msgs.msg import (
-    Header,
-    Empty,
-)
+from std_msgs.msg import Empty
 
 
 from util.file_io import * 
@@ -24,11 +13,14 @@ from util.pddl_parser.planner import Planner
 from agent.srv import * 
 from pddl.msg import *
 from pddl.srv import *
+from environment.srv import * 
 
 
 KBDomainProxy = rospy.ServiceProxy('get_KB_domain_srv', GetKBDomainSrv)
 KBActionLocsProxy = rospy.ServiceProxy('get_KB_action_locs', GetKBActionLocsSrv)
 pddlActionExecutorProxy = rospy.ServiceProxy('pddl_action_executor_srv', PddlExecutorSrv)
+scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
+checkPddlEffects = rospy.ServiceProxy('check_effects_srv', CheckEffectsSrv)
 
 def generate_plan(req):
 
@@ -79,26 +71,29 @@ def generate_plan(req):
 
     return PlanGeneratorSrvResponse(ActionExecutionInfoList(actionList))
 
-# def get_solution(req):
-#     domainFile = os.path.dirname(os.path.realpath(__file__)) + '/../data/test_orig_domain.pddl'
-#     problemFile = os.path.dirname(os.path.realpath(__file__)) + '/../data/test_orig_problem.pddl'
-#     planner = Planner()
-#     solution = planner.solve(domainFile, problemFile)
-#     print(getPlanFromPDDLactionList(solution))
-
-
-### Need to check to see if the effects are met!!! and then return the 'failure' action
 def execute_plan(req):
-    try:
-        for action in req.actions.actions:
-            actionName = action.actionName
-            args = action.argVals  
-            pddlActionExecutorProxy(actionName, args)
-        return PlanExecutorSrvResponse(True, None)        
-    except rospy.ServiceException, e:
-        print("Service call failed: %s"%e)
-        return PlanExecutorSrvResponse(False, req.action.actions[0])
+    execution_success = False
+    goal_complete = None
+    failure_action = None
 
+    for action in req.actions.actions:
+        actionName = action.actionName
+        args = action.argVals 
+
+        preconditions = scenarioData().init
+        try:
+            pddlActionExecutorProxy(actionName, args)
+        except:
+            failure_action = actionName 
+            return PlanExecutionOutcome(execution_success, goal_complete, failure_action)
+        effects = scenarioData().init
+        effects_met = checkPddlEffects(actionName, args, preconditions, effects)
+        if effects_met == False:
+            failure_action = actionName
+            return PlanExecutionOutcome(execution_success, goal_complete, failure_action)
+
+    execution_success = True
+    return PlanExecutionOutcome(execution_success, goal_complete, failure_action)  
 
 ###########################################################################
 def main():
@@ -107,8 +102,6 @@ def main():
 
     rospy.Service("plan_generator_srv", PlanGeneratorSrv, generate_plan)
     rospy.Service("plan_executor_srv", PlanExecutorSrv, execute_plan)
-    # rospy.Service("test_pddl_srv", EmptyTestSrv, get_solution)
-
 
     rospy.spin()
     

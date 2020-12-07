@@ -143,7 +143,9 @@ def handle_environment_request(req):
     environment = 'default' if req.environment_setting == None else req.environment_setting
     if action == "init":
         try:
+            rospy.sleep(1)
             load_gazebo_models(environment)
+            rospy.sleep(3)
             return HandleEnvironmentSrvResponse(1)
         except rospy.ServiceException, e:
             rospy.logerr("Init environment call failed: {0}".format(e))
@@ -151,7 +153,9 @@ def handle_environment_request(req):
 
     elif action == 'destroy':
         try:
+            rospy.sleep(1)
             delete_gazebo_models()
+            rospy.sleep(2)
             return HandleEnvironmentSrvResponse(1)
         except rospy.ServiceException, e:
             rospy.logerr("Destroy environment call failed: {0}".format(e))
@@ -159,10 +163,11 @@ def handle_environment_request(req):
 
     elif action == 'restart':
         try:
+            rospy.sleep(1)
             delete_gazebo_models()
-            rospy.sleep(3)
+            rospy.sleep(2)
             load_gazebo_models(environment)
-            rospy.sleep(5)
+            rospy.sleep(4)
             return HandleEnvironmentSrvResponse(1)
 
         except rospy.ServiceException, e:

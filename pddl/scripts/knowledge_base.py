@@ -57,7 +57,12 @@ def handle_get_pddl_instatiations(req):
 
     # This is not a correct assumption to make
     # locs = [poseStampedToString(getObjLoc(x).location) for x in args]
-    locs = ['A', 'B']
+    passed_locs = [x for x in args if '.' in x]
+    if passed_locs == []:
+        locs = ['A', 'B']
+    else:
+        args = [x for x in args if '.' not in x]
+        locs = passed_locs
     preConds = action.get_instatiated_preconditions(args, locs)
     effects = action.get_instatiated_effects(args, locs)
 
