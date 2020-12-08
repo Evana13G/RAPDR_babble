@@ -53,8 +53,6 @@ def loc_effects_met(pre, eff, exp):
     w_negation = generate_effects_negations(pre, eff)
     locChanging_actual = detect_loc_changing_objects(w_negation)
     locChanging_expected = detect_loc_changing_objects(exp)
-    print(locChanging_actual)
-    print(locChanging_expected)
     if all(x in locChanging_actual for x in locChanging_expected):
         return True
     return False

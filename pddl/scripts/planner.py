@@ -35,7 +35,6 @@ def generate_plan(req):
 
     domain = KBDomainProxy(action_exclusions).domain
 
-    # print(domain)
     # # write to the files
     writeToDomainFile(domainFilepath, 
                       domain.name, 

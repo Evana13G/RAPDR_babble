@@ -33,7 +33,7 @@
     <!--Start PDDL Checker Node-->
     <node name="pddl_checker" pkg="pddl" type="pddl_checker.py"/>
     <!--Start Knowledge Base Interface Node-->
-    <!-- <node name="knowledge_base" pkg="pddl" type="knowledge_base.py"/> -->
+    <node name="knowledge_base" pkg="pddl" type="knowledge_base.py"/>
 
 
  <!-- ###################################################### -->

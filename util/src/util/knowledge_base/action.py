@@ -21,7 +21,7 @@ class Action(object):
 
     def addExecutionArgName(self, argName):
         self.executionArgNames.append(argName)
-        
+
     def addArg(self, arg):
         self.args.append(arg) # check to make sure this actually sets it 
 
@@ -35,11 +35,7 @@ class Action(object):
         self.params.append(param)
 
     def setParamDefault(self, param, val):
-        # print(param)
-        # print(val)
-        # if param != 'orientation':
         next((x.setVal(val) for x in self.params if x.getName() == param), None)
-        # print('cannot set orientation')
 
     #### GETTERS
     def getName(self):
