@@ -138,15 +138,14 @@ class KnowledgeBase(object):
                 if c in str(elementName):
                     return c
 
-    def getDomainData(self):
-        
+    def getDomainData(self, action_exclusions=[]):
         data = {}
         _reqs = []
         _types = []
         _preds = []
         _acts = []
         _locs = []
-        
+
         for r in self.requirements:
             _reqs.append(':' + r)
         for t in self.types:
@@ -154,7 +153,8 @@ class KnowledgeBase(object):
         for p in self.predicates:
             _preds.append(str(p))
         for a in self.actions:
-            _acts.append(str(a))
+            if a.getName() not in action_exclusions:
+                _acts.append(str(a))
         for l in self.pddlLocs:
             _locs.append(str(l))
             

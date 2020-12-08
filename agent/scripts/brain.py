@@ -78,10 +78,11 @@ def handle_trial(req):
         while(goalAccomplished(goal, currentState.init) == False):
             
             # trialStart = rospy.get_time()
-            outcome = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions, additionalDomainLocs)
-            print(outcome)
+            outcome = single_attempt_execution(task, goal, novel_env, attempt, additionalDomainLocs, action_exclusions)
+
             if (outcome.goal_complete == True): break 
             currentState = scenarioData() #For the while loop (end on resetting this)
+            action_exclusions.append(outcome.failure_action)
 
             #####################################################################################
             momentOfFailurePreds = scenarioData().predicates
@@ -94,7 +95,8 @@ def handle_trial(req):
                 comboChoice = random.randint(0, len(APVtrials) - 1)
                 comboToExecute = APVtrials[comboChoice]
                 comboToExecute.append(novel_env)
-                print("#### ---- Combo # " + str(trialNo) + ': ' + str(comboToExecute))
+                # print("#### ---- Combo # " + str(trialNo) + ': ' + str(comboToExecute))
+                print(comboToExecute)
                 resp = APVproxy(*comboToExecute)
                 del APVtrials[comboChoice]
                 trialNo = trialNo + 1 

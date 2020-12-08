@@ -16,7 +16,7 @@ executionInfo = rospy.ServiceProxy('get_offset', GetHardcodedOffsetSrv)
 orientationSolver = rospy.ServiceProxy('calc_gripper_orientation_pose', CalcGripperOrientationPoseSrv)
 
 def handle_domain_req(req):
-    domainDict = KB.getDomainData()
+    domainDict = KB.getDomainData(req.action_exclusions)
     domainName = domainDict['domain']
     types = domainDict['types']
     predicates = domainDict['predicates']
@@ -77,8 +77,6 @@ def add_action_to_KB(req):
     param_assignments = req.param_assignments
     new_effects = req.new_effects
     
-    # try: 
-
     assert(len(param_names) == len(param_assignments))
     new_action = copy.deepcopy(KB.getAction(req.orig_action_name))
     new_action.setName(new_name)
@@ -108,10 +106,11 @@ def add_action_to_KB(req):
         new_action.addEffect(pred)
         for new_arg in new_args:
             new_action.addArg(Variable(new_arg, 'obj'))
+            new_action.addExecutionArgName(new_arg.replace('?arg', 'object'))
 
     for i in range(len(param_names)):
         new_action.setParamDefault(param_names[i], param_assignments[i])
-    
+
     KB.addAction(new_action)
 
     return AddActionToKBSrvResponse(True)

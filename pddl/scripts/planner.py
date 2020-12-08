@@ -23,17 +23,19 @@ scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
 checkPddlEffects = rospy.ServiceProxy('check_effects_srv', CheckEffectsSrv)
 
 def generate_plan(req):
-
     domainFile = req.filename + '_domain.pddl'
     problemFile = req.filename + '_problem.pddl'
     solutionFile = req.filename + '_problem.pddl.soln'
+    action_exclusions = req.action_exclusions
 
     dataFilepath = os.path.dirname(os.path.realpath(__file__)) + "/../data/"
     domainFilepath = dataFilepath + domainFile
     problemFilepath = dataFilepath + problemFile
     # solutionFilepath = dataFilepath + solutionFile
 
-    domain = KBDomainProxy().domain
+    domain = KBDomainProxy(action_exclusions).domain
+
+    # print(domain)
     # # write to the files
     writeToDomainFile(domainFilepath, 
                       domain.name, 
@@ -53,6 +55,7 @@ def generate_plan(req):
     # os.system('python3 ' + pddlDriver + ' ' + domainFilepath + ' ' + problemFilepath)
 
     # plan = getPlanFromSolutionFile(solutionFilepath)
+
     planner = Planner()
     solution = planner.solve(domainFilepath, problemFilepath)
     plan = getPlanFromPDDLactionList(solution)
@@ -81,13 +84,16 @@ def execute_plan(req):
         args = action.argVals 
 
         preconditions = scenarioData().init
+
         try:
             pddlActionExecutorProxy(actionName, args)
         except:
-            failure_action = actionName 
+            failure_action = actionName
             return PlanExecutionOutcome(execution_success, goal_complete, failure_action)
+
         effects = scenarioData().init
-        effects_met = checkPddlEffects(actionName, args, preconditions, effects)
+        effects_met = checkPddlEffects(actionName, args, preconditions, effects).effects_met
+
         if effects_met == False:
             failure_action = actionName
             return PlanExecutionOutcome(execution_success, goal_complete, failure_action)
