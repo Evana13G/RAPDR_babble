@@ -28,8 +28,10 @@
 
  <!-- ###################################################### -->
  <!-- ####### Start PDDL Nodes ####### -->
-    <!--Start PDDL Nodes-->
+    <!--Start PDDL Planner Node-->
     <node name="planner" pkg="pddl" type="planner.py"/>
+    <!--Start PDDL Checker Node-->
+    <node name="pddl_checker" pkg="pddl" type="pddl_checker.py"/>
     <!--Start Knowledge Base Interface Node-->
     <node name="knowledge_base" pkg="pddl" type="knowledge_base.py"/>
 
@@ -42,7 +44,7 @@
  <!-- ###################################################### -->
  <!-- ####### Start Test Nodes ####### -->
     <!--Start Param Variation Tool-->
-    <node name="test_actions" pkg="test" type="test_actions.py"/>
-    <node name="test_action_settings" pkg="test" type="test_action_settings.py"/>
+    <!-- <node name="test_actions" pkg="test" type="test_actions.py"/> -->
+    <!-- <node name="test_action_settings" pkg="test" type="test_action_settings.py"/> -->
 
 </launch>

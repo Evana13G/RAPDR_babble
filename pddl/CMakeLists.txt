@@ -27,6 +27,7 @@ add_message_files(
   LocationBinding.msg
   ExecutableAction.msg
   ActionPDDLBinding.msg
+  PlanExecutionOutcome.msg
 )
 
 add_service_files(
@@ -39,6 +40,8 @@ add_service_files(
   GetKBActionInfoSrv.srv
   GetActionPDDLBindingSrv.srv
   AddActionToKBSrv.srv
+  CheckEffectsSrv.srv
+  NovelEffectsSrv.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs gazebo_msgs)

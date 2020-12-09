@@ -119,7 +119,7 @@ class PhysicalAgent(object):
         
         rospy.sleep(3)
         self._retract(gripper_name)
-        return 1
+        # return 1
 
     def grasp(self, gripper, objPose, orientation='left'):
         gripper_name = gripper.replace(gripper_name, '')
@@ -127,7 +127,7 @@ class PhysicalAgent(object):
         self._hover_approach(gripper_name, objPose)
         self._approach(gripper_name, objPose)
         self._gripper_close(gripper_name)
-        return 1
+        # return 1
 
     def shake(self, gripper, objPose, twist_range=1, rate=0.3):
         # For now, assume left gripper is moving (change to an argument)
@@ -167,7 +167,7 @@ class PhysicalAgent(object):
         self._approach(gripper_name, objPose)
         self._gripper_open(gripper_name)
         self._hover_approach(gripper_name, objPose)
-        return 1
+        # return 1
 
     def press(self, gripper, startPose, endPose, rate=100): 
         gripper_name = gripper.replace('_gripper', '')
@@ -175,7 +175,7 @@ class PhysicalAgent(object):
         self._approach(gripper_name, startPose)
         self._approach(gripper_name, endPose, rate=rate)
         self._retract(gripper_name)
-        return 1
+        # return 1
 
     def drop(self, gripper, objPose, dropPose):
         gripper_name = gripper.replace('_gripper', '')
@@ -185,7 +185,7 @@ class PhysicalAgent(object):
         self._gripper_close(gripper_name)
         self._approach(gripper_name, dropPose)
         self._gripper_open(gripper_name)
-        return 1
+        # return 1
 
 ###################################################################################################
 ############## Lower Level Action Primitives 

@@ -95,7 +95,7 @@ def push(req):
     argVals = [gripper, startPose, endPose, rate]
     args = arg_list_to_hash(argNames, argVals)
 
-    return pa.push(**args)
+    pa.push(**args)
 
 #### SHAKE #####################################################################
 def shake(req):
@@ -109,7 +109,7 @@ def shake(req):
     argVals = [gripper, objPose, twist_range, rate]
     args = arg_list_to_hash(argNames, argVals)
 
-    return pa.shake(**args)
+    pa.shake(**args)
 
 #### PRESS #####################################################################
 def press(req):
@@ -133,7 +133,7 @@ def press(req):
     argVals = [gripper, startPose, endPose, rate]
     args = arg_list_to_hash(argNames, argVals)
 
-    return pa.press(**args)
+    pa.press(**args)
 
 
 #### DROP ######################################################################
@@ -176,7 +176,11 @@ def action_executor(req):
                                    req.args, 
                                    req.paramNames, 
                                    req.params)
-    a(zipped_request)
+    try:
+        a(zipped_request)
+        return True
+    except:
+        return False
 
 def raw_action_executor(req):
     actionName = req.actionName
@@ -191,8 +195,8 @@ def raw_action_executor(req):
     assert(len(argNames) == len(args))
     assert(len(paramNames) == len(params))
 
-    action_executor(Action(actionName, argNames, paramNames, args, params))
-    return RawActionExecutorSrvResponse(1)
+    success_bool = action_executor(Action(actionName, argNames, paramNames, args, params))
+    return RawActionExecutorSrvResponse(success_bool)
 
 def param_action_executor(req):
     actionName = req.actionName
@@ -214,8 +218,8 @@ def param_action_executor(req):
         i_pToSet = paramNames.index(pNameToSet)
         paramVals[i_pToSet] = pValToSet
 
-    action_executor(Action(actionName, argNames, paramNames, argValues, paramVals))
-    return ParamActionExecutorSrvResponse(1)
+    success_bool = action_executor(Action(actionName, argNames, paramNames, argValues, paramVals))
+    return ParamActionExecutorSrvResponse(success_bool)
 
 # This just takes in one action, pulls param values, and sends to the 
 # Appropriate srv, which takes care of the hardcodings call. 
@@ -232,8 +236,10 @@ def pddl_action_executor(req):
         args = strip_pddl_call(args) 
     assert(len(argNames) == len(args))
     
-    action_executor(Action(actionName, argNames, paramNames, args, paramDefaults))
-    return PddlExecutorSrvResponse(1)
+    success_bool = action_executor(Action(actionName, argNames, paramNames, args, paramDefaults))
+    ## Check effects here?
+    
+    return PddlExecutorSrvResponse(success_bool)
 
 ################################################################################
 ## UTIL 

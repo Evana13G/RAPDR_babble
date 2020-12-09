@@ -46,10 +46,10 @@ class KnowledgeBase(object):
 
         ## Types of predicates available, templated
         _preds.append(TemplatedPredicate('at', [Variable('?e', 'entity'), Variable('?loc', 'cartesian')]))
-        # _preds.append(TemplatedPredicate('not', [TemplatedPredicate('at', [Variable('?e', 'entity'), Variable('?loc', 'cartesian')])]))
         _preds.append(TemplatedPredicate('touching', [Variable('?e', 'entity'), Variable('?e', 'entity')]))
         _preds.append(TemplatedPredicate('is_visible', [Variable('?e', 'entity')]))
         _preds.append(TemplatedPredicate('grasped', [Variable('?o', 'obj')]))
+        _preds.append(TemplatedPredicate('pressed', [Variable('?o', 'obj')]))
         
 
         ## PUSH 
@@ -70,13 +70,13 @@ class KnowledgeBase(object):
         push.setExecutionArgNames(['gripper', 'objectName'])
 
         # ## GRASP
-        # grasp = Action('grasp', [], [], [], []) # All default, add after 
-        # grasp.addArg(Variable('?g', 'gripper'))
-        # grasp.addArg(Variable('?o', 'obj'))
-        # # grasp_p1 = Parameter('grasp_amount' , None, 1, 0, 5)
-        # # grasp.addParam(grasp_p1)
-        # grasp.addEffect(StaticPredicate('grasped', ['?o']))
-        # grasp.setExecutionArgNames(['gripper', 'objectName'])
+        grasp = Action('grasp', [], [], [], []) # All default, add after 
+        grasp.addArg(Variable('?g', 'gripper'))
+        grasp.addArg(Variable('?o', 'obj'))
+        grasp_p1 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front'])
+        grasp.addParam(grasp_p1)
+        grasp.addEffect(StaticPredicate('grasped', ['?o']))
+        grasp.setExecutionArgNames(['gripper', 'objectName'])
 
         ## SHAKE
         shake = Action('shake', [], [], [], []) # All default, add after 
@@ -97,6 +97,8 @@ class KnowledgeBase(object):
         press_p1 = Parameter('rate', 100.0, 50.0, 1000.0)
         press_p2 = Parameter('movementMagnitude', 0.1, 0.03, 0.3)
         press_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front'])
+        push.addPreCond(StaticPredicate('is_visible', ['?o']))
+        push.addEffect(StaticPredicate('pressed', ['?o']))
         press.addParam(press_p1)
         press.addParam(press_p2)
         press.addParam(press_p3)
@@ -138,15 +140,14 @@ class KnowledgeBase(object):
                 if c in str(elementName):
                     return c
 
-    def getDomainData(self):
-        
+    def getDomainData(self, action_exclusions=[]):
         data = {}
         _reqs = []
         _types = []
         _preds = []
         _acts = []
         _locs = []
-        
+
         for r in self.requirements:
             _reqs.append(':' + r)
         for t in self.types:
@@ -154,7 +155,8 @@ class KnowledgeBase(object):
         for p in self.predicates:
             _preds.append(str(p))
         for a in self.actions:
-            _acts.append(str(a))
+            if a.getName() not in action_exclusions:
+                _acts.append(str(a))
         for l in self.pddlLocs:
             _locs.append(str(l))
             
