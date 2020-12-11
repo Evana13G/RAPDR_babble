@@ -217,7 +217,8 @@ def param_action_executor(req):
         pValToSet = paramValsToSet[i]
         i_pToSet = paramNames.index(pNameToSet)
         paramVals[i_pToSet] = pValToSet
-
+    print(paramNames)
+    print(paramVals)
     success_bool = action_executor(Action(actionName, argNames, paramNames, argValues, paramVals))
     return ParamActionExecutorSrvResponse(success_bool)
 

@@ -53,6 +53,11 @@ class Action(object):
     def getParams(self):
         return self.params
 
+    def getParam(self, paramName):
+        for p in self.params:
+            if p.getName() == paramName:
+                return p
+
     def getExecutionArgNames(self):
         return self.executionArgNames
 

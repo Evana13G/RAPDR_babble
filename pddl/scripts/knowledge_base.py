@@ -31,6 +31,12 @@ def handle_pddlLocs_req(req):
 def handle_action_locs_req(req):
     return KB.getActionsLocs()
 
+def get_param_options(req):
+    name = req.actionName
+    param = req.paramName
+    action = KB.getAction(name)
+    return action.getParam(param).getPossibleVals()
+
 def get_action_info(req):
     name = req.actionName
     action = KB.getAction(name)
@@ -39,13 +45,15 @@ def get_action_info(req):
     paramDefaults = [x.getDefaultVal() for x in action.getParams()]
     paramMins = [x.getMin() for x in action.getParams()]
     paramMaxs = [x.getMax() for x in action.getParams()]
+    discreteVals = [DiscreteParamVals(x.getPossibleVals()) for x in action.getParams()]
 
     return ActionInfo(name, 
                       argNames, 
                       paramNames, 
                       paramDefaults, 
                       paramMins, 
-                      paramMaxs)
+                      paramMaxs, 
+                      discreteVals)
 
 def handle_get_pddl_instatiations(req):    
     name = req.actionName
@@ -132,6 +140,10 @@ def parse_and_map_predicate_args(instatiated_pred_args, args, pddl_args):
             static_pred_args.append(new_arg)
     return static_pred_args, new_args
 
+def get_param_options(req):
+    action = KB.getAction(req.actionName)
+    vals = action.getParam(req.paramName).getPossibleVals()
+    return vals
 ################################################################################
 
 def main():
@@ -143,6 +155,8 @@ def main():
     rospy.Service("get_KB_pddl_locs", GetKBPddlLocsSrv, handle_pddlLocs_req)
     rospy.Service("get_pddl_instatiations_srv", GetActionPDDLBindingSrv, handle_get_pddl_instatiations)
     rospy.Service("add_action_to_KB_srv", AddActionToKBSrv, add_action_to_KB)
+    rospy.Service("get_param_options_srv", GetParamOptionsSrv, get_param_options)
+
     rospy.spin()
 
     return 0 

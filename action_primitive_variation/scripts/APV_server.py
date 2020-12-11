@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
+import random
 
 from action_primitive_variation.srv import *
 from pddl.srv import *
@@ -12,9 +13,9 @@ actionInfoProxy = rospy.ServiceProxy('get_KB_action_info_srv', GetKBActionInfoSr
 envResetProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
 paramActionExecutionProxy = rospy.ServiceProxy('param_action_executor_srv', ParamActionExecutorSrv)
 scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
-# pddlInstatiations = rospy.ServiceProxy('get_pddl_instatiations_srv', GetActionPDDLBindingSrv)
 addActionToKB = rospy.ServiceProxy('add_action_to_KB_srv', AddActionToKBSrv)
 novelEffectChecker = rospy.ServiceProxy('novel_effect_srv', NovelEffectsSrv)
+
 
 
 #### Access functions
@@ -26,21 +27,28 @@ def getObjectPose(object_name, pose_only=False):
 
 #### Helper functions
 def process_intervals(actionInfo, paramToVary, T):
-    paramNames = actionInfo.paramNames
+    paramNames= actionInfo.paramNames
     paramMins = list(actionInfo.paramMins)
     paramMaxs = list(actionInfo.paramMaxs)
+    paramDiscreteChoices = actionInfo.discreteChoices
 
     i_paramToVary = paramNames.index(paramToVary)
-    paramMin = float(paramMins[i_paramToVary])
-    paramMax = float(paramMaxs[i_paramToVary])
-    I = (paramMax - paramMin)/(T-1)
-
-    ## Process parameter values 
     paramVals = []
-    for i in range(0, T-1):
-        addition =  i * I
-        paramVals.append(paramMin + addition)
-    paramVals.append(paramMax)
+
+    if paramToVary == 'orientation':
+        if T > 3: T = 3
+        choices = paramDiscreteChoices[i_paramToVary].discretizedParamVals
+        paramVals = random.sample(choices, k=T)
+    else:
+        paramMin = float(paramMins[i_paramToVary])
+        paramMax = float(paramMaxs[i_paramToVary])
+        I = (paramMax - paramMin)/(T-1)
+        
+        ## Process parameter values 
+        for i in range(0, T-1):
+            addition =  i * I
+            paramVals.append(paramMin + addition)
+        paramVals.append(paramMax)
 
     return paramVals
 
@@ -73,10 +81,9 @@ def set_up_variations(req):
     assert(len(argNames) == len(args))
 
     paramVals = process_intervals(actionInfo, paramToVary, T)
+
     for paramAssignment in paramVals:
         validity, new_effects = execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment, env)
-        print(validity)
-        print(new_effects)
         if validity == True:
             newName = str(actionToVary) + '_' + str(paramToVary) + '_' + str(paramAssignment).split('.')[0]
             addActionToKB(actionToVary, newName, args, [paramToVary], [str(paramAssignment)], new_effects)
