@@ -36,7 +36,7 @@ def process_intervals(actionInfo, paramToVary, T):
     paramVals = []
 
     if paramToVary == 'orientation':
-        if T > 3: T = 3
+        if T > 5: T = 5
         choices = paramDiscreteChoices[i_paramToVary].discretizedParamVals
         paramVals = random.sample(choices, k=T)
     else:
@@ -61,6 +61,7 @@ def execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment
     novelty = novelEffectChecker(actionToVary, args, preconds, effects) 
     is_novel = novelty.novel_action
     new_effects = novelty.new_effects
+    print("New Effects: " + str(new_effects))
     return is_novel, new_effects
 
 #### Call-back functions

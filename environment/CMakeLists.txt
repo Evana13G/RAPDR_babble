@@ -27,6 +27,7 @@ add_service_files(
   HandleEnvironmentSrv.srv 
   ScenarioDataSrv.srv 
   ObjectLocationSrv.srv 
+  EmptySrvReq.srv
 )
 
 catkin_python_setup()

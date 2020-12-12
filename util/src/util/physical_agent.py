@@ -96,7 +96,7 @@ class PhysicalAgent(object):
         joint_angles_end = self.ik_request(gripper_name, endPose)
 
         joint_movement_amounts = {}
-        T = 1.0/float(rate)
+        # T = 1.0/float(rate)
         if gripper_name == 'left':
             joints = ['left_w0','left_w1','left_w2','left_e0','left_e1','left_s0','left_s1']
         else:
@@ -104,20 +104,20 @@ class PhysicalAgent(object):
 
         for joint in joints: 
             diff = joint_angles_end[joint] - joint_angles_start[joint]
-            joint_movement_amounts[joint] = diff/T
+            joint_movement_amounts[joint] = diff*float(rate)
 
-        _rate = 10000.0
+        _rate = 1000.0
         missed_cmds = 20.0
         control_rate = rospy.Rate(_rate)
         limb.set_command_timeout((1.0 / _rate) * missed_cmds)
 
         i = 0
-        while i<1000:
+        while i<500:
             limb.set_joint_velocities(joint_movement_amounts) 
             control_rate.sleep()
             i = i + 1
         
-        rospy.sleep(3)
+        rospy.sleep(1)
         self._retract(gripper_name)
         # return 1
 

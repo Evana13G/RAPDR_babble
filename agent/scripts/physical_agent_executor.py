@@ -36,15 +36,8 @@ from util.data_conversion import arg_list_to_hash
 pa = None
 obj_location_srv = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
 actionInfoProxy = rospy.ServiceProxy('get_KB_action_info_srv', GetKBActionInfoSrv)
-
-def getOffset(object, orientation):
-    rospy.wait_for_service('get_offset')
-    try:
-        query = rospy.ServiceProxy('get_offset', GetHardcodedOffsetSrv)
-        response = query(object, orientation)
-        return response.hardcodings
-    except rospy.ServiceException as e:
-        print("Service call to get_offset failed: %s"%e)
+getOffset = rospy.ServiceProxy('get_offset_srv', GetHardcodedOffsetSrv)
+moveMagVector = rospy.ServiceProxy('get_movemag_unit_srv', GetMoveMagUnitSrv)
 
 def getObjectPose(object_name, pose_only=False):
     loc_pStamped = obj_location_srv(object_name)
@@ -69,26 +62,29 @@ def getCorrectAction(action_name):
 
 def push(req):
     gripper = req.gripper
-    objPose = getObjectPose(req.objectName)
+    objName = req.objectName
     rate = req.rate
-    
-    ending_offset = req.movementMagnitude
     orientation = req.orientation
-    start_offset = getOffset(req.objectName, orientation).y
+    moveMagScalar = req.movementMagnitude
+    
+    objPose = getObjectPose(req.objectName)
+    offSets = getOffset(objName, orientation).hardcodings
+    moveMagVec = moveMagVector(orientation).hardcodings
 
-    # Process args
     startPose = copy.deepcopy(objPose)
     endPose = copy.deepcopy(objPose)
 
-    if orientation == 'left':
-        obj_y_val = copy.deepcopy(objPose.pose.position.y) 
-        startPose.pose.position.y = (obj_y_val - start_offset)
-        endPose.pose.position.y = (obj_y_val + ending_offset)
-    elif orientation == 'right':
-        obj_y_val = copy.deepcopy(objPose.pose.position.y)  
-        startPose.pose.position.y = (obj_y_val + start_offset)
-        endPose.pose.position.y = (obj_y_val - ending_offset)
+    moveMagVec.x *= moveMagScalar
+    moveMagVec.y *= moveMagScalar
+    moveMagVec.z *= moveMagScalar
 
+    startPose.pose.position.x += offSets.x
+    startPose.pose.position.y += offSets.y
+    startPose.pose.position.z += offSets.z
+
+    endPose.pose.position.x += moveMagVec.x
+    endPose.pose.position.y += moveMagVec.y
+    endPose.pose.position.z += moveMagVec.z
 
     # Put args into hash object
     argNames = ['gripper', 'startPose', 'endPose', 'rate']
@@ -217,8 +213,6 @@ def param_action_executor(req):
         pValToSet = paramValsToSet[i]
         i_pToSet = paramNames.index(pNameToSet)
         paramVals[i_pToSet] = pValToSet
-    print(paramNames)
-    print(paramVals)
     success_bool = action_executor(Action(actionName, argNames, paramNames, argValues, paramVals))
     return ParamActionExecutorSrvResponse(success_bool)
 

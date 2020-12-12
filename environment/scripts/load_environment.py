@@ -40,7 +40,8 @@ environment = 'default'
 
 pub_all = rospy.Publisher('models_loaded', Bool, queue_size=10)
 moveToStartProxy = rospy.ServiceProxy('move_to_start_srv', MoveToStartSrv)
-    
+resetPreds = rospy.ServiceProxy('reset_env_preds', EmptySrvReq)
+
 #SPAWN WALL AT 1.1525 z to be above table or 0.3755 to be below
 def load_gazebo_models(env='default'):
 
@@ -116,6 +117,7 @@ def load_gazebo_models(env='default'):
     except rospy.ServiceException, e:
         rospy.logerr("Spawn URDF service call failed: {0}".format(e))
 
+    resetPreds()
     pub_all.publish(True)
 
 
@@ -131,7 +133,8 @@ def delete_gazebo_models():
         delete_model("cover")
         rospy.sleep(1)
         delete_model("cup")
-        # rospy.sleep(1)
+        rospy.sleep(1)
+        resetPreds()
         # delete_model("cafe_table")
 
     except rospy.ServiceException, e:
