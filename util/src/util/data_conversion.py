@@ -234,9 +234,9 @@ def removePredicateList(listToRemoveFrom, listToRemove):
     return list(set(newList))
 
 def poseStampedToString(val):
-    x = round(val.pose.position.x, 2)
-    y = round(val.pose.position.y, 2)
-    z = round(val.pose.position.z, 2)
+    x = round(val.pose.position.x, 1)
+    y = round(val.pose.position.y, 1)
+    z = round(val.pose.position.z, 1)
     if x == -0.0:
         x = 0.0
     if y == -0.0:
@@ -249,9 +249,9 @@ def poseStampedToString(val):
             str(z))
 
 def poseToString(val):
-    x = round(val.position.x, 2)
-    y = round(val.position.y, 2)
-    z = round(val.position.z, 2)
+    x = round(val.position.x, 1)
+    y = round(val.position.y, 1)
+    z = round(val.position.z, 1)
     if x == -0.0:
         x = 0.0
     if y == -0.0:

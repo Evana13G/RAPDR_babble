@@ -193,12 +193,16 @@ class KnowledgeBase(object):
         return newAction
 
     def addAction(self, newAction):
+        existing_action_names = [x.getName() for x in self.actions]
+        name = newAction.getName()
+        if name in existing_action_names:
+            try:
+                iteration = str(int(name.split('V')[1]) + 1)
+            except:
+                iteration = '2'
+            new_name = name + '_V' + iteration
+            newAction.setName(new_name)
         self.actions.append(newAction)
-        # locs = copy.deepcopy(newAction.getLocs())
-        # for loc in newAction.getExecutionParams():
-        #     locs.append(poseStampedToString(loc))
-        # locs = list(set(locs))
-        # self.addLocs(locs)
 
     def __str__(self):
         s = ''

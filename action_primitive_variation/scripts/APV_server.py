@@ -61,7 +61,7 @@ def execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment
     novelty = novelEffectChecker(actionToVary, args, preconds, effects) 
     is_novel = novelty.novel_action
     new_effects = novelty.new_effects
-    print("New Effects: " + str(new_effects))
+    # print("New Effects: " + str(new_effects))
     return is_novel, new_effects
 
 #### Call-back functions
