@@ -18,25 +18,10 @@ Setup each of the following, in order:
 
         git clone https://github.com/Evana13G/RAPDR_babble.git
         
-6. Download PDDL-Parser (https://github.com/pucrs-automated-planning/pddl-parser)
+6. Run the setup.sh script in RAPDR_babble (Only need to run once after installation)
+        cd RAPDR_babble && ./setup.sh
 
-        git submodule update --init
-   
-** At this point, the file heirarchy should take the following form:
-
-        catkin_ws/
-        catkin_ws/src/
-        catkin_ws/src/RAPDR_babble/
-        catkin_ws/src/*all baxter gazebo packages*
-        catkin_ws/src/RAPDR_babble/util/src/util/pddl-parser/
-        
-7. Manual Changes (will eventually write a setup script to do this automatically)
-
-    <b>a.</b> Rename 'pddl-parser' directory (filepath: RAPDR_babble/util/src/util/pddl-parser) to 'pddl_parser' <br />
-    <b>b.</b> Add a blank file called ```__init__.py``` to the pddl_parser directory (See https://docs.python.org/3/tutorial/modules.html#packages for explanatory details. TLDR; this file addition let's Python know that we want to consider it's encapsulating directory a package) <br />
-    <b>c.</b> Change baxter source code as instructed at https://github.com/Evana13G/RAPDR_babble/wiki/Changing-the-Baxter-Source-Code
-    
-8. Build:
+7. Build:
 
         cd ~/catkin_ws
         catkin_make
