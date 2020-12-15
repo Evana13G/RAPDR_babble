@@ -1,0 +1,7 @@
+string actionName
+string[] args
+string[] preconditions
+string[] effects
+---
+bool novel_action
+string[] new_effects
