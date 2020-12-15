@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
+import random
 
 from action_primitive_variation.srv import *
 from pddl.srv import *
@@ -12,8 +13,10 @@ actionInfoProxy = rospy.ServiceProxy('get_KB_action_info_srv', GetKBActionInfoSr
 envResetProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
 paramActionExecutionProxy = rospy.ServiceProxy('param_action_executor_srv', ParamActionExecutorSrv)
 scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
-pddlInstatiations = rospy.ServiceProxy('get_pddl_instatiations_srv', GetActionPDDLBindingSrv)
 addActionToKB = rospy.ServiceProxy('add_action_to_KB_srv', AddActionToKBSrv)
+novelEffectChecker = rospy.ServiceProxy('novel_effect_srv', NovelEffectsSrv)
+
+
 
 #### Access functions
 def getObjectPose(object_name, pose_only=False):
@@ -24,60 +27,30 @@ def getObjectPose(object_name, pose_only=False):
 
 #### Helper functions
 def process_intervals(actionInfo, paramToVary, T):
-    paramNames = actionInfo.paramNames
+    paramNames= actionInfo.paramNames
     paramMins = list(actionInfo.paramMins)
     paramMaxs = list(actionInfo.paramMaxs)
+    paramDiscreteChoices = actionInfo.discreteChoices
 
     i_paramToVary = paramNames.index(paramToVary)
-    paramMin = float(paramMins[i_paramToVary])
-    paramMax = float(paramMaxs[i_paramToVary])
-    I = (paramMax - paramMin)/(T-1)
-
-    ## Process parameter values 
     paramVals = []
-    for i in range(0, T-1):
-        addition =  i * I
-        paramVals.append(paramMin + addition)
-    paramVals.append(paramMax)
+
+    if paramToVary == 'orientation':
+        if T > 5: T = 5
+        choices = paramDiscreteChoices[i_paramToVary].discretizedParamVals
+        paramVals = random.sample(choices, k=T)
+    else:
+        paramMin = float(paramMins[i_paramToVary])
+        paramMax = float(paramMaxs[i_paramToVary])
+        I = (paramMax - paramMin)/(T-1)
+        
+        ## Process parameter values 
+        for i in range(0, T-1):
+            addition =  i * I
+            paramVals.append(paramMin + addition)
+        paramVals.append(paramMax)
 
     return paramVals
-
-def detect_loc_changing_objects(actual_preconds, actual_effects, expected_effects):
-    actual_preconds = [x for x in actual_preconds if 'at' in x]
-    actual_effects = [x for x in actual_effects if 'at' in x]
-    expected_effects = [x for x in expected_effects if 'at' in x]
-
-    negativeLoc_objs = [x[9:].split()[0] for x in expected_effects if '(not ' in x]
-    positiveLoc_objs = [x[4:].split()[0] for x in expected_effects if '(not ' not in x]
-
-    expected_loc_changing_objects = [x for x in positiveLoc_objs if x in negativeLoc_objs]
-    actual_loc_changing_objects = [pred[4:].split()[0] for pred in actual_effects if pred not in actual_preconds]
-
-    print(expected_loc_changing_objects)
-    print(actual_loc_changing_objects)
-
-    if expected_loc_changing_objects == actual_loc_changing_objects:
-        return []
-    return actual_loc_changing_objects 
-
-def novel_effect(actual_preconds, actual_effects, expected_effects):
-    # locChange = detect_loc_changing_objects(actual_preconds, actual_effects, expected_effects)
-    actual_preconds = [x for x in actual_preconds if 'at' not in x]
-    actual_effects = [x for x in actual_effects if 'at' not in x]
-    expected_effects = [x for x in expected_effects if 'at' not in x] 
-
-    for pre in actual_preconds:
-        if pre not in actual_effects:
-            actual_effects.append('(not ' + pre + ')')
-
-    actual_effects = [x for x in actual_effects if x not in actual_preconds]
-
-    for pred in actual_effects:
-        if pred not in expected_effects:
-            # if locChange == []:
-            return True, actual_effects
-
-    return False, actual_effects
 
 def execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment, env):
     envResetProxy('restart', env)
@@ -85,13 +58,15 @@ def execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment
     preconds = scenarioData().init
     paramActionExecutionProxy(actionToVary, args, [paramToVary], [str(paramAssignment)])
     effects = scenarioData().init
-    expectation = pddlInstatiations(actionToVary, args).pddlBindings
-    novelty, new_effects = novel_effect(preconds, effects, expectation.effects) 
-    return novelty, new_effects
+    novelty = novelEffectChecker(actionToVary, args, preconds, effects) 
+    is_novel = novelty.novel_action
+    new_effects = novelty.new_effects
+    print("New Effects: " + str(new_effects))
+    return is_novel, new_effects
 
 #### Call-back functions
 def set_up_variations(req):
-    
+
     #### Extract Info
     actionToVary = req.actionName
     args = req.args
@@ -107,7 +82,7 @@ def set_up_variations(req):
     assert(len(argNames) == len(args))
 
     paramVals = process_intervals(actionInfo, paramToVary, T)
-    
+
     for paramAssignment in paramVals:
         validity, new_effects = execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment, env)
         if validity == True:

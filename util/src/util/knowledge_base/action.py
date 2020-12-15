@@ -18,7 +18,10 @@ class Action(object):
 
     def setExecutionArgNames(self, argNames):
         self.executionArgNames = argNames
-        
+
+    def addExecutionArgName(self, argName):
+        self.executionArgNames.append(argName)
+
     def addArg(self, arg):
         self.args.append(arg) # check to make sure this actually sets it 
 
@@ -32,7 +35,7 @@ class Action(object):
         self.params.append(param)
 
     def setParamDefault(self, param, val):
-        next((x.setVal(float(val)) for x in self.params if x.getName() == param), None)
+        next((x.setVal(val) for x in self.params if x.getName() == param), None)
 
     #### GETTERS
     def getName(self):
@@ -49,6 +52,11 @@ class Action(object):
 
     def getParams(self):
         return self.params
+
+    def getParam(self, paramName):
+        for p in self.params:
+            if p.getName() == paramName:
+                return p
 
     def getExecutionArgNames(self):
         return self.executionArgNames

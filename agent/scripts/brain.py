@@ -55,13 +55,15 @@ def handle_trial(req):
     # gripperExecutionValidity = True
 
     currentState = scenarioData() # A bit of a hack for now
+    
     try:
         print("\n\n################################################")
         print('#### ------------------------------------------ ')
         print("#### Goal: " + str(goal))
         print('#### ------------------------------------------ ')
         print("#### -- Original Scenario: ")
-        success_bool = single_attempt_execution(task, goal, orig_env, additional_locs=additionalDomainLocs)
+        outcome = single_attempt_execution(task, goal, orig_env, additional_locs=additionalDomainLocs)
+
     except rospy.ServiceException, e:
         print("Service call failed: %s"%e)
         return BrainSrvResponse([1], 1)
@@ -71,13 +73,16 @@ def handle_trial(req):
         attempt = 0
         totalTimeStart = rospy.get_time()
         # currentState = scenarioData()
+        action_exclusions = []
 
         while(goalAccomplished(goal, currentState.init) == False):
             
             # trialStart = rospy.get_time()
-            success_bool = single_attempt_execution(task, goal, novel_env, attempt, additionalDomainLocs)
-            if (success_bool == 1): break 
+            outcome = single_attempt_execution(task, goal, novel_env, attempt, additionalDomainLocs, action_exclusions)
+
+            if (outcome.goal_complete == True): break 
             currentState = scenarioData() #For the while loop (end on resetting this)
+            action_exclusions.append(outcome.failure_action)
 
             #####################################################################################
             momentOfFailurePreds = scenarioData().predicates
@@ -90,7 +95,8 @@ def handle_trial(req):
                 comboChoice = random.randint(0, len(APVtrials) - 1)
                 comboToExecute = APVtrials[comboChoice]
                 comboToExecute.append(novel_env)
-                print("#### ---- Combo # " + str(trialNo) + ': ' + str(comboToExecute))
+                # print("#### ---- Combo # " + str(trialNo) + ': ' + str(comboToExecute))
+                print(comboToExecute)
                 resp = APVproxy(*comboToExecute)
                 del APVtrials[comboChoice]
                 trialNo = trialNo + 1 
@@ -152,47 +158,52 @@ def handle_trial(req):
 #############################################################################
 #############################################################################
 
-def single_attempt_execution(task_name, goal, env, attempt='orig', additional_locs=[]):
-    try:
-        # print('#### ------------------------------------------ ')
-        if (attempt != 'orig' and attempt != 0):
-            print("#### -- [ATTEMPT " + str(attempt)+ "] ") 
-        envProxy('restart', env) if attempt != 'orig' else envProxy('no_action', env) 
-        totalTimeStart = rospy.get_time()
-        filename = task_name + '_' + str(attempt)
+def single_attempt_execution(task_name, goal, env, attempt='orig', additional_locs=[], action_exclusions=[]):
+    
+    # print('#### ------------------------------------------ ')
+    if (attempt != 'orig' and attempt != 0):
+        print("#### -- [ATTEMPT " + str(attempt)+ "] ") 
+    filename = task_name + '_' + str(attempt)
+    outcome = PlanExecutionOutcome(False, False, None)  
 
+    try:
+        envProxy('restart', env) if attempt != 'orig' else envProxy('no_action', env) 
+    except rospy.ServiceException, e:
+        print("Reset Environment Service call failed: %s"%e)
+        return outcome
+
+    try:
+        totalTimeStart = rospy.get_time()
         initStateInfo = scenarioData()
         initObjsIncludingLoc = extendInitLocs(initStateInfo, additional_locs)
         initObjsIncludingLoc['gripper'] = ['left_gripper']
         objs = pddlObjectsStringFormat_fromDict(initObjsIncludingLoc)
         init = initStateInfo.init
         init = [x for x in init if 'right_gripper' not in x]
+
         problem = Problem(task_name, KBDomainProxy().domain.name, objs, init, goal)
-        plan = planGenerator(problem, filename)
-        print("#### -- " + str(plan.plan.actions[0].actionName))
-        executionSuccess = planExecutor(plan.plan).success_bool
+        plan = planGenerator(problem, filename, action_exclusions)
+        
+        if plan.plan.actions == []:
+            print("#### -- No Plan Found") 
+            return outcome
 
-        if (executionSuccess == 1):
-            print('#### ---- Plan execution: SUCCESS')
-            endStateInfo = scenarioData()
+        print("#### -- " + str([act.actionName for act in plan.plan.actions])) 
 
-            if (goalAccomplished(goal, endStateInfo.init) == True):
-                print('#### ---- Goal Accomplished: TRUE')
-                print('#### ------------------------------------------ ')
-                return True
-            # else:
-            print('#### ---- Goal Accomplished: FALSE')
-            print('#### ------------------------------------------ ')
-            return False
+        outcome = planExecutor(plan.plan).execution_outcome
+        endStateInfo = scenarioData().init
+        outcome.goal_complete = goalAccomplished(goal, endStateInfo)
 
-        else:
-            print('#### ---- Plan execution: FAIL')
-            moveToStartProxy() #maybe this should be reset environment proxy...
-            return False
+        print('#### ---- Plan execution: ' + str(outcome.execution_success))
+        print('#### ---- Goal Accomplished: ' + str(outcome.goal_complete))
+        print('#### ------------------------------------------ ')
 
     except rospy.ServiceException, e:
         print("Service call failed: %s"%e)
-        return False
+        moveToStartProxy()
+
+    return outcome
+
 
 def main():
     rospy.init_node("agent_brain")

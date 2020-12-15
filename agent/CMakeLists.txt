@@ -29,6 +29,7 @@ ParamActionExecutorSrv.srv
 IsVisibleSrv.srv
 BrainSrv.srv
 GetScenarioSettingsSrv.srv
+GetMoveMagUnitSrv.srv
 )
 
 catkin_python_setup()
