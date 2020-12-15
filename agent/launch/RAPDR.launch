@@ -7,7 +7,7 @@
  <!-- ###################################################### -->
  <!-- ####### Start Agent Nodes ####### -->
     <!--Start Agent Proxy-->
-    <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py"/>
+    <!-- <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py"/> -->
     <!--Start Agent Vision Processing Mechanism-->
     <node name="vision" pkg="agent" type="vision.py"/>
     <!--Start Execution Hardcodings -->
@@ -23,7 +23,7 @@
     <!--Start Publishing Environment Elements-->
     <node name="publish_environment" pkg="environment" type="publish_environment.py"/>
     <!--Start Data Conversion Module-->
-    <!-- <node name="scenario_data" pkg="environment" type="scenario_data.py"/> -->
+    <node name="scenario_data" pkg="environment" type="scenario_data.py"/>
 
 
  <!-- ###################################################### -->

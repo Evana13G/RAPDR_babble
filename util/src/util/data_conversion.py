@@ -42,35 +42,8 @@ def getVisibleObjects(predList):
             obj_list.append(pred.objects[0] + ' ')
     return obj_list
 
-# def is_touching(object1_loc, object2_loc, xy_epsilon=0.2, z_epsilon=None, translations=[True, True]):
-#     if ((object1_loc is not None) and (object2_loc is not None)):
-#         translation1 = 0.0, translation2 = 0.0
-#         if z_epsilon is None: z_epsilon = xy_epsilon
-#         if translations[0] is True: translation1 = 0.93
-#         if translations[1] is True: translation2 = 0.93
 
-#         xy_1 = np.array((object1_loc.pose.position.x, 
-#                             object1_loc.pose.position.y)) 
-#         xy_2 = np.array((object2_loc.pose.position.x, 
-#                             object2_loc.pose.position.y)) 
-#         if np.linalg.norm(xy_1 - xy_2) < xy_epsilon:
-#             z_1 = np.array((object1_loc.pose.position.z + translation1))
-#             z_2 = np.array((object2_loc.pose.position.z + translation2))
-    
-#             if np.linalg.norm(z_1 - z_2) < z_epsilon:
-#                 return True 
-#         return False
-
-# def is_pressed(obj, actuator, xy_epsilon=0.2, z_epsilon=None, translations=[True, True]):
-#     if ((obj is not None) and (actuator is not None)):
-#         if is_touching(obj, actuator, xy_ep, z_ep, translations):
-#             z_dist = obj.pose.position.z - actuator.pose.position.z
-#             if 0.0 < z_dist < z_epsilon*0.8: 
-#                 return True 
-#     return False
-
-
-def is_touching(object1_loc, object2_loc, xy_epsilon=0.2, z_epsilon=None):
+def is_touching(object1_loc, object2_loc, xy_epsilon=0.1, z_epsilon=None):
     if ((object1_loc is not None) and (object2_loc is not None)):
 
         if z_epsilon is None: z_epsilon = xy_epsilon
@@ -88,11 +61,12 @@ def is_touching(object1_loc, object2_loc, xy_epsilon=0.2, z_epsilon=None):
                 return True 
         return False
 
-def is_pressed(obj, actuator, z_epsilon=None):
+def is_pressed(obj, actuator, press_z_dist = None, epsilon=[0.1, None]):
     if ((obj is not None) and (actuator is not None)):
-        if is_touching(obj, actuator, z_epsilon):
+        if is_touching(obj, actuator, epsilon[0], epsilon[1]):
             z_dist = obj.pose.position.z - actuator.pose.position.z
-            if 0.0 < z_dist < z_epsilon*0.8: 
+            if press_z_dist == None: press_z_dist = 0.8*epsilon[0]
+            if 0.0 < z_dist < press_z_dist: 
                 return True 
     return False
 
@@ -260,9 +234,9 @@ def removePredicateList(listToRemoveFrom, listToRemove):
     return list(set(newList))
 
 def poseStampedToString(val):
-    x = round(val.pose.position.x, 1)
-    y = round(val.pose.position.y, 1)
-    z = round(val.pose.position.z, 1)
+    x = round(val.pose.position.x, 2)
+    y = round(val.pose.position.y, 2)
+    z = round(val.pose.position.z, 2)
     if x == -0.0:
         x = 0.0
     if y == -0.0:
@@ -275,9 +249,9 @@ def poseStampedToString(val):
             str(z))
 
 def poseToString(val):
-    x = round(val.position.x, 1)
-    y = round(val.position.y, 1)
-    z = round(val.position.z, 1)
+    x = round(val.position.x, 2)
+    y = round(val.position.y, 2)
+    z = round(val.position.z, 2)
     if x == -0.0:
         x = 0.0
     if y == -0.0:

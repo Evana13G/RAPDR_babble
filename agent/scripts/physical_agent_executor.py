@@ -38,6 +38,7 @@ obj_location_srv = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
 actionInfoProxy = rospy.ServiceProxy('get_KB_action_info_srv', GetKBActionInfoSrv)
 getOffset = rospy.ServiceProxy('get_offset_srv', GetHardcodedOffsetSrv)
 moveMagVector = rospy.ServiceProxy('get_movemag_unit_srv', GetMoveMagUnitSrv)
+orientationSolver = rospy.ServiceProxy("calc_gripper_orientation_pose", CalcGripperOrientationPoseSrv)
 
 def getObjectPose(object_name, pose_only=False):
     loc_pStamped = obj_location_srv(object_name)
@@ -96,13 +97,15 @@ def push(req):
 #### SHAKE #####################################################################
 def shake(req):
     gripper = req.gripper
-    objPose = getObjectPose(req.objectName)
+    objName = req.objectName
+    objPose = getObjectPose(objName)
     rate = req.rate
     twist_range = req.movementMagnitude
     orientation = req.orientation
+    startPose = orientationSolver(gripper, objName, orientation).configuration
 
-    argNames = ['gripper', 'objPose', 'twist_range', 'rate']
-    argVals = [gripper, objPose, twist_range, rate]
+    argNames = ['gripper', 'objPose', 'orientation', 'twist_range', 'rate']
+    argVals = [gripper, startPose, orientation, twist_range, rate]
     args = arg_list_to_hash(argNames, argVals)
 
     pa.shake(**args)

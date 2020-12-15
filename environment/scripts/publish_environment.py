@@ -72,7 +72,7 @@ def publish(environment='default'):
         header_cafe_table = resp_cafe_table_ms.header
         header_cafe_table.frame_id = frameid_var
         poseStamped_cafe_table = PoseStamped(header=header_cafe_table, pose=pose_cafe_table)
-        pub_cafe_table_pose.publish(poseFromPoint(poseStamped_cafe_table))
+        pub_cafe_table_pose.publish(poseStamped_cafe_table)
 
     except rospy.ServiceException, e:
         rospy.logerr("get_model_state for cafe_table service call failed: {0}".format(e))

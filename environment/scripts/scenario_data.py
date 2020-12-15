@@ -63,11 +63,12 @@ def setPoseGripperRight(data):
 
 def setPoseTable(data):
     global TablePose
+    translate(data, -0.2)
     TablePose = data
     updatePredicates("table", data)
 
-def translate(objPose):
-    objPose.pose.position.z -= 0.93
+def translate(objPose, z_amt=-1.0):
+    objPose.pose.position.z += z_amt
 
 ########################################################
 
@@ -117,24 +118,24 @@ def updatePhysicalStateBasedPredicates():
         if pred.operator not in physical_operators:
             new_predicates.append(pred)
 
-    if is_touching(LeftGripperPose, TablePose, 1.0, 0.15):
+    if is_touching(LeftGripperPose, TablePose, 1.0, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['left_gripper', 'table'], locationInformation=None)) 
-    if is_touching(RightGripperPose, TablePose, 1.0, 0.15):
+    if is_touching(RightGripperPose, TablePose, 1.0, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'table'], locationInformation=None)) 
-    if is_touching(CupPose, TablePose, 1.0, 0.15):
+    if is_touching(CupPose, TablePose, 1.0, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['cup', 'table'], locationInformation=None)) 
-    if is_touching(CoverPose, TablePose, 1.0, 0.15):
+    if is_touching(CoverPose, TablePose, 1.0, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['cover', 'table'], locationInformation=None)) 
-    if is_touching(CoverPose, CupPose, 0.1):
+    if is_touching(CoverPose, CupPose, 0.07):
         new_predicates.append(Predicate(operator="touching", objects=['cover', 'cup'], locationInformation=None)) 
-    if is_touching(LeftGripperPose, CoverPose, 0.2, 0.3):
+    if is_touching(LeftGripperPose, CoverPose, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['left_gripper', 'cover'], locationInformation=None)) 
-    if is_touching(RightGripperPose, CoverPose, 0.2, 0.3):
+    if is_touching(RightGripperPose, CoverPose, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'cover'], locationInformation=None)) 
 
-    if is_pressed(LeftGripperPose, CoverPose, 0.3):
+    if is_pressed(LeftGripperPose, CoverPose, 0.05, [0.01, None]):
         cover_pressed = True
-    if is_pressed(RightGripperPose, CoverPose, 0.3):
+    if is_pressed(RightGripperPose, CoverPose, 0.05, [0.01, None]):
         cover_pressed = True
 
     if cover_pressed == True:

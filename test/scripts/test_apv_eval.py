@@ -20,7 +20,7 @@ def test(req):
 
     try:
         
-        resp = APVproxy('push', ['left_gripper', 'cover'], 'orientation', 5, 'default')
+        resp = APVproxy('shake', ['left_gripper', 'cover'], 'orientation', 5, 'default')
 
         return True 
     
