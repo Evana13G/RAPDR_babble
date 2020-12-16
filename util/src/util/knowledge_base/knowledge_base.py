@@ -69,15 +69,6 @@ class KnowledgeBase(object):
         push.addParam(push_p3)
         push.setExecutionArgNames(['gripper', 'objectName'])
 
-        # ## GRASP
-        grasp = Action('grasp', [], [], [], []) # All default, add after 
-        grasp.addArg(Variable('?g', 'gripper'))
-        grasp.addArg(Variable('?o', 'obj'))
-        grasp_p1 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front', 'back'])
-        grasp.addParam(grasp_p1)
-        grasp.addEffect(StaticPredicate('grasped', ['?o']))
-        grasp.setExecutionArgNames(['gripper', 'objectName'])
-
         ## SHAKE
         shake = Action('shake', [], [], [], []) # All default, add after 
         shake.addArg(Variable('?g', 'gripper'))
@@ -97,13 +88,22 @@ class KnowledgeBase(object):
         press_p1 = Parameter('rate', 100.0, 50.0, 1000.0)
         press_p2 = Parameter('movementMagnitude', 0.1, 0.03, 0.3)
         press_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front', 'back'])
-        push.addPreCond(StaticPredicate('is_visible', ['?o']))
-        push.addEffect(StaticPredicate('pressed', ['?o']))
+        press.addPreCond(StaticPredicate('is_visible', ['?o']))
+        press.addEffect(StaticPredicate('pressed', ['?o']))
         press.addParam(press_p1)
         press.addParam(press_p2)
         press.addParam(press_p3)
         press.setExecutionArgNames(['gripper', 'objectName'])
 
+        # ## GRASP
+        grasp = Action('grasp', [], [], [], []) # All default, add after 
+        grasp.addArg(Variable('?g', 'gripper'))
+        grasp.addArg(Variable('?o', 'obj'))
+        grasp_p1 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front', 'back'])
+        grasp.addParam(grasp_p1)
+        grasp.addEffect(StaticPredicate('grasped', ['?o']))
+        grasp.setExecutionArgNames(['gripper', 'objectName'])
+        
         # ## DROP
         # drop = Action('drop', [], [], [], []) # All default, add after 
         # drop.addArg(Variable('?g', 'gripper'))
@@ -113,9 +113,9 @@ class KnowledgeBase(object):
         # drop.setExecutionArgNames(['gripper', 'objectName'])
 
         _actions.append(push)
-        # _actions.append(grasp)
         _actions.append(shake)
         _actions.append(press)
+        # _actions.append(grasp)
         # _actions.append(drop)
 
 
@@ -193,12 +193,16 @@ class KnowledgeBase(object):
         return newAction
 
     def addAction(self, newAction):
+        existing_action_names = [x.getName() for x in self.actions]
+        name = newAction.getName()
+        if name in existing_action_names:
+            try:
+                iteration = str(int(name.split('V')[1]) + 1)
+            except:
+                iteration = '2'
+            new_name = name + '_V' + iteration
+            newAction.setName(new_name)
         self.actions.append(newAction)
-        # locs = copy.deepcopy(newAction.getLocs())
-        # for loc in newAction.getExecutionParams():
-        #     locs.append(poseStampedToString(loc))
-        # locs = list(set(locs))
-        # self.addLocs(locs)
 
     def __str__(self):
         s = ''

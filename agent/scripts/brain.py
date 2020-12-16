@@ -3,6 +3,7 @@
 import rospy
 import time
 import random
+import multiprocessing
 
 from agent.srv import *
 from action_primitive_variation.srv import *
@@ -35,7 +36,6 @@ def handle_trial(req):
     print('## -- Evana Gizzi, Amel Hassan, Jivko Sinapov, 2020                                  ##')
     print("#######################################################################################")
     print("#######################################################################################")
-
 
     attemptsTime = []
     totalTimeStart = 0 ## TODO: Change this to SIM time. 
@@ -86,7 +86,7 @@ def handle_trial(req):
 
             #####################################################################################
             momentOfFailurePreds = scenarioData().predicates
-            APVtrials = generateAllCombos(T)
+            APVtrials = generateAllCombos(T, req.scenario)
             print("#### -- APV mode: " + str(len(APVtrials)) + " total combo(s) found")
 
             trialNo = 1
@@ -151,12 +151,12 @@ def handle_trial(req):
         # processLogData(logFilePath, logData)        
         # return BrainSrvResponse(attemptsTime, totalTimeEnd - totalTimeStart) 
 
+    
+#############################################################################
+#############################################################################
+#############################################################################
+#############################################################################
 
-
-#############################################################################
-#############################################################################
-#############################################################################
-#############################################################################
 
 def single_attempt_execution(task_name, goal, env, attempt='orig', additional_locs=[], action_exclusions=[]):
     
@@ -183,9 +183,9 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', additional_lo
 
         problem = Problem(task_name, KBDomainProxy().domain.name, objs, init, goal)
         plan = planGenerator(problem, filename, action_exclusions)
-        
+     
         if plan.plan.actions == []:
-            print("#### -- No Plan Found") 
+            print("#### ---- No Plan Found") 
             return outcome
 
         print("#### -- " + str([act.actionName for act in plan.plan.actions])) 
@@ -213,5 +213,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

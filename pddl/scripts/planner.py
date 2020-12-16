@@ -3,6 +3,7 @@
 import sys
 import os 
 import rospy
+from threading import Thread
 
 from std_msgs.msg import Empty
 
@@ -21,6 +22,11 @@ KBActionLocsProxy = rospy.ServiceProxy('get_KB_action_locs', GetKBActionLocsSrv)
 pddlActionExecutorProxy = rospy.ServiceProxy('pddl_action_executor_srv', PddlExecutorSrv)
 scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
 checkPddlEffects = rospy.ServiceProxy('check_effects_srv', CheckEffectsSrv)
+
+def solve_plan(solution, domainFilepath, problemFilepath):
+    planner = Planner()
+    solution['solution'] = planner.solve(domainFilepath, problemFilepath)
+    return
 
 def generate_plan(req):
     domainFile = req.filename + '_domain.pddl'
@@ -50,27 +56,34 @@ def generate_plan(req):
                        req.problem.init, 
                        req.problem.goals)
 
-    # pddlDriver = os.path.dirname(os.path.realpath(__file__)) + "/../../../Pyperplan/src/pyperplan.py" 
-    # os.system('python3 ' + pddlDriver + ' ' + domainFilepath + ' ' + problemFilepath)
+    # planner = Planner()
+    actionList = []  
+    solution = {'solution' : None}
+    t = Thread(target=solve_plan, args=(solution, domainFilepath, problemFilepath,))
 
-    # plan = getPlanFromSolutionFile(solutionFilepath)
+    try: 
+        t.start()
+        t.join(5)
+        # success = t.is_alive()
+    except TimeOutException as ex:
+        print('No PDDL Solution Found: ' + str(ex))
 
-    planner = Planner()
-    solution = planner.solve(domainFilepath, problemFilepath)
-    plan = getPlanFromPDDLactionList(solution)
+    solution = solution['solution']
+    if solution is not None:
+        plan = getPlanFromPDDLactionList(solution)
 
-    locBindings = KBActionLocsProxy().locBindings
-    bindings = {}
-    for bind in locBindings.bindings:
-      bindings[bind.actionName] = bind.endEffectorInfo
+        locBindings = KBActionLocsProxy().locBindings
+        bindings = {}
+        for bind in locBindings.bindings:
+          bindings[bind.actionName] = bind.endEffectorInfo
 
-    actionList = []    
-    for act in plan:
-        name = act['actionName']
-        argVals = act['args']
-        action = ActionExecutionInfo(name, argVals)
-        actionList.append(action)
 
+        for act in plan:
+            name = act['actionName']
+            argVals = act['args']
+            action = ActionExecutionInfo(name, argVals)
+            actionList.append(action)
+    
     return PlanGeneratorSrvResponse(ActionExecutionInfoList(actionList))
 
 def execute_plan(req):
@@ -114,3 +127,4 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
+

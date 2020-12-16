@@ -69,9 +69,14 @@ def compileResults(brainRunDirectory, runName):
 #         T = 0
 #     return goal, orig_scenario, novel_scenario, T
  
-def generateAllCombos(T):
+def generateAllCombos(T, scenario):
     APVtrials = []
-    APVtrials.append(['push', ['left_gripper', 'cover'], 'rate', T]) 
+    if scenario == 'discover_strike':
+        APVtrials.append(['push', ['left_gripper', 'cover'], 'rate', T]) 
+    elif scenario == 'discover_pour':
+        APVtrials.append(['shake', ['left_gripper', 'cup'], 'orientation', T]) 
+
+    # APVtrials.append(['push', ['left_gripper', 'cover'], 'rate', T]) 
     # APVtrials.append(['grasp', ['left_gripper', 'cover'], None, T]) 
     # APVtrials.append(['shake', ['left_gripper', 'cover'], 'twistRange', T]) 
     # APVtrials.append(['shake', ['left_gripper', 'cover'], 'rate', T]) 
