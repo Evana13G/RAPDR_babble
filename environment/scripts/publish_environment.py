@@ -68,10 +68,11 @@ def publish(environment='default'):
         cafe_table_ms = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
         resp_cafe_table_ms = cafe_table_ms("cafe_table", "");
         pose_cafe_table = resp_cafe_table_ms.pose
+        # pose_cafe_table.position.z += 0.7
         header_cafe_table = resp_cafe_table_ms.header
         header_cafe_table.frame_id = frameid_var
         poseStamped_cafe_table = PoseStamped(header=header_cafe_table, pose=pose_cafe_table)
-        pub_cafe_table_pose.publish(poseFromPoint(poseStamped_cafe_table))
+        pub_cafe_table_pose.publish(poseStamped_cafe_table)
 
     except rospy.ServiceException, e:
         rospy.logerr("get_model_state for cafe_table service call failed: {0}".format(e))
@@ -108,18 +109,15 @@ def publish(environment='default'):
     pose_rgrf = None
 
     hdr = Header(frame_id=frameid_var)
+    get_link_state = rospy.ServiceProxy('/gazebo/get_link_state', GetLinkState)
 
     try:
-        lglf_link_state = rospy.ServiceProxy('/gazebo/get_link_state', GetLinkState)
-        resp_lglf_link_state = lglf_link_state('l_gripper_l_finger', 'world')
-        # lglf_reference = resp_lglf_link_state.link_state.reference_frame
+        resp_lglf_link_state = get_link_state('l_gripper_l_finger', 'world')
         pose_lglf = resp_lglf_link_state.link_state.pose
     except rospy.ServiceException, e:
         rospy.logerr("get_link_state for l_gripper_l_finger: {0}".format(e))
     try:
-        lgrf_link_state = rospy.ServiceProxy('/gazebo/get_link_state', GetLinkState)
-        resp_lgrf_link_state = lgrf_link_state('l_gripper_r_finger', 'world')
-        # lgrf_reference = resp_lgrf_link_state.link_state.reference_frame
+        resp_lgrf_link_state = get_link_state('l_gripper_r_finger', 'world')
         pose_lgrf = resp_lgrf_link_state.link_state.pose
     except rospy.ServiceException, e:
         rospy.logerr("get_link_state for l_gripper_r_finger: {0}".format(e))
@@ -138,16 +136,13 @@ def publish(environment='default'):
         rospy.logerr("Unable to calculate calibrated position: {0}".format(e))
 
     try:
-        lglf_link_state = rospy.ServiceProxy('/gazebo/get_link_state', GetLinkState)
-        resp_rglf_link_state = lglf_link_state('r_gripper_l_finger', 'world')
+        resp_rglf_link_state = get_link_state('r_gripper_l_finger', 'world')
         lglf_reference = resp_lglf_link_state.link_state.reference_frame
         pose_rglf = resp_rglf_link_state.link_state.pose
     except rospy.ServiceException, e:
         rospy.logerr("get_link_state for r_gripper_l_finger: {0}".format(e))
     try:
-        rgrf_link_state = rospy.ServiceProxy('/gazebo/get_link_state', GetLinkState)
-        resp_rgrf_link_state = rgrf_link_state('r_gripper_r_finger', 'world')
-        # lgrf_reference = resp_lgrf_link_state.link_state.reference_frame
+        resp_rgrf_link_state = get_link_state('r_gripper_r_finger', 'world')
         pose_rgrf = resp_rgrf_link_state.link_state.pose
     except rospy.ServiceException, e:
         rospy.logerr("get_link_state for r_gripper_r_finger: {0}".format(e))

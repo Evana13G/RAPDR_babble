@@ -33,6 +33,9 @@ LeftGripperPose = None
 RightGripperPose = None
 TablePose = None
 
+cover_pressed = False
+cup_pressed = False
+
 predicates_list = []
 
 ########################################################
@@ -48,18 +51,25 @@ def setPoseCover(data):
 
 def setPoseGripperLeft(data):
     global LeftGripperPose
+    translate(data)
     LeftGripperPose = data
     updatePredicates("left_gripper", data)    
 
 def setPoseGripperRight(data):
     global RightGripperPose
+    translate(data)
     RightGripperPose = data
     updatePredicates("right_gripper", data)    
 
 def setPoseTable(data):
     global TablePose
+    translate(data, -0.2)
     TablePose = data
     updatePredicates("table", data)
+
+def translate(objPose, z_amt=-1.0):
+    objPose.pose.position.z += z_amt
+
 ########################################################
 
 # Jumping off point for updates. "Master" list 
@@ -101,25 +111,35 @@ def updatePhysicalStateBasedPredicates():
 
     # Physical state choices
     global predicates_list
+    global cover_pressed
+
     new_predicates = []
     for pred in predicates_list:
         if pred.operator not in physical_operators:
             new_predicates.append(pred)
 
-    if is_touching(LeftGripperPose, TablePose):
+    if is_touching(LeftGripperPose, TablePose, 1.0, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['left_gripper', 'table'], locationInformation=None)) 
-    if is_touching(RightGripperPose, TablePose):
+    if is_touching(RightGripperPose, TablePose, 1.0, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'table'], locationInformation=None)) 
-    if is_touching(CupPose, TablePose):
+    if is_touching(CupPose, TablePose, 1.0, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['cup', 'table'], locationInformation=None)) 
-    if is_touching(CoverPose, TablePose):
+    if is_touching(CoverPose, TablePose, 1.0, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['cover', 'table'], locationInformation=None)) 
-    if is_touching(CoverPose, CupPose):
+    if is_touching(CoverPose, CupPose, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['cover', 'cup'], locationInformation=None)) 
-    if is_touching(LeftGripperPose, CoverPose, 1.1):
+    if is_touching(LeftGripperPose, CoverPose, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['left_gripper', 'cover'], locationInformation=None)) 
-    if is_touching(RightGripperPose, CoverPose, 1.1):
+    if is_touching(RightGripperPose, CoverPose, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'cover'], locationInformation=None)) 
+
+    if is_pressed(LeftGripperPose, CoverPose, 0.05, [0.01, None]):
+        cover_pressed = True
+    if is_pressed(RightGripperPose, CoverPose, 0.05, [0.01, None]):
+        cover_pressed = True
+
+    if cover_pressed == True:
+        new_predicates.append(Predicate(operator="pressed", objects=['cover'], locationInformation=None)) 
 
     predicates_list = new_predicates
 
@@ -140,6 +160,11 @@ def getObjectLocation(data):
     }
     return obj_choices.get(obj)
 
+def reset(req):
+    global cover_pressed
+    cover_pressed = False
+    return True
+
 def main():
     rospy.init_node("scenario_data_node")
     rospy.wait_for_service('is_visible_srv', timeout=60)
@@ -152,6 +177,7 @@ def main():
 
     rospy.Service("scenario_data_srv", ScenarioDataSrv, getPredicates)
     rospy.Service("object_location_srv", ObjectLocationSrv, getObjectLocation)
+    rospy.Service("reset_env_preds", EmptySrvReq, reset)
 
     rospy.spin()
     
