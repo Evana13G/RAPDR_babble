@@ -19,7 +19,7 @@ def check_pddl_effects(req):
     # to be a subset of actual 
     CONDITION_loc = loc_effects_met(actual_pre, actual_effects, expectatation)
     CONDITION_nonLoc = nonLoc_effects_met(actual_pre, actual_effects, expectatation)
-    
+
     return (CONDITION_loc and CONDITION_nonLoc) == True
 
 def novel_effect(req):
@@ -57,11 +57,12 @@ def loc_effects_met(pre, eff, exp):
         return True
     return False
 
-def nonLoc_effects_met(pre, eff, exp):
+def nonLoc_effects_met(pre, eff, exp): 
     w_negation = generate_effects_negations(pre, eff)
+
     effects = [x for x in w_negation if 'at' not in x]
     expected_effects = [x for x in exp if 'at' not in x] 
-    # new_effects = [x for x in effects if x not in pre]
+    
     if all(x in effects for x in expected_effects):
         return True
     return False  

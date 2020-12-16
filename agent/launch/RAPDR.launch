@@ -7,7 +7,7 @@
  <!-- ###################################################### -->
  <!-- ####### Start Agent Nodes ####### -->
     <!--Start Agent Proxy-->
-    <!-- <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py"/> -->
+    <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py"/>
     <!--Start Agent Vision Processing Mechanism-->
     <node name="vision" pkg="agent" type="vision.py"/>
     <!--Start Execution Hardcodings -->
@@ -29,7 +29,7 @@
  <!-- ###################################################### -->
  <!-- ####### Start PDDL Nodes ####### -->
     <!--Start PDDL Planner Node-->
-    <node name="planner" pkg="pddl" type="planner.py"/>
+    <!-- <node name="planner" pkg="pddl" type="planner.py"/> -->
     <!--Start PDDL Checker Node-->
     <node name="pddl_checker" pkg="pddl" type="pddl_checker.py"/>
     <!--Start Knowledge Base Interface Node-->
@@ -39,7 +39,7 @@
  <!-- ###################################################### -->
  <!-- ####### Start Action Primitive Variation Nodes ####### -->
     <!--Start Param Variation Tool-->
-    <!-- <node name="APV" pkg="action_primitive_variation" type="APV_server.py"/> -->
+    <node name="APV" pkg="action_primitive_variation" type="APV_server.py"/>
 
  <!-- ###################################################### -->
  <!-- ####### Start Test Nodes ####### -->

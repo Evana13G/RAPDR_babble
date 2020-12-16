@@ -140,10 +140,10 @@ def scenario_settings(req):
         T = 3
         additional_domain_locs = []
     elif scenario == 'discover_pour':
-        goal = ['not (touching cup cover)']
+        goal = ['(not (touching cover cup))']
         orig_scenario = 'default'
         novel_scenario = 'high_friction'
-        T = 3
+        T = 5
         additional_domain_locs = []
     else:
         goal = []
