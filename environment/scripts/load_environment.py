@@ -52,6 +52,8 @@ def load_gazebo_models(env='default'):
     block_reference_frame="world"
     cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
     cover_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
+    #breakable obj pose
+    breakable_obj_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
     reference_frame="world"
 
 
@@ -61,6 +63,8 @@ def load_gazebo_models(env='default'):
     table_xml = ''
     cup_xml = ''
     cover_xml = ''
+    #breakable obj xml
+    brk_obj_xml = ''
 
 
     moveToStartProxy('both')
@@ -94,6 +98,11 @@ def load_gazebo_models(env='default'):
         with open (model_path + "cup_with_cover/cover_model_heavy_high_friction.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
 
+    ###############################
+    ######## BREAKABLE OBJECT ##    
+    elif env == 'brk_test':
+        with open (model_path + "breakable_obj/breakable_model", "r") as brk_obj_file:
+            brk_obj_xml=brk_obj_file.read().replace('\n', '')
 
     ###############################
     ########### DEFAULT ########### 
@@ -111,6 +120,9 @@ def load_gazebo_models(env='default'):
         spawn_sdf("cafe_table", table_xml, "/", table_pose, reference_frame)
         spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
         spawn_sdf("cover", cover_xml, "/", cover_pose, reference_frame)
+
+        #breakable obj spawn
+        spawn_sdf("brk_obj", brk_obj_xml, "/", breakable_obj_pose, reference_frame)
         # spawn_sdf("cover2", cover_xml, "/", left_button_pose, reference_frame)
         # spawn_sdf("cover3", cover_xml, "/", right_button_pose, reference_frame)
 
@@ -133,6 +145,9 @@ def delete_gazebo_models():
         delete_model("cover")
         rospy.sleep(1)
         delete_model("cup")
+        rospy.sleep(1)
+        #brk obj delete
+        delete_model("brk_obj")
         rospy.sleep(1)
         resetPreds()
         # delete_model("cafe_table")

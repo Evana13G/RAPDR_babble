@@ -45,6 +45,8 @@ pub_left_gripper_pose = rospy.Publisher('left_gripper_pose', PoseStamped, queue_
 pub_right_gripper_pose = rospy.Publisher('right_gripper_pose', PoseStamped, queue_size = 10)
 pub_cup_pose = rospy.Publisher('cup_pose', PoseStamped, queue_size = 10)
 pub_cover_pose = rospy.Publisher('cover_pose', PoseStamped, queue_size = 10)
+pub_brk_obj_pose = rospy.Publisher('brk_obj',PoseStamped, queue_size= 10)
+
 
 
 # def setPubAll(data):
@@ -98,7 +100,17 @@ def publish(environment='default'):
         pub_cup_pose.publish(poseFromPoint(poseStamped_cup))
     except rospy.ServiceException, e:
         rospy.logerr("get_model_state for block service call failed: {0}".format(e))
-
+    #brk_obj publisher updated
+    try:
+        brk_obj_ms = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
+        resp_brk_obj_ms = brk_obj_ms("brk_obj", "");
+        pose_brk_obj = resp_brk_obj_ms.pose
+        header_brk_obj = resp_brk_obj_ms.header
+        header_brk_obj.frame_id = frameid_var
+        poseStamped_brk_obj = PoseStamped(header=header_brk_obj, pose=pose_brk_obj)
+        pub_brk_obj_pose.publish(poseFromPoint(poseStamped_brk_obj))
+    except rospy.ServiceException, e:
+        rospy.logerr("get_model_state for block service call failed: {0}".format(e))
 
  ######################################################################################
  ####### START: Gripper pose processing
