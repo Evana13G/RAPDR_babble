@@ -73,6 +73,29 @@ class PhysicalAgent(object):
             print("Enabling robot... ")
         self._rs.enable()
 
+        # self.orientationSolver = rospy.ServiceProxy("calc_gripper_orientation_pose", CalcGripperOrientationPoseSrv)
+
+        self._pos_offsets_dict = dict({'right_front0': [0, 0.01, 0.075],
+                                        'right_front1': [0.015, 0.005, -0.08],
+                                        'right_left0': [0, 0.04, 0],
+                                        'right_left1': [0, -0.05, 0],
+                                        'right_back0': [0.02, 0.005, 0],
+                                        'right_back1': [-0.02, 0, 0],
+                                        'right_right0': [-0.03, -0.01, -0.015],
+                                        'right_right1': [-0.038, 0.05, 0],
+                                        'right_top0': [0, 0, 0.1],
+                                        'right_top1': [0, 0, -0.09],
+                                        'left_front0': [0, -0.01, 0.075],
+                                        'left_front1': [0.015, -0.01, -0.08],
+                                        'left_left0': [-0.055, 0.1, -0.01],
+                                        'left_left1': [0, -0.15, 0],
+                                        'left_back0': [0.005, 0.005, 0],
+                                        'left_back1': [0, 0, 0],
+                                        'left_right0': [-0.1, -0.02, -0.015],
+                                        'left_right1': [0.01, 0.115],
+                                        'left_top0': [0, 0, 0],
+                                        'left_top1': [0, 0, 0]})
+
 ####################################################################################################
 ############## Higher Level Action Primitives 
 
@@ -96,7 +119,7 @@ class PhysicalAgent(object):
         joint_angles_end = self.ik_request(gripper_name, endPose)
 
         joint_movement_amounts = {}
-        T = 1.0/float(rate)
+        # T = 1.0/float(rate)
         if gripper_name == 'left':
             joints = ['left_w0','left_w1','left_w2','left_e0','left_e1','left_s0','left_s1']
         else:
@@ -104,50 +127,70 @@ class PhysicalAgent(object):
 
         for joint in joints: 
             diff = joint_angles_end[joint] - joint_angles_start[joint]
-            joint_movement_amounts[joint] = diff/T
+            joint_movement_amounts[joint] = diff*float(rate)
 
-        _rate = 10000.0
+        _rate = 1000.0
         missed_cmds = 20.0
         control_rate = rospy.Rate(_rate)
         limb.set_command_timeout((1.0 / _rate) * missed_cmds)
 
         i = 0
-        while i<1000:
+        while i<500:
             limb.set_joint_velocities(joint_movement_amounts) 
             control_rate.sleep()
             i = i + 1
         
-        rospy.sleep(3)
+        rospy.sleep(1)
         self._retract(gripper_name)
-        return 1
+        # return 1
 
     def grasp(self, gripper, objPose, orientation='left'):
-        gripper_name = gripper.replace(gripper_name, '')
-        self._gripper_open(gripper_name)
-        self._hover_approach(gripper_name, objPose)
-        self._approach(gripper_name, objPose)
-        self._gripper_close(gripper_name)
-        return 1
+        # Note: For left gripper the initial object dimensions was 0.4 by 0.4 
+        # The right gripper does not open as far as the left gripper, so 0.25 by 0.25 is used 
 
-    def shake(self, gripper, objPose, twist_range=1, rate=0.3):
+        gripper_name = gripper.replace('_gripper', '')
+        print(gripper_name)
+        self._gripper_open(gripper_name)
+
+        # Approach two different positions for smooth grasp action
+        orientationStr = gripper_name + '_' + orientation
+
+        appr = copy.deepcopy(objPose)
+
+        for i in range(0,1):
+            pos = self._pos_offsets_dict[orientationStr + str(i)]
+            appr.pose.position.x += pos[0]
+            appr.pose.position.y += pos[1]
+            appr.pose.position.z += pos[2]
+            self._approach(gripper_name, appr)
+
+        self._gripper_close(gripper_name)
+
+    def shake(self, gripper, objPose, orientation='left', twist_range=1, rate=10.0):
         # For now, assume left gripper is moving (change to an argument)
         # Number of times to shake can be adjusted by the for loop 
 
         # twist_range tells you how much to move in each direction (delta)
         # speed has to do with the duration of the sleep between the two positions (frequency)
 
+        time_steps = 20
+        rate = 1.0/rate
+
         gripper_name = gripper.replace('_gripper', '')
         limb = self.translateLimb(gripper_name)
-        time_steps = 20
-        lj = limb.joint_names()
-        joint_name= lj[6] # gripper twist, left_w2
+
+        limb_joints = limb.joint_names()
+        joint_name= limb_joints[6] # gripper twist, left_w2
 
         # GRIP OBJECT 
-        self._gripper_open(gripper_name)
-        self._hover_approach(gripper_name, objPose)
-        self._approach(gripper_name, objPose)
-        self._gripper_close(gripper_name)
-        self._hover_approach(gripper_name, objPose)
+        # self._gripper_open(gripper_name)
+        # self._hover_approach(gripper_name, objPose)
+        # self._approach(gripper_name, objPose)
+        # self._gripper_close(gripper_name)
+        # self._hover_approach(gripper_name, objPose)
+
+        self.grasp(gripper_name, objPose, orientation)
+        self._hover_approach(gripper_name, objPose) # increases z position to lift object up
 
         begin_position = limb.joint_angle(joint_name) # pose robot will move to at the end
 
@@ -167,7 +210,7 @@ class PhysicalAgent(object):
         self._approach(gripper_name, objPose)
         self._gripper_open(gripper_name)
         self._hover_approach(gripper_name, objPose)
-        return 1
+        # return 1
 
     def press(self, gripper, startPose, endPose, rate=100): 
         gripper_name = gripper.replace('_gripper', '')
@@ -175,7 +218,7 @@ class PhysicalAgent(object):
         self._approach(gripper_name, startPose)
         self._approach(gripper_name, endPose, rate=rate)
         self._retract(gripper_name)
-        return 1
+        # return 1
 
     def drop(self, gripper, objPose, dropPose):
         gripper_name = gripper.replace('_gripper', '')
@@ -185,7 +228,7 @@ class PhysicalAgent(object):
         self._gripper_close(gripper_name)
         self._approach(gripper_name, dropPose)
         self._gripper_open(gripper_name)
-        return 1
+        # return 1
 
 ###################################################################################################
 ############## Lower Level Action Primitives 

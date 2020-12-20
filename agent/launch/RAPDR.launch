@@ -31,10 +31,20 @@
 
  <!-- ###################################################### -->
  <!-- ####### Start PDDL Nodes ####### -->
+<<<<<<< HEAD
    <!--Start PDDL Nodes-->
    <node name="planner" pkg="pddl" type="planner.py" respawn="true" respawn_delay="5"/>
    <!--Start Knowledge Base Interface Node-->
    <node name="knowledge_base" pkg="pddl" type="knowledge_base.py" respawn="true" respawn_delay="5"/>
+=======
+    <!--Start PDDL Planner Node-->
+    <node name="planner" pkg="pddl" type="planner.py"/>
+    <!--Start PDDL Checker Node-->
+    <node name="pddl_checker" pkg="pddl" type="pddl_checker.py"/>
+    <!--Start Knowledge Base Interface Node-->
+    <node name="knowledge_base" pkg="pddl" type="knowledge_base.py"/>
+
+>>>>>>> f6605f46d8afb83b860e47d9beb046c881087242
 
  <!-- ###################################################### -->
  <!-- ####### Start Action Primitive Variation Nodes ####### -->
@@ -44,7 +54,12 @@
  <!-- ###################################################### -->
  <!-- ####### Start Test Nodes ####### -->
     <!--Start Param Variation Tool-->
+<<<<<<< HEAD
     <node name="test_actions" pkg="test" type="test_actions.py" respawn="true" respawn_delay="5"/>
     <node name="test_action_settings" pkg="test" type="test_action_settings.py" respawn="true" respawn_delay="5"/>
+=======
+    <!-- <node name="test_actions" pkg="test" type="test_actions.py"/> -->
+    <!-- <node name="test_action_settings" pkg="test" type="test_action_settings.py"/> -->
+>>>>>>> f6605f46d8afb83b860e47d9beb046c881087242
 
 </launch>

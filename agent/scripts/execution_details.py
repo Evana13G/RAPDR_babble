@@ -28,16 +28,23 @@ getObjLoc = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
 
 ################################################################################
 #### LOCAL INFORMATION #########################################################
-offsets = {'cup' : {'left': {'x' : 0, 'y' : 0.13, 'z' : 0},
-                    'right': {'x' : 0, 'y' : 0.13, 'z' : 0}, 
-                    'top': {'x' : 0, 'y' : 0.13, 'z' : 0}, 
-                    'front': {'x' : 0, 'y' : 0.13, 'z' : 0}, 
-                    'back': {'x' : 0, 'y' : 0.13, 'z' : 0}}, 
-           'cover' :  {'left': {'x' : 0, 'y' : 0.13, 'z' : 0},
-                       'right': {'x' : 0, 'y' : 0.13, 'z' : 0}, 
-                       'top': {'x' : 0, 'y' : 0.13, 'z' : 0}, 
-                       'front': {'x' : 0, 'y' : 0.13, 'z' : 0}, 
-                       'back': {'x' : 0, 'y' : 0.13, 'z' : 0}}}
+offsets = {'cover' : {'left': {'x' : 0.0, 'y' : -0.13, 'z' : 0.0},
+                    'right': {'x' : 0.0, 'y' : 0.13, 'z' : 0.0}, 
+                    'top': {'x' : 0.0, 'y' : 0.0, 'z' : 0.0}, 
+                    'front': {'x' : -0.1, 'y' : 0.0, 'z' : 0.0}, 
+                    'back': {'x' : 0.1, 'y' : 0.0, 'z' : 0.0}}, 
+           'cup' :  {'left': {'x' : 0.0, 'y' : -0.13, 'z' : 0.0},
+                    'right': {'x' : 0.0, 'y' : 0.13, 'z' : 0.0}, 
+                    'top': {'x' : 0.0, 'y' : 0.0, 'z' : 0.0}, 
+                    'front': {'x' : -0.1, 'y' : 0.0, 'z' : 0.0}, 
+                    'back': {'x' : 0.1, 'y' : 0.0, 'z' : 0.0}},}
+
+moveMagHelper = {'left' : {'x' : 0.0, 'y' : 1.0, 'z' : 0.0},
+                 'right': {'x' : 0.0, 'y' : -1.0, 'z' : 0.0}, 
+                 'top': {'x' : 0.0, 'y' : 0.0, 'z' : -0.1}, 
+                 'front': {'x' : 0.3, 'y' : 0.0, 'z' : 0.0}, 
+                 'back': {'x' : -0.3, 'y' : 0.0, 'z' : 0.0}}
+
 ################################################################################
 #### ACCESS FUNCTIONS ##########################################################
 def getObjectPose(object_name, pose_only=False):
@@ -118,6 +125,11 @@ def get_offset(req):
     vals = offsets[objectName][orientation]
     return HardcodedOffset(vals['x'], vals['y'], vals['z'])
 
+def get_moveMag(req):
+    orientation = req.orientation
+    vals = moveMagHelper[orientation]
+    return HardcodedOffset(vals['x'], vals['y'], vals['z'])
+
 def scenario_settings(req):
     scenario = req.scenario
     if scenario == 'discover_strike':
@@ -128,10 +140,10 @@ def scenario_settings(req):
         T = 3
         additional_domain_locs = []
     elif scenario == 'discover_pour':
-        goal = ['not (touching cup cover)']
+        goal = ['(not (touching cover cup))']
         orig_scenario = 'default'
         novel_scenario = 'high_friction'
-        T = 3
+        T = 5
         additional_domain_locs = []
     else:
         goal = []
@@ -149,7 +161,8 @@ def scenario_settings(req):
 
 def main():
     rospy.init_node("execution_info_node")
-    rospy.Service("get_offset", GetHardcodedOffsetSrv, get_offset)
+    rospy.Service("get_offset_srv", GetHardcodedOffsetSrv, get_offset)
+    rospy.Service("get_movemag_unit_srv", GetMoveMagUnitSrv, get_moveMag)
     rospy.Service("calc_gripper_orientation_pose", CalcGripperOrientationPoseSrv, orientation_solver)
     rospy.Service("scenario_settings_srv", GetScenarioSettingsSrv, scenario_settings)
     rospy.spin()

@@ -1,0 +1,3 @@
+bool execution_success
+bool goal_complete
+string failure_action
