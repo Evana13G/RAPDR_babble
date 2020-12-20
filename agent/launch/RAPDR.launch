@@ -17,8 +17,8 @@
    <node name="vision" pkg="agent" type="vision.py"/>
    <!--Start Execution Hardcodings -->
    <node name="execution_details" pkg="agent" type="execution_details.py"/>
-   <!--Start Agent Brain-->
-   <node name="brain" pkg="agent" type="brain.py" respawn="true" output="screen"/>
+   <!--Start Agent Brain and Set output to Screen-->
+   <node name="brain" pkg="agent" type="brain.py" respawn="true" output="screen"/> 
 
  <!-- ###################################################### -->
  <!-- ####### Start Environment Nodes ####### -->
