@@ -62,7 +62,7 @@ def handle_trial(req):
         print('#### ------------------------------------------ ')
         print("#### -- Original Scenario: ")
         success_bool = single_attempt_execution(task, goal, orig_env, additional_locs=additionalDomainLocs)
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         print("Service call failed: %s"%e)
         return BrainSrvResponse([1], 1)
 
