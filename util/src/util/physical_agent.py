@@ -230,6 +230,19 @@ class PhysicalAgent(object):
         self._gripper_open(gripper_name)
         # return 1
 
+    def cover_obj(self, gripper, objPose1, objPose2):
+        gripper_name = gripper.replace('_gripper', '')
+        self._gripper_open(gripper_name)
+        self._hover_approach(gripper_name, objPose1)
+        self._approach(gripper_name, objPose1)
+        self._gripper_close(gripper_name)
+        self._hover_approach(gripper_name, objPose1)
+        self._hover_approach(gripper_name, objPose2)
+        self._approach(gripper_name, objPose2)
+        self._gripper_open(gripper_name)
+        self._retract(gripper_name)
+
+
 ###################################################################################################
 ############## Lower Level Action Primitives 
 

@@ -32,6 +32,7 @@ CoverPose = None
 LeftGripperPose = None
 RightGripperPose = None
 TablePose = None
+BurnerPose = None
 
 cover_pressed = False
 cup_pressed = False
@@ -66,6 +67,12 @@ def setPoseTable(data):
     translate(data, -0.2)
     TablePose = data
     updatePredicates("table", data)
+
+def setPoseBurner(data):
+    global BurnerPose
+    translate(data, -0.2)
+    BurnerPose = data
+    updatePredicates("burner1", data)
 
 def translate(objPose, z_amt=-1.0):
     objPose.pose.position.z += z_amt
@@ -138,6 +145,19 @@ def updatePhysicalStateBasedPredicates():
     if is_pressed(RightGripperPose, CoverPose, 0.05, [0.01, None]):
         cover_pressed = True
 
+    if is_touching(CoverPose, BurnerPose, 0.1):
+        new_predicates.append(Predicate(operator="touching", objects=['cover', 'burner1'], locationInformation=None)) 
+        new_predicates.append(Predicate(operator="on_burner", objects=['cover', 'burner1'], locationInformation=None)) 
+    if is_touching(CupPose, BurnerPose, 0.1):
+        new_predicates.append(Predicate(operator="touching", objects=['cup', 'burner1'], locationInformation=None)) 
+        new_predicates.append(Predicate(operator="on_burner", objects=['cup', 'burner1'], locationInformation=None)) 
+
+
+    if is_pressed(CupPose, CoverPose, 0.05, [0.01, None]):
+        new_predicates.append(Predicate(operator="covered", objects=['cover'], locationInformation=None)) 
+    if is_pressed(CoverPose, CupPose, 0.05, [0.01, None]):
+        new_predicates.append(Predicate(operator="covered", objects=['cup'], locationInformation=None)) 
+
     if cover_pressed == True:
         new_predicates.append(Predicate(operator="pressed", objects=['cover'], locationInformation=None)) 
 
@@ -156,7 +176,8 @@ def getObjectLocation(data):
         'cover': CoverPose,
         'left_gripper': LeftGripperPose,
         'right_gripper': RightGripperPose, 
-        'table': TablePose
+        'table': TablePose,
+        'burner1': BurnerPose
     }
     return obj_choices.get(obj)
 
@@ -174,6 +195,7 @@ def main():
     rospy.Subscriber("left_gripper_pose", PoseStamped, setPoseGripperLeft)
     rospy.Subscriber("right_gripper_pose", PoseStamped, setPoseGripperRight)
     rospy.Subscriber("cafe_table_pose", PoseStamped, setPoseTable)
+    rospy.Subscriber("burner1_pose", PoseStamped, setPoseBurner)
 
     rospy.Service("scenario_data_srv", ScenarioDataSrv, getPredicates)
     rospy.Service("object_location_srv", ObjectLocationSrv, getObjectLocation)

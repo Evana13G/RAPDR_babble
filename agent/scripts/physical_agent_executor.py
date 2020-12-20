@@ -51,8 +51,9 @@ def getCorrectAction(action_name):
     actions = {'push' : push,
                # 'grasp' : grasp, 
                'shake' : shake,
-               'press' : press}
+               # 'press' : press}
                # 'drop' : drop}
+               'cover_obj' : cover_obj}
     return actions[action]
 
 ################################################################################
@@ -111,28 +112,28 @@ def shake(req):
     pa.shake(**args)
 
 #### PRESS #####################################################################
-def press(req):
-    gripper = req.gripper
-    objPose = getObjectPose(req.objectName)
-    rate = req.rate
-    press_amount = req.movementMagnitude
-    orientation = req.orientation
+# def press(req):
+#     gripper = req.gripper
+#     objPose = getObjectPose(req.objectName)
+#     rate = req.rate
+#     press_amount = req.movementMagnitude
+#     orientation = req.orientation
 
-    hover_distance = 0.1
+#     hover_distance = 0.1
     
-    # Process args
-    obj_z_val = copy.deepcopy(objPose.pose.position.z)  
-    startPose = copy.deepcopy(objPose)
-    endPose = copy.deepcopy(objPose)
-    startPose.pose.position.z = (obj_z_val + hover_distance)
-    endPose.pose.position.z = (obj_z_val + hover_distance - press_amount)
+#     # Process args
+#     obj_z_val = copy.deepcopy(objPose.pose.position.z)  
+#     startPose = copy.deepcopy(objPose)
+#     endPose = copy.deepcopy(objPose)
+#     startPose.pose.position.z = (obj_z_val + hover_distance)
+#     endPose.pose.position.z = (obj_z_val + hover_distance - press_amount)
 
-    # Put args into hash object
-    argNames = ['gripper', 'startPose', 'endPose', 'rate']
-    argVals = [gripper, startPose, endPose, rate]
-    args = arg_list_to_hash(argNames, argVals)
+#     # Put args into hash object
+#     argNames = ['gripper', 'startPose', 'endPose', 'rate']
+#     argVals = [gripper, startPose, endPose, rate]
+#     args = arg_list_to_hash(argNames, argVals)
 
-    pa.press(**args)
+#     pa.press(**args)
 
 
 #### DROP ######################################################################
@@ -156,6 +157,24 @@ def press(req):
 #     gripper = req.gripper
 #     objPose = getObjectPose(req.objectName)
 #     return ActionExecutorSrvResponse(pa.grasp(objPose))
+
+#### COVER OBJ #####################################################################
+def cover_obj(req):
+    gripper = req.gripper
+    objName1 = req.objectName1
+    objName2 = req.objectName2
+    objPose1 = getObjectPose(objName1)
+    objPose2 = getObjectPose(objName2)
+    # orientation = req.orientation
+    # startPose = orientationSolver(gripper, objName, orientation).configuration
+
+    # argNames = ['gripper', 'objPose', 'orientation', 'twist_range', 'rate']
+    argNames = ['gripper', 'objPose1', 'objPose2']
+    argVals = [gripper, objPose1, objPose2]
+    args = arg_list_to_hash(argNames, argVals)
+
+    pa.cover_obj(**args)
+
 
 ################################################################################
 ################################################################################

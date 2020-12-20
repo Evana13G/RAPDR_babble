@@ -33,7 +33,7 @@ from parameter import Parameter
 class KnowledgeBase(object):
     def __init__(self):
         _domain = 'rapdr'
-        _reqs = ['strips', 'typing']
+        _reqs = ['strips', 'typing', 'negative-preconditions']
         _types = []
         _preds = []
         _actions = []
@@ -55,7 +55,8 @@ class KnowledgeBase(object):
         _preds.append(TemplatedPredicate('powered_on', [Variable('?e', 'entity')]))
         _preds.append(TemplatedPredicate('pressed', [Variable('?e', 'entity')]))
         _preds.append(TemplatedPredicate('on', [Variable('?e', 'entity'), Variable('?e', 'entity')]))
-        _preds.append(TemplatedPredicate('meal_complete', [Variable('?e', 'entity')]))
+        _preds.append(TemplatedPredicate('prepped', [Variable('?e', 'entity')]))
+        _preds.append(TemplatedPredicate('shaken', [Variable('?e', 'entity')]))
 
         ## PUSH 
         push = Action('push', [], [], [], []) # All default, add after 
@@ -78,6 +79,7 @@ class KnowledgeBase(object):
         shake = Action('shake', [], [], [], []) # All default, add after 
         shake.addArg(Variable('?g', 'gripper'))
         shake.addArg(Variable('?o', 'obj'))
+        shake.addEffect(StaticPredicate('shaken', ['?o']))
         shake_p1 = Parameter('rate', 5.0, 1.0, 20.0)
         shake_p2 = Parameter('movementMagnitude', 1.0, 0.0, 5.0)
         shake_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front', 'back'])
@@ -228,6 +230,16 @@ class KnowledgeBase(object):
         # clear_table_item.addEffect(StaticPredicate('not', [StaticPredicate('is_visible', ['?o'])]))
         # clear_table_item.setExecutionArgNames(['gripper', 'objectName'])
 
+        # FOOD PREPPED
+        prep_food = Action('prep_food', [], [], [], []) # All default, add after 
+        prep_food.addArg(Variable('?g', 'gripper'))
+        prep_food.addArg(Variable('?o', 'obj'))
+        prep_food.addPreCond(StaticPredicate('covered', ['?o']))
+        prep_food.addPreCond(StaticPredicate('shaken', ['?o']))
+        prep_food.addEffect(StaticPredicate('prepped', ['?o']))
+        prep_food.setExecutionArgNames(['gripper', 'objectName'])
+
+
         _actions.append(push)
         _actions.append(shake)
 
@@ -235,16 +247,22 @@ class KnowledgeBase(object):
         _actions.append(place_on_burner)
         _actions.append(cook)
         _actions.append(check_food)
+        _actions.append(prep_food)
+        
         # _actions.append(remove_from_burner)
         # _actions.append(uncover_obj)
         # _actions.append(serve_food)
         # _actions.append(clear_table_item)
 
-
         # _actions.append(press)
         # _actions.append(grasp)
         # _actions.append(drop)
 
+# need a reason to use 'push' before the action that fails (cover)
+# push shake cover
+
+# ['shake', 'cover_obj', 'prep_food']
+# ['cover_obj', 'place_on_burner', 'cook']
 
         self.domain = _domain
         self.requirements = _reqs

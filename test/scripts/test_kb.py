@@ -22,13 +22,12 @@ def test(req):
     try:
         task_name = 'test'
         filename = 'test_1'
-        goal = ['(food_cooked )']
+        # goal = ['(prepped cup )']
+        goal = ['(cooking cup )']
         initStateInfo = scenarioData()
         initObjsIncludingLoc = extendInitLocs(initStateInfo, [])
         initObjsIncludingLoc['gripper'] = ['left_gripper']
-        initObjsIncludingLoc['burner'] = ['burner_1']
         objs = pddlObjectsStringFormat_fromDict(initObjsIncludingLoc)
-        objs.append('burner_1 - burner')
         init = initStateInfo.init
         init = [x for x in init if 'right_gripper' not in x]
         problem = Problem(task_name, KBDomainProxy().domain.name, objs, init, goal)

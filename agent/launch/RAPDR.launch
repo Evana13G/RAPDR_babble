@@ -7,7 +7,7 @@
  <!-- ###################################################### -->
  <!-- ####### Start Agent Nodes ####### -->
     <!--Start Agent Proxy-->
-    <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py"/>
+    <!-- <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py"/> -->
     <!--Start Agent Vision Processing Mechanism-->
     <node name="vision" pkg="agent" type="vision.py"/>
     <!--Start Execution Hardcodings -->
