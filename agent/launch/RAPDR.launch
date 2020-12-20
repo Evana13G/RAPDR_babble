@@ -12,7 +12,7 @@
  <!-- ###################################################### -->
  <!-- ####### Start Agent Nodes ####### -->
    <!--Start Agent Proxy-->
-   <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py"/>
+   <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py" respawn="true"/>
    <!--Start Agent Vision Processing Mechanism-->
    <node name="vision" pkg="agent" type="vision.py"/>
    <!--Start Execution Hardcodings -->
@@ -23,7 +23,7 @@
  <!-- ###################################################### -->
  <!-- ####### Start Environment Nodes ####### -->
    <!--Start Loading Environment Elements-->
-   <node name="load_environment" pkg="environment" type="load_environment.py"/>
+   <node name="load_environment" pkg="environment" type="load_environment.py" respawn="true"/>
    <!--Start Publishing Environment Elements-->
    <node name="publish_environment" pkg="environment" type="publish_environment.py"/>
    <!--Start Data Conversion Module-->

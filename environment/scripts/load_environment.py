@@ -100,9 +100,9 @@ def load_gazebo_models(env='default'):
 
     ###############################
     ######## BREAKABLE OBJECT ##    
-    elif env == 'brk_test':
-        with open (model_path + "breakable_obj/breakable_model", "r") as brk_obj_file:
-            brk_obj_xml=brk_obj_file.read().replace('\n', '')
+    # elif env == 'brk_test':
+    #     with open (model_path + "breakable_obj/breakable_model", "r") as brk_obj_file:
+    #         brk_obj_xml=brk_obj_file.read().replace('\n', '')
 
     ###############################
     ########### DEFAULT ########### 
@@ -121,8 +121,9 @@ def load_gazebo_models(env='default'):
         spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
         spawn_sdf("cover", cover_xml, "/", cover_pose, reference_frame)
 
-        #breakable obj spawn
-        spawn_sdf("brk_obj", brk_obj_xml, "/", breakable_obj_pose, reference_frame)
+        ############ breakable obj spawn ############
+        # spawn_sdf("brk_obj", brk_obj_xml, "/", breakable_obj_pose, reference_frame)
+
         # spawn_sdf("cover2", cover_xml, "/", left_button_pose, reference_frame)
         # spawn_sdf("cover3", cover_xml, "/", right_button_pose, reference_frame)
 
@@ -147,7 +148,7 @@ def delete_gazebo_models():
         delete_model("cup")
         rospy.sleep(1)
         #brk obj delete
-        delete_model("brk_obj")
+        # delete_model("brk_obj")
         rospy.sleep(1)
         resetPreds()
         # delete_model("cafe_table")
