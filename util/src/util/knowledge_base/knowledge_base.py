@@ -90,39 +90,6 @@ class KnowledgeBase(object):
 
         #####################################################################################################
         #####################################################################################################
-        ## PRESS
-        # press = Action('press', [], [], [], []) # All default, add after 
-        # press.addArg(Variable('?g', 'gripper'))
-        # press.addArg(Variable('?o', 'obj'))
-        # press_p1 = Parameter('rate', 100.0, 50.0, 1000.0)
-        # press_p2 = Parameter('movementMagnitude', 0.1, 0.03, 0.3)
-        # press_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front', 'back'])
-        # press.addPreCond(StaticPredicate('is_visible', ['?o']))
-        # press.addEffect(StaticPredicate('pressed', ['?o']))
-        # press.addParam(press_p1)
-        # press.addParam(press_p2)
-        # press.addParam(press_p3)
-        # press.setExecutionArgNames(['gripper', 'objectName'])
-        #####################################################################################################
-        #####################################################################################################
-        # ## GRASP
-        # grasp = Action('grasp', [], [], [], []) # All default, add after 
-        # grasp.addArg(Variable('?g', 'gripper'))
-        # grasp.addArg(Variable('?o', 'obj'))
-        # grasp_p1 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front', 'back'])
-        # grasp.addParam(grasp_p1)
-        # grasp.addEffect(StaticPredicate('grasped', ['?o']))
-        # grasp.setExecutionArgNames(['gripper', 'objectName'])
-        # ## DROP
-        # drop = Action('drop', [], [], [], []) # All default, add after 
-        # drop.addArg(Variable('?g', 'gripper'))
-        # drop.addArg(Variable('?o', 'obj'))
-        # drop_p1 = Parameter('dropHeight', 0.1, 0.01, 0.3)
-        # drop.addParam(drop_p1)
-        # drop.setExecutionArgNames(['gripper', 'objectName'])
-        #####################################################################################################
-        #####################################################################################################
-        ###
         ###
         ###
         ### It seems like it cant handle plans which require 
@@ -181,6 +148,7 @@ class KnowledgeBase(object):
         cook.addArg(Variable('?o', 'obj'))
         cook.addArg(Variable('?b', 'burner'))
         cook.addPreCond(StaticPredicate('on_burner', ['?o', '?b']))
+        # cook.addPreCond(StaticPredicate('prepped', ['?o']))
         # cook.addPreCond(StaticPredicate('powered_on', ['?b']))
         cook.addEffect(StaticPredicate('cooking', ['?o']))
         cook.setExecutionArgNames(['gripper', 'objectName1', 'objectName2'])
@@ -192,43 +160,6 @@ class KnowledgeBase(object):
         check_food.addPreCond(StaticPredicate('cooking', ['?o']))
         check_food.addEffect(StaticPredicate('food_cooked', []))
         check_food.setExecutionArgNames(['gripper', 'objectName'])
-
-        # # REMOVE FROM BURNER
-        # remove_from_burner = Action('remove_from_burner', [], [], [], []) # All default, add after 
-        # remove_from_burner.addArg(Variable('?g', 'gripper'))
-        # remove_from_burner.addArg(Variable('?o', 'obj'))
-        # remove_from_burner.addArg(Variable('?b', 'burner'))
-        # # remove_from_burner.addPreCond(StaticPredicate('on_burner', ['?o', '?b']))
-        # remove_from_burner.addPreCond(StaticPredicate('cooked', ['?o']))
-        # remove_from_burner.addEffect(StaticPredicate('not', [StaticPredicate('on_burner', ['?o', '?b'])]))
-        # remove_from_burner.setExecutionArgNames(['gripper', 'objectName1', 'objectName2'])
-
-        # # UNCOVER OBJECT
-        # uncover_obj = Action('uncover_obj', [], [], [], []) # All default, add after 
-        # uncover_obj.addArg(Variable('?g', 'gripper'))
-        # uncover_obj.addArg(Variable('?o', 'obj'))
-        # uncover_obj.addArg(Variable('?b', 'burner'))
-        # uncover_obj.addPreCond(StaticPredicate('not', [StaticPredicate('on_burner', ['?o', '?b'])]))
-        # # uncover_obj.addPreCond(StaticPredicate('covered', ['?o']))
-        # uncover_obj.addEffect(StaticPredicate('not', [StaticPredicate('covered', ['?o'])]))
-        # uncover_obj.setExecutionArgNames(['gripper', 'objectName'])
-
-        # # SERVE FOOD
-        # serve_food = Action('serve_food', [], [], [], []) # All default, add after 
-        # serve_food.addArg(Variable('?g', 'gripper'))
-        # serve_food.addArg(Variable('?o', 'obj'))
-        # serve_food.addPreCond(StaticPredicate('cooked', ['?o']))
-        # # serve_food.addPreCond(StaticPredicate('not', [StaticPredicate('covered', ['?o'])]))
-        # serve_food.addEffect(StaticPredicate('meal_complete', ['?o']))
-        # serve_food.setExecutionArgNames(['objectName'])
-
-        # # CLEAR ITEM
-        # clear_table_item = Action('clear_table_item', [], [], [], []) # All default, add after 
-        # clear_table_item.addArg(Variable('?g', 'gripper'))
-        # clear_table_item.addArg(Variable('?o', 'obj'))
-        # # clear_table_item.addPreCond(StaticPredicate('cooked', ['?o']))
-        # clear_table_item.addEffect(StaticPredicate('not', [StaticPredicate('is_visible', ['?o'])]))
-        # clear_table_item.setExecutionArgNames(['gripper', 'objectName'])
 
         # FOOD PREPPED
         prep_food = Action('prep_food', [], [], [], []) # All default, add after 
@@ -249,14 +180,6 @@ class KnowledgeBase(object):
         _actions.append(check_food)
         _actions.append(prep_food)
         
-        # _actions.append(remove_from_burner)
-        # _actions.append(uncover_obj)
-        # _actions.append(serve_food)
-        # _actions.append(clear_table_item)
-
-        # _actions.append(press)
-        # _actions.append(grasp)
-        # _actions.append(drop)
 
 # need a reason to use 'push' before the action that fails (cover)
 # push shake cover
@@ -354,3 +277,89 @@ class KnowledgeBase(object):
         for a in self.actions:
             s = s + str(a) + '\n'
         return s
+
+
+######################################################################
+######################################################################
+######################################################################
+
+        #####################################################################################################
+        #####################################################################################################
+        ## PRESS
+        # press = Action('press', [], [], [], []) # All default, add after 
+        # press.addArg(Variable('?g', 'gripper'))
+        # press.addArg(Variable('?o', 'obj'))
+        # press_p1 = Parameter('rate', 100.0, 50.0, 1000.0)
+        # press_p2 = Parameter('movementMagnitude', 0.1, 0.03, 0.3)
+        # press_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front', 'back'])
+        # press.addPreCond(StaticPredicate('is_visible', ['?o']))
+        # press.addEffect(StaticPredicate('pressed', ['?o']))
+        # press.addParam(press_p1)
+        # press.addParam(press_p2)
+        # press.addParam(press_p3)
+        # press.setExecutionArgNames(['gripper', 'objectName'])
+        #####################################################################################################
+        #####################################################################################################
+        # ## GRASP
+        # grasp = Action('grasp', [], [], [], []) # All default, add after 
+        # grasp.addArg(Variable('?g', 'gripper'))
+        # grasp.addArg(Variable('?o', 'obj'))
+        # grasp_p1 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front', 'back'])
+        # grasp.addParam(grasp_p1)
+        # grasp.addEffect(StaticPredicate('grasped', ['?o']))
+        # grasp.setExecutionArgNames(['gripper', 'objectName'])
+        # ## DROP
+        # drop = Action('drop', [], [], [], []) # All default, add after 
+        # drop.addArg(Variable('?g', 'gripper'))
+        # drop.addArg(Variable('?o', 'obj'))
+        # drop_p1 = Parameter('dropHeight', 0.1, 0.01, 0.3)
+        # drop.addParam(drop_p1)
+        # drop.setExecutionArgNames(['gripper', 'objectName'])
+        #####################################################################################################
+        #####################################################################################################
+
+        # # REMOVE FROM BURNER
+        # remove_from_burner = Action('remove_from_burner', [], [], [], []) # All default, add after 
+        # remove_from_burner.addArg(Variable('?g', 'gripper'))
+        # remove_from_burner.addArg(Variable('?o', 'obj'))
+        # remove_from_burner.addArg(Variable('?b', 'burner'))
+        # # remove_from_burner.addPreCond(StaticPredicate('on_burner', ['?o', '?b']))
+        # remove_from_burner.addPreCond(StaticPredicate('cooked', ['?o']))
+        # remove_from_burner.addEffect(StaticPredicate('not', [StaticPredicate('on_burner', ['?o', '?b'])]))
+        # remove_from_burner.setExecutionArgNames(['gripper', 'objectName1', 'objectName2'])
+
+        # # UNCOVER OBJECT
+        # uncover_obj = Action('uncover_obj', [], [], [], []) # All default, add after 
+        # uncover_obj.addArg(Variable('?g', 'gripper'))
+        # uncover_obj.addArg(Variable('?o', 'obj'))
+        # uncover_obj.addArg(Variable('?b', 'burner'))
+        # uncover_obj.addPreCond(StaticPredicate('not', [StaticPredicate('on_burner', ['?o', '?b'])]))
+        # # uncover_obj.addPreCond(StaticPredicate('covered', ['?o']))
+        # uncover_obj.addEffect(StaticPredicate('not', [StaticPredicate('covered', ['?o'])]))
+        # uncover_obj.setExecutionArgNames(['gripper', 'objectName'])
+
+        # # SERVE FOOD
+        # serve_food = Action('serve_food', [], [], [], []) # All default, add after 
+        # serve_food.addArg(Variable('?g', 'gripper'))
+        # serve_food.addArg(Variable('?o', 'obj'))
+        # serve_food.addPreCond(StaticPredicate('cooked', ['?o']))
+        # # serve_food.addPreCond(StaticPredicate('not', [StaticPredicate('covered', ['?o'])]))
+        # serve_food.addEffect(StaticPredicate('meal_complete', ['?o']))
+        # serve_food.setExecutionArgNames(['objectName'])
+
+        # # CLEAR ITEM
+        # clear_table_item = Action('clear_table_item', [], [], [], []) # All default, add after 
+        # clear_table_item.addArg(Variable('?g', 'gripper'))
+        # clear_table_item.addArg(Variable('?o', 'obj'))
+        # # clear_table_item.addPreCond(StaticPredicate('cooked', ['?o']))
+        # clear_table_item.addEffect(StaticPredicate('not', [StaticPredicate('is_visible', ['?o'])]))
+        # clear_table_item.setExecutionArgNames(['gripper', 'objectName'])
+
+        # _actions.append(remove_from_burner)
+        # _actions.append(uncover_obj)
+        # _actions.append(serve_food)
+        # _actions.append(clear_table_item)
+
+        # _actions.append(press)
+        # _actions.append(grasp)
+        # _actions.append(drop)
