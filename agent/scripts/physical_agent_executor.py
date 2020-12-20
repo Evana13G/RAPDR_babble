@@ -36,6 +36,9 @@ from util.data_conversion import arg_list_to_hash
 pa = None
 obj_location_srv = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
 actionInfoProxy = rospy.ServiceProxy('get_KB_action_info_srv', GetKBActionInfoSrv)
+getOffset = rospy.ServiceProxy('get_offset_srv', GetHardcodedOffsetSrv)
+moveMagVector = rospy.ServiceProxy('get_movemag_unit_srv', GetMoveMagUnitSrv)
+orientationSolver = rospy.ServiceProxy("calc_gripper_orientation_pose", CalcGripperOrientationPoseSrv)
 
 def getObjectPose(object_name, pose_only=False):
     loc_pStamped = obj_location_srv(object_name)
@@ -56,49 +59,56 @@ def getCorrectAction(action_name):
 ################################################################################
 
 #### PUSH ######################################################################
+
+
 def push(req):
     gripper = req.gripper
-    objPose = getObjectPose(req.objectName)
+    objName = req.objectName
     rate = req.rate
-    
-    start_offset = 0.1
-    ending_offset = req.movementMagnitude
     orientation = req.orientation
+    moveMagScalar = req.movementMagnitude
+    
+    objPose = getObjectPose(req.objectName)
+    offSets = getOffset(objName, orientation).hardcodings
+    moveMagVec = moveMagVector(orientation).hardcodings
 
-    # Process args
     startPose = copy.deepcopy(objPose)
     endPose = copy.deepcopy(objPose)
 
-    if orientation == 'left':
-        obj_y_val = copy.deepcopy(objPose.pose.position.y)  
-        startPose.pose.position.y = (obj_y_val - start_offset)
-        endPose.pose.position.y = (obj_y_val + ending_offset)
-    elif orientation == 'right':
-        obj_y_val = copy.deepcopy(objPose.pose.position.y)  
-        startPose.pose.position.y = (obj_y_val + start_offset)
-        endPose.pose.position.y = (obj_y_val - ending_offset)
+    moveMagVec.x *= moveMagScalar
+    moveMagVec.y *= moveMagScalar
+    moveMagVec.z *= moveMagScalar
 
+    startPose.pose.position.x += offSets.x
+    startPose.pose.position.y += offSets.y
+    startPose.pose.position.z += offSets.z
+
+    endPose.pose.position.x += moveMagVec.x
+    endPose.pose.position.y += moveMagVec.y
+    endPose.pose.position.z += moveMagVec.z
 
     # Put args into hash object
     argNames = ['gripper', 'startPose', 'endPose', 'rate']
     argVals = [gripper, startPose, endPose, rate]
     args = arg_list_to_hash(argNames, argVals)
 
-    return pa.push(**args)
+    pa.push(**args)
 
 #### SHAKE #####################################################################
 def shake(req):
     gripper = req.gripper
-    objPose = getObjectPose(req.objectName)
+    objName = req.objectName
+    objPose = getObjectPose(objName)
     rate = req.rate
     twist_range = req.movementMagnitude
     orientation = req.orientation
+    startPose = orientationSolver(gripper, objName, orientation).configuration
 
-    argNames = ['gripper', 'objPose', 'twist_range', 'rate']
-    argVals = [gripper, objPose, twist_range, rate]
+    argNames = ['gripper', 'objPose', 'orientation', 'twist_range', 'rate']
+    argVals = [gripper, startPose, orientation, twist_range, rate]
     args = arg_list_to_hash(argNames, argVals)
 
-    return pa.shake(**args)
+    pa.shake(**args)
 
 #### PRESS #####################################################################
 def press(req):
@@ -122,7 +132,7 @@ def press(req):
     argVals = [gripper, startPose, endPose, rate]
     args = arg_list_to_hash(argNames, argVals)
 
-    return pa.press(**args)
+    pa.press(**args)
 
 
 #### DROP ######################################################################
@@ -165,7 +175,11 @@ def action_executor(req):
                                    req.args, 
                                    req.paramNames, 
                                    req.params)
-    a(zipped_request)
+    try:
+        a(zipped_request)
+        return True
+    except:
+        return False
 
 def raw_action_executor(req):
     actionName = req.actionName
@@ -180,8 +194,8 @@ def raw_action_executor(req):
     assert(len(argNames) == len(args))
     assert(len(paramNames) == len(params))
 
-    action_executor(Action(actionName, argNames, paramNames, args, params))
-    return RawActionExecutorSrvResponse(1)
+    success_bool = action_executor(Action(actionName, argNames, paramNames, args, params))
+    return RawActionExecutorSrvResponse(success_bool)
 
 def param_action_executor(req):
     actionName = req.actionName
@@ -202,9 +216,8 @@ def param_action_executor(req):
         pValToSet = paramValsToSet[i]
         i_pToSet = paramNames.index(pNameToSet)
         paramVals[i_pToSet] = pValToSet
-
-    action_executor(Action(actionName, argNames, paramNames, argValues, paramVals))
-    return ParamActionExecutorSrvResponse(1)
+    success_bool = action_executor(Action(actionName, argNames, paramNames, argValues, paramVals))
+    return ParamActionExecutorSrvResponse(success_bool)
 
 # This just takes in one action, pulls param values, and sends to the 
 # Appropriate srv, which takes care of the hardcodings call. 
@@ -221,8 +234,10 @@ def pddl_action_executor(req):
         args = strip_pddl_call(args) 
     assert(len(argNames) == len(args))
     
-    action_executor(Action(actionName, argNames, paramNames, args, paramDefaults))
-    return PddlExecutorSrvResponse(1)
+    success_bool = action_executor(Action(actionName, argNames, paramNames, args, paramDefaults))
+    ## Check effects here?
+    
+    return PddlExecutorSrvResponse(success_bool)
 
 ################################################################################
 ## UTIL 

@@ -1,3 +1,3 @@
 ActionExecutionInfoList actions
 ---
-int64 success_bool
+PlanExecutionOutcome execution_outcome

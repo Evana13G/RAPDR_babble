@@ -40,7 +40,8 @@ environment = 'default'
 
 pub_all = rospy.Publisher('models_loaded', Bool, queue_size=10)
 moveToStartProxy = rospy.ServiceProxy('move_to_start_srv', MoveToStartSrv)
-    
+resetPreds = rospy.ServiceProxy('reset_env_preds', EmptySrvReq)
+
 #SPAWN WALL AT 1.1525 z to be above table or 0.3755 to be below
 def load_gazebo_models(env='default'):
 
@@ -74,7 +75,7 @@ def load_gazebo_models(env='default'):
     if env == 'heavy': 
         with open (model_path + "cup_with_cover/cup_model_heavy.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')
-        with open (model_path + "cup_with_cover/cover_model.sdf", "r") as cover_file:
+        with open (model_path + "cup_with_cover/cover_model_heavy.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
 
     ###############################
@@ -89,7 +90,7 @@ def load_gazebo_models(env='default'):
     ###############################
     ######## HEAVY HIGH FRICTION ##
     elif env == 'HH':
-        with open (model_path + "cup_with_cover/cup_model_heavy.sdf", "r") as cup_file:
+        with open (model_path + "cup_with_cover/cup_model.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')
         with open (model_path + "cup_with_cover/cover_model_heavy_high_friction.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
@@ -112,6 +113,7 @@ def load_gazebo_models(env='default'):
     except rospy.ServiceException as e:
         rospy.logerr("Spawn URDF service call failed: {0}".format(e))
 
+    resetPreds()
     pub_all.publish(True)
 
 
@@ -124,8 +126,12 @@ def delete_gazebo_models():
         pub_all.publish(False)
         
         delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
-        delete_model("cafe_table")
-        delete_model("breakable_obj")
+        delete_model("cover")
+        rospy.sleep(1)
+        delete_model("cup")
+        rospy.sleep(1)
+        resetPreds()
+        # delete_model("cafe_table")
 
     except rospy.ServiceException as e:
         rospy.loginfo("Delete Model service call failed: {0}".format(e))
@@ -136,7 +142,9 @@ def handle_environment_request(req):
     environment = 'default' if req.environment_setting == None else req.environment_setting
     if action == "init":
         try:
+            rospy.sleep(1)
             load_gazebo_models(environment)
+            rospy.sleep(3)
             return HandleEnvironmentSrvResponse(1)
         except rospy.ServiceException, e:
             rospy.logerr("Init environment call failed: {0}".format(e))
@@ -144,7 +152,9 @@ def handle_environment_request(req):
 
     elif action == 'destroy':
         try:
+            rospy.sleep(1)
             delete_gazebo_models()
+            rospy.sleep(2)
             return HandleEnvironmentSrvResponse(1)
         except rospy.ServiceException, e:
             rospy.logerr("Destroy environment call failed: {0}".format(e))
@@ -152,10 +162,11 @@ def handle_environment_request(req):
 
     elif action == 'restart':
         try:
+            rospy.sleep(1)
             delete_gazebo_models()
-            rospy.sleep(3)
+            rospy.sleep(2)
             load_gazebo_models(environment)
-            rospy.sleep(5)
+            rospy.sleep(4)
             return HandleEnvironmentSrvResponse(1)
 
         except rospy.ServiceException, e:

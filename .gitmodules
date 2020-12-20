@@ -1,0 +1,4 @@
+[submodule "pddl_parser"]
+	path = util/src/util/pddl_parser
+	url = https://github.com/pucrs-automated-planning/pddl-parser
+    ignore = dirty

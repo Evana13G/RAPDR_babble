@@ -42,17 +42,34 @@ def getVisibleObjects(predList):
             obj_list.append(pred.objects[0] + ' ')
     return obj_list
 
-def is_touching(object1_loc, object2_loc, epsilon=0.135):
+
+def is_touching(object1_loc, object2_loc, xy_epsilon=0.1, z_epsilon=None):
     if ((object1_loc is not None) and (object2_loc is not None)):
-        obj1 = np.array((object1_loc.pose.position.x, 
-                            object1_loc.pose.position.y,
-                            object1_loc.pose.position.z)) 
-        obj2 = np.array((object2_loc.pose.position.x, 
-                            object2_loc.pose.position.y,
-                            object2_loc.pose.position.z)) 
-        if np.linalg.norm(obj1 - obj2) < epsilon:
-            return True 
+
+        if z_epsilon is None: z_epsilon = xy_epsilon
+
+        xy_1 = np.array((object1_loc.pose.position.x, 
+                            object1_loc.pose.position.y)) 
+        xy_2 = np.array((object2_loc.pose.position.x, 
+                            object2_loc.pose.position.y)) 
+        
+        if np.linalg.norm(xy_1 - xy_2) < xy_epsilon:
+            z_1 = np.array((object1_loc.pose.position.z))
+            z_2 = np.array((object2_loc.pose.position.z))
+    
+            if np.linalg.norm(z_1 - z_2) < z_epsilon:
+                return True 
         return False
+
+def is_pressed(obj, actuator, press_z_dist = None, epsilon=[0.1, None]):
+    if ((obj is not None) and (actuator is not None)):
+        if is_touching(obj, actuator, epsilon[0], epsilon[1]):
+            z_dist = obj.pose.position.z - actuator.pose.position.z
+            if press_z_dist == None: press_z_dist = 0.8*epsilon[0]
+            if 0.0 < z_dist < press_z_dist: 
+                return True 
+    return False
+
 
 def is_obtained(object1_loc, object2_loc):
     if (object1_loc is not None) and (object2_loc is not None): 
@@ -350,3 +367,5 @@ def getPlanFromPDDLactionList(action_list):
         action['args'] = full_action.parameters
         plan.append(action)
     return plan
+
+# def seperate_preds_LocationBased(pred_list):
