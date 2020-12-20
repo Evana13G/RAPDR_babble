@@ -98,7 +98,7 @@ def load_gazebo_models(env='default'):
     ###############################
     ########### DEFAULT ########### 
     else:
-        with open (model_path + "breakable_obj/model.sdf", "r") as breakable_obj_file:
+        with open (model_path + "breakable_obj/test_model.sdf", "r") as breakable_obj_file:
             breakable_obj_xml=breakable_obj_file.read().replace('\n', '')
 
     # Spawn Table SDF and other URDFs

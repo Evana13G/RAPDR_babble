@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--
     Launching the files necessary to run the Action Primitive Discovery Simulation
 -->
@@ -5,44 +6,45 @@
 <launch>
 
  <!-- ###################################################### -->
- <!-- ####### Start Agent Nodes ####### -->
-    <!--Start Agent Proxy-->
-    <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py"/>
-    <!--Start Agent Vision Processing Mechanism-->
-    <node name="vision" pkg="agent" type="vision.py"/>
-    <!--Start Execution Hardcodings -->
-    <node name="execution_details" pkg="agent" type="execution_details.py"/>
-    <!--Start Agent Brain-->
-    <!-- <node name="brain" pkg="agent" type="brain.py"/> -->
+ <!-- ####### Start Baxter Gazebo Simulation ####### -->
+   <include file="$(find baxter_gazebo)/launch/baxter_world.launch"/>
 
+ <!-- ###################################################### -->
+ <!-- ####### Start Agent Nodes ####### -->
+   <!--Start Agent Proxy-->
+   <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py" respawn="true"/>
+   <!--Start Agent Vision Processing Mechanism-->
+   <node name="vision" pkg="agent" type="vision.py"/>
+   <!--Start Execution Hardcodings -->
+   <node name="execution_details" pkg="agent" type="execution_details.py"/>
+   <!--Start Agent Brain and Set output to Screen-->
+   <node name="brain" pkg="agent" type="brain.py" respawn="true" output="screen"/> 
 
  <!-- ###################################################### -->
  <!-- ####### Start Environment Nodes ####### -->
-    <!--Start Loading Environment Elements-->
-    <node name="load_environment" pkg="environment" type="load_environment.py"/>
-    <!--Start Publishing Environment Elements-->
-    <node name="publish_environment" pkg="environment" type="publish_environment.py"/>
-    <!--Start Data Conversion Module-->
-    <node name="scenario_data" pkg="environment" type="scenario_data.py"/>
-
+   <!--Start Loading Environment Elements-->
+   <node name="load_environment" pkg="environment" type="load_environment.py" respawn="true"/>
+   <!--Start Publishing Environment Elements-->
+   <node name="publish_environment" pkg="environment" type="publish_environment.py"/>
+   <!--Start Data Conversion Module-->
+   <node name="scenario_data" pkg="environment" type="scenario_data.py"/>
 
  <!-- ###################################################### -->
  <!-- ####### Start PDDL Nodes ####### -->
-    <!--Start PDDL Nodes-->
-    <node name="planner" pkg="pddl" type="planner.py"/>
-    <!--Start Knowledge Base Interface Node-->
-    <node name="knowledge_base" pkg="pddl" type="knowledge_base.py"/>
-
+   <!--Start PDDL Nodes-->
+   <node name="planner" pkg="pddl" type="planner.py"/>
+   <!--Start Knowledge Base Interface Node-->
+   <node name="knowledge_base" pkg="pddl" type="knowledge_base.py"/>
 
  <!-- ###################################################### -->
  <!-- ####### Start Action Primitive Variation Nodes ####### -->
-    <!--Start Param Variation Tool-->
-    <node name="APV" pkg="action_primitive_variation" type="APV_server.py"/>
+   <!--Start Param Variation Tool-->
+   <node name="APV" pkg="action_primitive_variation" type="APV_server.py" />
 
  <!-- ###################################################### -->
  <!-- ####### Start Test Nodes ####### -->
     <!--Start Param Variation Tool-->
-<!--     <node name="test_actions" pkg="agent" type="test_actions.py"/>
-    <node name="test_action_settings" pkg="agent" type="test_action_settings.py"/> -->
+    <!-- <node name="test_actions" pkg="test" type="test_actions.py" respawn="true" respawn_delay="5"/>
+    <node name="test_action_settings" pkg="test" type="test_action_settings.py" respawn="true" respawn_delay="5"/> -->
 
 </launch>
