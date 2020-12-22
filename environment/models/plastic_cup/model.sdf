@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <sdf version="1.5">
   <model name="plastic_cup">
-    <link name="link">
+    <link name="plastic_cup_link">
       <pose>0 0 0.065 0 0 0</pose>
       <inertial>
         <mass>0.09</mass>
@@ -56,7 +56,34 @@
           </script>
         </material>
       </visual>
-
     </link>
+    
+    <link name="surface1">
+    <visual>
+      <origin xyz="0.23 0 0.755" rpy="0 0 0" />
+      <geometry>
+        <box size="0.913 2 0.04" />
+      </geometry>
+    </visual>
+    <inertial>
+      <origin xyz="0.23 0 0.755" rpy="0 0 0" />
+      <mass value="1"/>
+      <inertia
+        ixx="0.07" ixy="0.0" ixz="0.0"
+        iyy="0.40" iyz="0.0"
+        izz="0.33"/>
+    </inertial>
+    <collision>
+      <origin xyz="0.23 0 0.755" rpy="0 0 0" />
+      <geometry>
+        <box size="0.913 2 0.04" />
+      </geometry>
+    </collision>
+  </link>
+ 
+  <joint name="column_to_surface1" type="fixed">
+    <parent link=""/>
+    <child link="surface1"/>
+  </joint>
   </model>
 </sdf>
