@@ -22,19 +22,21 @@ def test(req):
     try:
         task_name = 'test'
         filename = 'test_1'
-        # goal = ['(prepped cup )']
-        goal = ['(cooking cup )']
+        goal = ['(prepped cup )']
+        # goal = ['(cooking cup )']
         initStateInfo = scenarioData()
         initObjsIncludingLoc = extendInitLocs(initStateInfo, [])
         initObjsIncludingLoc['gripper'] = ['left_gripper']
+        initObjsIncludingLoc['obj'] = ['cup', 'cover']
         objs = pddlObjectsStringFormat_fromDict(initObjsIncludingLoc)
         init = initStateInfo.init
         init = [x for x in init if 'right_gripper' not in x]
+        init = [x for x in init if 'table' not in x]
         problem = Problem(task_name, KBDomainProxy().domain.name, objs, init, goal)
         plan = planGenerator(problem, filename, [])
      
-        # plan = plan.plan.actions
-        plan = [a.actionName for a in plan.plan.actions]
+        plan = plan.plan.actions
+        # plan = [a.actionName for a in plan.plan.actions]
         print("Plan: " + str(plan))
         return True 
     

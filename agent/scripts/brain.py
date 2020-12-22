@@ -62,6 +62,7 @@ def handle_trial(req):
         print("#### Goal: " + str(goal))
         print('#### ------------------------------------------ ')
         print("#### -- Original Scenario: ")
+        # envProxy('restart', orig_env)
         outcome = single_attempt_execution(task, goal, orig_env, additional_locs=additionalDomainLocs)
 
     except rospy.ServiceException, e:
@@ -177,10 +178,11 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', additional_lo
         initStateInfo = scenarioData()
         initObjsIncludingLoc = extendInitLocs(initStateInfo, additional_locs)
         initObjsIncludingLoc['gripper'] = ['left_gripper']
+        initObjsIncludingLoc['obj'] = ['cup', 'cover']
+
         objs = pddlObjectsStringFormat_fromDict(initObjsIncludingLoc)
         init = initStateInfo.init
         init = [x for x in init if 'right_gripper' not in x]
-
         problem = Problem(task_name, KBDomainProxy().domain.name, objs, init, goal)
         plan = planGenerator(problem, filename, action_exclusions)
      
@@ -188,8 +190,8 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', additional_lo
             print("#### ---- No Plan Found") 
             return outcome
 
-        print("#### -- " + str([act.actionName for act in plan.plan.actions])) 
-
+        # print("#### -- " + str([act.actionName for act in plan.plan.actions])) 
+        print(plan.plan.actions)
         outcome = planExecutor(plan.plan).execution_outcome
         endStateInfo = scenarioData().init
         outcome.goal_complete = goalAccomplished(goal, endStateInfo)

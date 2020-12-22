@@ -106,12 +106,12 @@ def execute_plan(req):
             failure_action = actionName
             return PlanExecutionOutcome(execution_success, goal_complete, failure_action)
 
-        effects = scenarioData().init
-        effects_met = checkPddlEffects(actionName, args, preconditions, effects).effects_met
+        # effects = scenarioData().init
+        # effects_met = checkPddlEffects(actionName, args, preconditions, effects).effects_met
 
-        if effects_met == False:
-            failure_action = actionName
-            return PlanExecutionOutcome(execution_success, goal_complete, failure_action)
+        # if effects_met == False:
+        #     failure_action = actionName
+        #     return PlanExecutionOutcome(execution_success, goal_complete, failure_action)
 
     execution_success = True
     return PlanExecutionOutcome(execution_success, goal_complete, failure_action)  

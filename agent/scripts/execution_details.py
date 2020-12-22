@@ -149,8 +149,8 @@ def scenario_settings(req):
         # goal = ['(cooking cup )']
         # goal = ['(food_cooked )']
         goal = ['(cooking cup )']
-        orig_scenario = 'default'
-        novel_scenario = 'default'
+        orig_scenario = 'cook'
+        novel_scenario = 'cook'
         T = 3
         additional_domain_locs = []
     else:

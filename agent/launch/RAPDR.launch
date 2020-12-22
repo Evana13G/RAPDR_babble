@@ -23,13 +23,13 @@
     <!--Start Publishing Environment Elements-->
     <node name="publish_environment" pkg="environment" type="publish_environment.py"/>
     <!--Start Data Conversion Module-->
-    <node name="scenario_data" pkg="environment" type="scenario_data.py"/>
+    <!-- <node name="scenario_data" pkg="environment" type="scenario_data.py"/> -->
 
 
  <!-- ###################################################### -->
  <!-- ####### Start PDDL Nodes ####### -->
     <!--Start PDDL Planner Node-->
-    <!-- <node name="planner" pkg="pddl" type="planner.py"/> -->
+    <node name="planner" pkg="pddl" type="planner.py"/>
     <!--Start PDDL Checker Node-->
     <node name="pddl_checker" pkg="pddl" type="pddl_checker.py"/>
     <!--Start Knowledge Base Interface Node-->

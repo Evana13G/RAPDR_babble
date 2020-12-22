@@ -52,7 +52,7 @@ def load_gazebo_models(env='default'):
     block_reference_frame="world"
     cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
     cover_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
-    burner_pose=Pose(position=Point(x=0.525, y=-0.17, z=0.8))
+    burner_pose=Pose(position=Point(x=0.5, y=0.12, z=0.8))
     reference_frame="world"
 
 
@@ -100,9 +100,9 @@ def load_gazebo_models(env='default'):
     ###############################
     ######## COOK ##
     elif env == 'cook':
-        with open (model_path + "cup_with_cover/cup_model.sdf", "r") as cup_file:
+        with open (model_path + "cup_with_cover/cup_model_high_friction.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')
-        with open (model_path + "cup_with_cover/cover_model.sdf", "r") as cover_file:
+        with open (model_path + "cup_with_cover/cover_model_high_friction.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
         with open (model_path + "cook/burner_model.sdf", "r") as burner_file:
             burner_xml=burner_file.read().replace('\n', '')
@@ -119,23 +119,31 @@ def load_gazebo_models(env='default'):
     rospy.wait_for_service('/gazebo/spawn_sdf_model')
     spawn_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
 
+
+    #  *********************************************************************  #
+    #  ******************************* SPAWN *******************************  # 
+    #  *********************************************************************  #
     try:
         spawn_sdf("cafe_table", table_xml, "/", table_pose, reference_frame)
-        spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
-        spawn_sdf("cover", cover_xml, "/", cover_pose, reference_frame)
-        # spawn_sdf("cover", cover_xml, "/", cover_pose, reference_frame)
-        # spawn_sdf("cover2", cover_xml, "/", left_button_pose, reference_frame)
-        # spawn_sdf("cover3", cover_xml, "/", right_button_pose, reference_frame)
-
     except rospy.ServiceException, e:
         rospy.logerr("Spawn URDF service call failed: {0}".format(e))
-
-
+        
     if env == 'cook':
         try: 
             spawn_sdf("burner1", burner_xml, "/", burner_pose, reference_frame)
+            spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
+            spawn_sdf("cover", cover_xml, "/", cover_pose, reference_frame)
         except rospy.ServiceException, e:
             rospy.logerr("Spawn URDF service call failed: {0}".format(e))
+    else:
+        try:
+            spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
+            spawn_sdf("cover", cover_xml, "/", cover_pose, reference_frame)
+
+        except rospy.ServiceException, e:
+            rospy.logerr("Spawn URDF service call failed: {0}".format(e))
+
+
 
     resetPreds()
     pub_all.publish(True)

@@ -57,17 +57,18 @@ class KnowledgeBase(object):
         _preds.append(TemplatedPredicate('on', [Variable('?e', 'entity'), Variable('?e', 'entity')]))
         _preds.append(TemplatedPredicate('prepped', [Variable('?e', 'entity')]))
         _preds.append(TemplatedPredicate('shaken', [Variable('?e', 'entity')]))
+        _preds.append(TemplatedPredicate('ingredients_added', [Variable('?e', 'entity')]))
 
         ## PUSH 
         push = Action('push', [], [], [], []) # All default, add after 
         push.addArg(Variable('?g', 'gripper'))
         push.addArg(Variable('?loc0', 'cartesian'))
         push.addArg(Variable('?o', 'obj'))
-        push.addArg(Variable('?loc1', 'cartesian'))
+        # push.addArg(Variable('?loc1', 'cartesian'))
         push.addPreCond(StaticPredicate('at', ['?o', '?loc0']))
-        push.addEffect(StaticPredicate('at', ['?o', '?loc1']))
+        # push.addEffect(StaticPredicate('at', ['?o', '?loc1']))
         push.addEffect(StaticPredicate('not', [StaticPredicate('at', ['?o', '?loc0'])]))
-        push_p1 = Parameter('rate', 7.0, 1.0, 150.0)
+        push_p1 = Parameter('rate', 5.0, 1.0, 150.0)
         push_p2 = Parameter('movementMagnitude', 0.4, 0.1, 0.6)
         push_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front', 'back'])
         push.addParam(push_p1)
@@ -125,12 +126,23 @@ class KnowledgeBase(object):
         ###
         ###
 
+        # # COVER OBJECT
+        # cover_obj = Action('cover_obj', [], [], [], []) # All default, add after 
+        # cover_obj.addArg(Variable('?g', 'gripper'))
+        # cover_obj.addArg(Variable('?o', 'obj'))
+        # cover_obj.addArg(Variable('?o2', 'obj'))
+        # cover_obj.addEffect(StaticPredicate('covered', ['?o']))
+        # cover_obj.setExecutionArgNames(['gripper', 'objectName1', 'objectName2'])
+
         # COVER OBJECT
         cover_obj = Action('cover_obj', [], [], [], []) # All default, add after 
         cover_obj.addArg(Variable('?g', 'gripper'))
-        cover_obj.addArg(Variable('?o', 'obj'))
+        cover_obj.addArg(Variable('?o1', 'obj'))
+        cover_obj.addArg(Variable('?loc1', 'cartesian'))
         cover_obj.addArg(Variable('?o2', 'obj'))
-        cover_obj.addEffect(StaticPredicate('covered', ['?o']))
+        cover_obj.addPreCond(StaticPredicate('at', ['?o2', '?loc1']))
+        cover_obj.addPreCond(StaticPredicate('not', [StaticPredicate('at', ['?o1', '?loc1'])]))
+        cover_obj.addEffect(StaticPredicate('covered', ['?o2']))
         cover_obj.setExecutionArgNames(['gripper', 'objectName1', 'objectName2'])
 
         # PLACE ON BURNER
@@ -139,6 +151,7 @@ class KnowledgeBase(object):
         place_on_burner.addArg(Variable('?o', 'obj'))
         place_on_burner.addArg(Variable('?b', 'burner'))
         place_on_burner.addPreCond(StaticPredicate('covered', ['?o']))
+        place_on_burner.addPreCond(StaticPredicate('prepped', ['?o']))
         place_on_burner.addEffect(StaticPredicate('on_burner', ['?o', '?b']))
         place_on_burner.setExecutionArgNames(['gripper', 'objectName1', 'objectName2'])
 
@@ -167,9 +180,17 @@ class KnowledgeBase(object):
         prep_food.addArg(Variable('?o', 'obj'))
         prep_food.addPreCond(StaticPredicate('covered', ['?o']))
         prep_food.addPreCond(StaticPredicate('shaken', ['?o']))
+        # prep_food.addPreCond(StaticPredicate('ingredients_added', ['?o']))
         prep_food.addEffect(StaticPredicate('prepped', ['?o']))
         prep_food.setExecutionArgNames(['gripper', 'objectName'])
 
+        # SORT INGREDIENTS
+        add_ingredients = Action('add_ingredients', [], [], [], []) # All default, add after 
+        add_ingredients.addArg(Variable('?g', 'gripper'))
+        add_ingredients.addArg(Variable('?o', 'obj'))
+        add_ingredients.addPreCond(StaticPredicate('not', [StaticPredicate('covered', ['?o'])]))
+        add_ingredients.addEffect(StaticPredicate('ingredients_added', ['?o']))
+        add_ingredients.setExecutionArgNames(['gripper', 'objectName'])
 
         _actions.append(push)
         _actions.append(shake)
@@ -179,13 +200,25 @@ class KnowledgeBase(object):
         _actions.append(cook)
         _actions.append(check_food)
         _actions.append(prep_food)
+        _actions.append(add_ingredients)
         
-
+###############################################################################################
+#
 # need a reason to use 'push' before the action that fails (cover)
 # push shake cover
-
-# ['shake', 'cover_obj', 'prep_food']
-# ['cover_obj', 'place_on_burner', 'cook']
+#
+# PREP TABLE, (not (at cover orig_loc))... or (not (covered cup))
+# Uncover action is to push one of the objs.. results in it not being covered 
+# ... ^^ the thing I don't like about this is that its not called push. Maybe I should 
+# make 'pushed' an end effect, like shake.... I dont think it would work the same though, 
+# if I'm being completely honest...
+#
+# action1: pre: at(cup loc1), not( at(cover loc1)) 
+#
+# ['shake', 'cover_obj', 'prep_food'] -- > WORKS, Doesnt work, NULL
+# ['cover_obj', 'place_on_burner', 'cook'] -- > Doesnt work, DOesnt work (same as first), Null
+#
+###############################################################################################
 
         self.domain = _domain
         self.requirements = _reqs
@@ -363,3 +396,7 @@ class KnowledgeBase(object):
         # _actions.append(press)
         # _actions.append(grasp)
         # _actions.append(drop)
+
+######################################################################
+######################################################################
+######################################################################

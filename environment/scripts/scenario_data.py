@@ -70,7 +70,7 @@ def setPoseTable(data):
 
 def setPoseBurner(data):
     global BurnerPose
-    translate(data, -0.2)
+    # translate(data, -0.2)
     BurnerPose = data
     updatePredicates("burner1", data)
 
@@ -111,10 +111,11 @@ def updateVisionBasedPredicates():
     # if (imageConverter.getObjectPixelCount('cover') > 0):
     if (imageConverter.is_visible('cover') == True):
         new_predicates.append(Predicate(operator="is_visible", objects=["cover"], locationInformation=None)) 
+    
     predicates_list = new_predicates
 
 def updatePhysicalStateBasedPredicates():
-    physical_operators = ['pressed', 'obtained', 'touching'] #grasped?
+    physical_operators = ['pressed', 'obtained', 'touching', 'on', 'on_burner', 'covered'] #grasped?
 
     # Physical state choices
     global predicates_list
@@ -140,26 +141,29 @@ def updatePhysicalStateBasedPredicates():
     if is_touching(RightGripperPose, CoverPose, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'cover'], locationInformation=None)) 
 
-    if is_pressed(LeftGripperPose, CoverPose, 0.05, [0.01, None]):
+    if is_pressed(LeftGripperPose, CoverPose, 0.08, [0.01, None]):
         cover_pressed = True
-    if is_pressed(RightGripperPose, CoverPose, 0.05, [0.01, None]):
+    if is_pressed(RightGripperPose, CoverPose, 0.08, [0.01, None]):
         cover_pressed = True
 
     if is_touching(CoverPose, BurnerPose, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['cover', 'burner1'], locationInformation=None)) 
         new_predicates.append(Predicate(operator="on_burner", objects=['cover', 'burner1'], locationInformation=None)) 
+
     if is_touching(CupPose, BurnerPose, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['cup', 'burner1'], locationInformation=None)) 
         new_predicates.append(Predicate(operator="on_burner", objects=['cup', 'burner1'], locationInformation=None)) 
 
 
-    if is_pressed(CupPose, CoverPose, 0.05, [0.01, None]):
-        new_predicates.append(Predicate(operator="covered", objects=['cover'], locationInformation=None)) 
-    if is_pressed(CoverPose, CupPose, 0.05, [0.01, None]):
-        new_predicates.append(Predicate(operator="covered", objects=['cup'], locationInformation=None)) 
+    # if is_pressed(CupPose, CoverPose, 0.1, [0.05, None]):
+    #     new_predicates.append(Predicate(operator="covered", objects=['cover'], locationInformation=None)) 
+
+    # if is_pressed(CoverPose, CupPose, 0.1, [0.05, None]):
+    #     new_predicates.append(Predicate(operator="covered", objects=['cup'], locationInformation=None)) 
 
     if cover_pressed == True:
         new_predicates.append(Predicate(operator="pressed", objects=['cover'], locationInformation=None)) 
+
 
     predicates_list = new_predicates
 

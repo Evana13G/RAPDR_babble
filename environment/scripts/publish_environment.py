@@ -103,7 +103,7 @@ def publish(environment='default'):
         header_burner = resp_burner_ms.header
         header_burner.frame_id = frameid_var
         poseStamped_burner = PoseStamped(header=header_burner, pose=pose_burner)
-        pub_burner_pose.publish(poseFromPoint(poseStamped_cup))
+        pub_burner_pose.publish(poseFromPoint(poseStamped_burner))
     except rospy.ServiceException, e:
         rospy.logerr("get_model_state for block service call failed: {0}".format(e))
 

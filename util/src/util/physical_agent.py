@@ -238,6 +238,7 @@ class PhysicalAgent(object):
         self._gripper_close(gripper_name)
         self._hover_approach(gripper_name, objPose1)
         self._hover_approach(gripper_name, objPose2)
+        objPose2.pose.position.z += 0.06
         self._approach(gripper_name, objPose2)
         self._gripper_open(gripper_name)
         self._retract(gripper_name)
