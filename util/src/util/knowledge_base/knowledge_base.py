@@ -80,10 +80,11 @@ class KnowledgeBase(object):
         shake = Action('shake', [], [], [], []) # All default, add after 
         shake.addArg(Variable('?g', 'gripper'))
         shake.addArg(Variable('?o', 'obj'))
+        shake.addPreCond(StaticPredicate('not', [StaticPredicate('covered', ['?o'])]))
         shake.addEffect(StaticPredicate('shaken', ['?o']))
-        shake_p1 = Parameter('rate', 5.0, 1.0, 20.0)
+        shake_p1 = Parameter('rate', 15.0, 1.0, 20.0)
         shake_p2 = Parameter('movementMagnitude', 1.0, 0.0, 5.0)
-        shake_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front', 'back'])
+        shake_p3 = Parameter('orientation', 'top', None, None, ['left', 'right', 'top', 'front', 'back'])
         shake.addParam(shake_p1)
         shake.addParam(shake_p2)
         shake.addParam(shake_p3)
@@ -126,13 +127,15 @@ class KnowledgeBase(object):
         ###
         ###
 
-        # # COVER OBJECT
-        # cover_obj = Action('cover_obj', [], [], [], []) # All default, add after 
-        # cover_obj.addArg(Variable('?g', 'gripper'))
-        # cover_obj.addArg(Variable('?o', 'obj'))
-        # cover_obj.addArg(Variable('?o2', 'obj'))
-        # cover_obj.addEffect(StaticPredicate('covered', ['?o']))
-        # cover_obj.setExecutionArgNames(['gripper', 'objectName1', 'objectName2'])
+        # UNCOVER OBJECT
+        uncover_obj = Action('uncover_obj', [], [], [], []) # All default, add after 
+        uncover_obj.addArg(Variable('?g', 'gripper'))
+        uncover_obj.addArg(Variable('?o1', 'obj'))
+        uncover_obj.addArg(Variable('?o2', 'obj'))
+        uncover_obj.addPreCond(StaticPredicate('covered', ['?o2']))
+        uncover_obj.addPreCond(StaticPredicate('touching', ['?o1', '?o2']))
+        uncover_obj.addEffect(StaticPredicate('not', [StaticPredicate('covered', ['?o2'])]))
+        uncover_obj.setExecutionArgNames(['gripper', 'objectName1', 'objectName2'])
 
         # COVER OBJECT
         cover_obj = Action('cover_obj', [], [], [], []) # All default, add after 
@@ -150,7 +153,8 @@ class KnowledgeBase(object):
         place_on_burner.addArg(Variable('?g', 'gripper'))
         place_on_burner.addArg(Variable('?o', 'obj'))
         place_on_burner.addArg(Variable('?b', 'burner'))
-        place_on_burner.addPreCond(StaticPredicate('covered', ['?o']))
+        # place_on_burner.addPreCond(StaticPredicate('covered', ['?o']))
+        place_on_burner.addPreCond(StaticPredicate('not', [StaticPredicate('covered', ['?o'])]))
         place_on_burner.addPreCond(StaticPredicate('prepped', ['?o']))
         place_on_burner.addEffect(StaticPredicate('on_burner', ['?o', '?b']))
         place_on_burner.setExecutionArgNames(['gripper', 'objectName1', 'objectName2'])
@@ -161,6 +165,7 @@ class KnowledgeBase(object):
         cook.addArg(Variable('?o', 'obj'))
         cook.addArg(Variable('?b', 'burner'))
         cook.addPreCond(StaticPredicate('on_burner', ['?o', '?b']))
+        cook.addPreCond(StaticPredicate('covered', ['?o']))
         # cook.addPreCond(StaticPredicate('prepped', ['?o']))
         # cook.addPreCond(StaticPredicate('powered_on', ['?b']))
         cook.addEffect(StaticPredicate('cooking', ['?o']))
@@ -178,7 +183,9 @@ class KnowledgeBase(object):
         prep_food = Action('prep_food', [], [], [], []) # All default, add after 
         prep_food.addArg(Variable('?g', 'gripper'))
         prep_food.addArg(Variable('?o', 'obj'))
-        prep_food.addPreCond(StaticPredicate('covered', ['?o']))
+        prep_food.addPreCond(StaticPredicate('not', [StaticPredicate('covered', ['?o'])]))
+        # prep_food.addPreCond(StaticPredicate('covered', ['?o']))
+
         prep_food.addPreCond(StaticPredicate('shaken', ['?o']))
         # prep_food.addPreCond(StaticPredicate('ingredients_added', ['?o']))
         prep_food.addEffect(StaticPredicate('prepped', ['?o']))
@@ -195,6 +202,7 @@ class KnowledgeBase(object):
         _actions.append(push)
         _actions.append(shake)
 
+        _actions.append(uncover_obj)
         _actions.append(cover_obj)
         _actions.append(place_on_burner)
         _actions.append(cook)

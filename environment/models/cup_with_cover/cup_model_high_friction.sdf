@@ -5,14 +5,14 @@
       <inertial>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <mass>0.5</mass>
-<!--         <inertia>
-          <ixx>0</ixx>
+        <inertia>
+          <ixx>0.4</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0</iyy>
+          <iyy>0.4</iyy>
           <iyz>0</iyz>
-          <izz>0</izz>
-        </inertia> -->
+          <izz>0.2</izz>
+        </inertia>
       </inertial>
       <collision name='base_link_collision'>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -24,8 +24,8 @@
         <surface>
           <friction>
             <ode>
-              <mu>0.2</mu>
-              <mu2>0.2</mu2>
+              <mu>150.0</mu>
+              <mu2>150.0</mu2>
             </ode>
           </friction>
       </surface>

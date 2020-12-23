@@ -115,7 +115,7 @@ def updateVisionBasedPredicates():
     predicates_list = new_predicates
 
 def updatePhysicalStateBasedPredicates():
-    physical_operators = ['pressed', 'obtained', 'touching', 'on', 'on_burner', 'covered'] #grasped?
+    physical_operators = ['pressed', 'obtained', 'touching', 'on', 'on_burner', 'covered', 'cooking'] #grasped?
 
     # Physical state choices
     global predicates_list
@@ -146,24 +146,34 @@ def updatePhysicalStateBasedPredicates():
     if is_pressed(RightGripperPose, CoverPose, 0.08, [0.01, None]):
         cover_pressed = True
 
+    item_on_burner = []
+    covered_item = []
+
     if is_touching(CoverPose, BurnerPose, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['cover', 'burner1'], locationInformation=None)) 
         new_predicates.append(Predicate(operator="on_burner", objects=['cover', 'burner1'], locationInformation=None)) 
+        item_on_burner.append('cover')
 
     if is_touching(CupPose, BurnerPose, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['cup', 'burner1'], locationInformation=None)) 
         new_predicates.append(Predicate(operator="on_burner", objects=['cup', 'burner1'], locationInformation=None)) 
+        item_on_burner.append('cup')
 
+    if is_pressed(CupPose, CoverPose, 0.1, [0.05, None]):
+        new_predicates.append(Predicate(operator="covered", objects=['cover'], locationInformation=None)) 
+        covered_item.append('cover')
 
-    # if is_pressed(CupPose, CoverPose, 0.1, [0.05, None]):
-    #     new_predicates.append(Predicate(operator="covered", objects=['cover'], locationInformation=None)) 
-
-    # if is_pressed(CoverPose, CupPose, 0.1, [0.05, None]):
-    #     new_predicates.append(Predicate(operator="covered", objects=['cup'], locationInformation=None)) 
+    if is_pressed(CoverPose, CupPose, 0.1, [0.05, None]):
+        new_predicates.append(Predicate(operator="covered", objects=['cup'], locationInformation=None)) 
+        covered_item.append('cup')
 
     if cover_pressed == True:
         new_predicates.append(Predicate(operator="pressed", objects=['cover'], locationInformation=None)) 
 
+    if item_on_burner is not []:
+        for item in item_on_burner:
+            if (item in covered_item) == True:
+                new_predicates.append(Predicate(operator="cooking", objects=[item], locationInformation=None)) 
 
     predicates_list = new_predicates
 

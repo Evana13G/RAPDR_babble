@@ -2,6 +2,9 @@ from util.physical_agent import PhysicalAgent
 import os 
 
 def goalAccomplished(goalList, currentState):
+    print("goal check")
+    print(goalList)
+    print(currentState)
     numGoalsAccomplished = 0
     for goal in goalList:
 

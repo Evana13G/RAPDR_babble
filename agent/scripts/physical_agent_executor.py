@@ -52,7 +52,9 @@ def getCorrectAction(action_name):
                'shake' : shake,
                'cover_obj' : cover_obj,
                'place_on_burner' : cover_obj, 
-               'cook' : stub_action}
+               'cook' : stub_action, 
+               'uncover_obj' : stub_action,
+               'prep_food' : stub_action}
                # 'grasp' : grasp, 
                # 'press' : press}
                # 'drop' : drop}
@@ -142,8 +144,6 @@ def strip_pddl_call(arg_list):
 ## To call for any general action to be executed
 # Performs checks and send to the appropriate srv
 def action_executor(req):
-    print("Action Executor")
-    print(req)
     assert(len(req.argNames) == len(req.args))
     assert(len(req.paramNames) == len(req.params))
 

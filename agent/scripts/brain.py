@@ -190,8 +190,8 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', additional_lo
             print("#### ---- No Plan Found") 
             return outcome
 
-        # print("#### -- " + str([act.actionName for act in plan.plan.actions])) 
-        print(plan.plan.actions)
+        print("#### -- " + str([act.actionName for act in plan.plan.actions])) 
+        # print(plan.plan.actions)
         outcome = planExecutor(plan.plan).execution_outcome
         endStateInfo = scenarioData().init
         outcome.goal_complete = goalAccomplished(goal, endStateInfo)

@@ -52,7 +52,7 @@ def load_gazebo_models(env='default'):
     block_reference_frame="world"
     cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
     cover_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
-    burner_pose=Pose(position=Point(x=0.5, y=0.12, z=0.8))
+    burner_pose=Pose(position=Point(x=0.5, y=-0.11, z=0.8))
     reference_frame="world"
 
 
@@ -127,7 +127,7 @@ def load_gazebo_models(env='default'):
         spawn_sdf("cafe_table", table_xml, "/", table_pose, reference_frame)
     except rospy.ServiceException, e:
         rospy.logerr("Spawn URDF service call failed: {0}".format(e))
-        
+
     if env == 'cook':
         try: 
             spawn_sdf("burner1", burner_xml, "/", burner_pose, reference_frame)
