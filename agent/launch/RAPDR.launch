@@ -23,7 +23,7 @@
     <!--Start Publishing Environment Elements-->
     <node name="publish_environment" pkg="environment" type="publish_environment.py"/>
     <!--Start Data Conversion Module-->
-    <!-- <node name="scenario_data" pkg="environment" type="scenario_data.py"/> -->
+    <node name="scenario_data" pkg="environment" type="scenario_data.py"/>
 
 
  <!-- ###################################################### -->

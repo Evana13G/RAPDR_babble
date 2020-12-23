@@ -59,7 +59,7 @@ def handle_get_pddl_instatiations(req):
     name = req.actionName
     action = KB.getAction(name)
     args = req.orderedArgs 
-
+    print(args)
     # info = executionInfo('cover', 'left')
     # info2 = orientationSolver('left_gripper', 'cover', 'left')
 
@@ -67,7 +67,7 @@ def handle_get_pddl_instatiations(req):
     # locs = [poseStampedToString(getObjLoc(x).location) for x in args]
     passed_locs = [x for x in args if '.' in x]
     if passed_locs == []:
-        locs = ['A', 'B']
+        locs = ['A']
     else:
         args = [x for x in args if '.' not in x]
         locs = passed_locs
