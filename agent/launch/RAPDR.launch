@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--
     Launching the files necessary to run the Action Primitive Discovery Simulation
 -->
@@ -13,7 +14,7 @@
     <!--Start Execution Hardcodings -->
     <node name="execution_details" pkg="agent" type="execution_details.py"/>
     <!--Start Agent Brain-->
-    <!-- <node name="brain" pkg="agent" type="brain.py"/> -->
+    <node name="brain" pkg="agent" type="brain.py" output="screen"/>
 
 
  <!-- ###################################################### -->
@@ -35,11 +36,10 @@
     <!--Start Knowledge Base Interface Node-->
     <node name="knowledge_base" pkg="pddl" type="knowledge_base.py"/>
 
-
  <!-- ###################################################### -->
  <!-- ####### Start Action Primitive Variation Nodes ####### -->
     <!--Start Param Variation Tool-->
-    <node name="APV" pkg="action_primitive_variation" type="APV_server.py"/>
+    <node name="APV" pkg="action_primitive_variation" type="APV_server.py" output="screen"/>
 
  <!-- ###################################################### -->
  <!-- ####### Start Test Nodes ####### -->

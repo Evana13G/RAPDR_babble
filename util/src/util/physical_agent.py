@@ -93,8 +93,8 @@ class PhysicalAgent(object):
                                         'left_back1': [0, 0, 0],
                                         'left_right0': [-0.1, -0.02, -0.015],
                                         'left_right1': [0.01, 0.115],
-                                        'left_top0': [0, 0, 0],
-                                        'left_top1': [0, 0, 0]})
+                                        'left_top0': [0, -0.0197, 0.01],
+                                        'left_top1': [0, -0.0197, -0.01]})
 
 ####################################################################################################
 ############## Higher Level Action Primitives 
@@ -149,7 +149,6 @@ class PhysicalAgent(object):
         # The right gripper does not open as far as the left gripper, so 0.25 by 0.25 is used 
 
         gripper_name = gripper.replace('_gripper', '')
-        print(gripper_name)
         self._gripper_open(gripper_name)
 
         # Approach two different positions for smooth grasp action
@@ -157,7 +156,7 @@ class PhysicalAgent(object):
 
         appr = copy.deepcopy(objPose)
 
-        for i in range(0,1):
+        for i in range(2):
             pos = self._pos_offsets_dict[orientationStr + str(i)]
             appr.pose.position.x += pos[0]
             appr.pose.position.y += pos[1]
@@ -166,14 +165,14 @@ class PhysicalAgent(object):
 
         self._gripper_close(gripper_name)
 
-    def shake(self, gripper, objPose, orientation='left', twist_range=1, rate=10.0):
+    def shake(self, gripper, objPose, orientation='left', twist_range=1.0, rate=10.0):
         # For now, assume left gripper is moving (change to an argument)
         # Number of times to shake can be adjusted by the for loop 
 
         # twist_range tells you how much to move in each direction (delta)
         # speed has to do with the duration of the sleep between the two positions (frequency)
 
-        time_steps = 20
+        time_steps = 15
         rate = 1.0/rate
 
         gripper_name = gripper.replace('_gripper', '')
@@ -229,6 +228,20 @@ class PhysicalAgent(object):
         self._approach(gripper_name, dropPose)
         self._gripper_open(gripper_name)
         # return 1
+
+    def cover_obj(self, gripper, objPose1, objPose2):
+        gripper_name = gripper.replace('_gripper', '')
+        self._gripper_open(gripper_name)
+        self._hover_approach(gripper_name, objPose1)
+        self._approach(gripper_name, objPose1)
+        self._gripper_close(gripper_name)
+        self._hover_approach(gripper_name, objPose1)
+        self._hover_approach(gripper_name, objPose2)
+        objPose2.pose.position.z += 0.06
+        self._approach(gripper_name, objPose2)
+        self._gripper_open(gripper_name)
+        self._retract(gripper_name)
+
 
 ###################################################################################################
 ############## Lower Level Action Primitives 

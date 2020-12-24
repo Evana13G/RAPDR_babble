@@ -92,7 +92,7 @@ def pddlStringFormat(predicates_list):
 def pddlObjectsStringFormat(predicates_list):
     strData = []
     objData = pddlObjects(predicates_list, False)
-    for objType in ['cartesian', 'gripper', 'obj']:
+    for objType in ['cartesian', 'gripper', 'obj', 'burner']:
         s = ''
         for item in objData[objType]:
             s = s + item + ' '
@@ -102,7 +102,7 @@ def pddlObjectsStringFormat(predicates_list):
 
 def pddlObjectsStringFormat_fromDict(dictObj):
     strData = []
-    for objType in ['cartesian', 'gripper', 'obj']:
+    for objType in ['cartesian', 'gripper', 'obj', 'burner']:
         if len(dictObj[objType]) > 0:
             s = ''
             for item in dictObj[objType]:
@@ -116,6 +116,8 @@ def pddlObjects(predicates_list, mod=True):
     cartesian = []
     grippers = []
     objs = []
+    burners = []
+
     for pred in predicates_list:
         if pred.operator == "at":
             if mod == True:
@@ -126,22 +128,28 @@ def pddlObjects(predicates_list, mod=True):
                 cartesian.append(loc)
             if 'gripper' in str(pred.objects):
                 grippers.extend(pred.objects)
+            elif 'burner' in str(pred.objects):
+                burners.extend(pred.objects)
             else:
                 objs.extend(pred.objects)
         elif 'gripper' in str(pred.objects):
             grippers.extend(pred.objects)
+        elif 'burner' in str(pred.objects):
+            burners.extend(pred.objects)
         else:
             objs.extend(pred.objects)
 
     cartesian = list(set(cartesian))
     grippers = list(set(grippers))
     objs = list(set(objs))
+    burners = list(set(burners))
 
     objects = {}
-    objects['types'] = ['cartesian', 'gripper', 'obj']
+    objects['types'] = ['cartesian', 'gripper', 'obj', 'burner']
     objects['cartesian'] = cartesian
     objects['gripper'] = grippers
     objects['obj'] = objs
+    objects['burner'] = burners
 
     return objects
 
@@ -271,7 +279,7 @@ def getElementDiffs(predList1, predList2, OGargs=[]):
             nonRepeatingDiffs.append(o.object)
     return list(set(nonRepeatingDiffs))
 
-def typeChecker(elementName, types=["obj", "gripper", "cartesian"]):
+def typeChecker(elementName, types=["obj", "gripper", "cartesian", "burner"]):
     for t in types:
         if t in str(elementName):
             return t

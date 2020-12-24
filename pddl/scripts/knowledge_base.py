@@ -16,6 +16,8 @@ executionInfo = rospy.ServiceProxy('get_offset', GetHardcodedOffsetSrv)
 orientationSolver = rospy.ServiceProxy('calc_gripper_orientation_pose', CalcGripperOrientationPoseSrv)
 
 def handle_domain_req(req):
+    print('handle_domain_req')
+    print(req.action_exclusions)
     domainDict = KB.getDomainData(req.action_exclusions)
     domainName = domainDict['domain']
     types = domainDict['types']
@@ -59,7 +61,6 @@ def handle_get_pddl_instatiations(req):
     name = req.actionName
     action = KB.getAction(name)
     args = req.orderedArgs 
-
     # info = executionInfo('cover', 'left')
     # info2 = orientationSolver('left_gripper', 'cover', 'left')
 
@@ -67,7 +68,7 @@ def handle_get_pddl_instatiations(req):
     # locs = [poseStampedToString(getObjLoc(x).location) for x in args]
     passed_locs = [x for x in args if '.' in x]
     if passed_locs == []:
-        locs = ['A', 'B']
+        locs = ['A']
     else:
         args = [x for x in args if '.' not in x]
         locs = passed_locs
