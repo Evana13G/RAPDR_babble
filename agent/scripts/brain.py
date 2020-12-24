@@ -29,13 +29,20 @@ getScenarioSettings = rospy.ServiceProxy('scenario_settings_srv', GetScenarioSet
 
 def handle_trial(req):
 
-    print("\n#######################################################################################")
-    print("#######################################################################################")
-    print('## Action Primivitive Discovery in Robotic Agents through Action Parameter Variation ##')
-    print('## -- a proof of concept model for knowledge aquisition in intelligent agents        ##')
-    print('## -- Evana Gizzi, Amel Hassan, Jivko Sinapov, 2020                                  ##')
-    print("#######################################################################################")
-    print("#######################################################################################")
+    print("\n########################################################")
+    print("########################################################")
+    print('##   Action Primivitive Discovery in Robotic Agents   ##') 
+    print('##         through Action Parameter Variation         ##')
+    print('##                                                    ##')
+    print('## -- a proof of concept model for knowledge          ##')
+    print('##    aquisition in intelligent agents                ##')
+    print('##                                                    ##')
+    print('## -- Evana Gizzi, Amel Hassan, Willy Lin,            ##')
+    print('##    Keenan Rhea, Jivko Sinapov, 2020                ##')
+    print('##                                                    ##')
+    print("########################################################")
+    print("########################################################\n")
+
 
     attemptsTime = []
     totalTimeStart = 0 ## TODO: Change this to SIM time. 
@@ -57,7 +64,7 @@ def handle_trial(req):
     currentState = scenarioData() # A bit of a hack for now
     
     try:
-        print("\n\n################################################")
+        print("################################################")
         print('#### ------------------------------------------ ')
         print("#### Goal: " + str(goal))
         print('#### ------------------------------------------ ')
@@ -96,8 +103,7 @@ def handle_trial(req):
                 comboChoice = random.randint(0, len(APVtrials) - 1)
                 comboToExecute = APVtrials[comboChoice]
                 comboToExecute.append(novel_env)
-                # print("#### ---- Combo # " + str(trialNo) + ': ' + str(comboToExecute))
-                print(comboToExecute)
+                # print("#### -- " + str(comboToExecute))
                 resp = APVproxy(*comboToExecute)
                 del APVtrials[comboChoice]
                 trialNo = trialNo + 1 

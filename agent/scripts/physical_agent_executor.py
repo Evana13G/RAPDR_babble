@@ -47,7 +47,7 @@ def getObjectPose(object_name, pose_only=False):
     return loc_pStamped.location
 
 def getCorrectAction(action_name):
-    # action = action_name.split('_')[0]
+    action = action_name.split('-')[0]
     actions = {'push' : push,
                'shake' : shake,
                'cover_obj' : cover_obj,
@@ -58,8 +58,7 @@ def getCorrectAction(action_name):
                # 'grasp' : grasp, 
                # 'press' : press}
                # 'drop' : drop}
-    # return actions[action]
-    return actions[action_name]
+    return actions[action]
 
 ################################################################################
 ################################################################################

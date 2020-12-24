@@ -132,12 +132,14 @@ def load_gazebo_models(env='default'):
         try: 
             spawn_sdf("burner1", burner_xml, "/", burner_pose, reference_frame)
             spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
+            rospy.sleep(0.5)
             spawn_sdf("cover", cover_xml, "/", cover_pose, reference_frame)
         except rospy.ServiceException, e:
             rospy.logerr("Spawn URDF service call failed: {0}".format(e))
     else:
         try:
             spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
+            rospy.sleep(0.5)
             spawn_sdf("cover", cover_xml, "/", cover_pose, reference_frame)
 
         except rospy.ServiceException, e:
