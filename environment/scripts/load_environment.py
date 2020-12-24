@@ -98,11 +98,21 @@ def load_gazebo_models(env='default'):
 
 
     ###############################
-    ######## COOK ##
+    ########     COOK      ########
     elif env == 'cook':
         with open (model_path + "cup_with_cover/cup_model_high_friction.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')
         with open (model_path + "cup_with_cover/cover_model_high_friction.sdf", "r") as cover_file:
+            cover_xml=cover_file.read().replace('\n', '')
+        with open (model_path + "cook/burner_model.sdf", "r") as burner_file:
+            burner_xml=burner_file.read().replace('\n', '')
+
+    ###############################
+    #### COOK LOW FRICTION ########
+    elif env == 'cook_low_friction':
+        with open (model_path + "cup_with_cover/cup_model_high_friction.sdf", "r") as cup_file:
+            cup_xml=cup_file.read().replace('\n', '')
+        with open (model_path + "cup_with_cover/cover_model_low_friction.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
         with open (model_path + "cook/burner_model.sdf", "r") as burner_file:
             burner_xml=burner_file.read().replace('\n', '')
@@ -136,7 +146,8 @@ def load_gazebo_models(env='default'):
             spawn_sdf("cover", cover_xml, "/", cover_pose, reference_frame)
         except rospy.ServiceException, e:
             rospy.logerr("Spawn URDF service call failed: {0}".format(e))
-    else:
+    
+    elif env in ['discover_strike', 'discover_pour']:
         try:
             spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
             rospy.sleep(0.5)
@@ -144,8 +155,6 @@ def load_gazebo_models(env='default'):
 
         except rospy.ServiceException, e:
             rospy.logerr("Spawn URDF service call failed: {0}".format(e))
-
-
 
     resetPreds()
     pub_all.publish(True)

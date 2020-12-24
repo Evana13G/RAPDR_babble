@@ -60,7 +60,9 @@ def handle_trial(req):
     newPrims = []
     gripperExecutingNewPrim = 'left_gripper'
     # gripperExecutionValidity = True
-
+    
+    envProxy('restart', orig_env)
+    
     currentState = scenarioData() # A bit of a hack for now
     
     try:
@@ -193,10 +195,15 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', additional_lo
         plan = planGenerator(problem, filename, action_exclusions)
      
         if plan.plan.actions == []:
-            print("#### ---- No Plan Found") 
+            print("#### ---- No Plan Found ") 
+            # print("#### ---- " + "\033[0m" + "No Plan Found" + "\033[1m") 
             return outcome
 
-        print("#### -- " + str([act.actionName for act in plan.plan.actions])) 
+        for a in [act.actionName for act in plan.plan.actions]:
+            print("#### ---- " + str(a))
+        print("#### ---- ")
+            # print("#### ---- " + "\033[1m" + str(a) + "\033[0m")
+        # print("#### -- " + str([act.actionName for act in plan.plan.actions])) 
         # print(plan.plan.actions)
         outcome = planExecutor(plan.plan).execution_outcome
         endStateInfo = scenarioData().init
