@@ -138,7 +138,7 @@ def load_gazebo_models(env='default'):
     except rospy.ServiceException, e:
         rospy.logerr("Spawn URDF service call failed: {0}".format(e))
 
-    if env == 'cook':
+    if env in ['cook', 'cook_low_friction']:
         try: 
             spawn_sdf("burner1", burner_xml, "/", burner_pose, reference_frame)
             spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
