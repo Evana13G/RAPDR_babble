@@ -101,7 +101,7 @@ def execute_plan(req):
         preconditions = scenarioData().init
 
         try:
-            pddlActionExecutorProxy(actionName, args)
+            action_success = pddlActionExecutorProxy(actionName, args)
         except:
             failure_action = actionName
             return PlanExecutionOutcome(execution_success, goal_complete, failure_action)
