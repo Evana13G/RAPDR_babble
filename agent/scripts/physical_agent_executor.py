@@ -47,11 +47,16 @@ def getObjectPose(object_name, pose_only=False):
     return loc_pStamped.location
 
 def getCorrectAction(action_name):
-    action = action_name.split('_')[0]
+    action = action_name.split('-')[0]
     actions = {'push' : push,
-               # 'grasp' : grasp, 
                'shake' : shake,
-               'press' : press}
+               'cover_obj' : cover_obj,
+               'place_on_burner' : cover_obj, 
+               'cook' : stub_action, 
+               'uncover_obj' : stub_action,
+               'prep_food' : stub_action}
+               # 'grasp' : grasp, 
+               # 'press' : press}
                # 'drop' : drop}
     return actions[action]
 
@@ -110,52 +115,24 @@ def shake(req):
 
     pa.shake(**args)
 
-#### PRESS #####################################################################
-def press(req):
+#### COVER OBJ #####################################################################
+def cover_obj(req):
     gripper = req.gripper
-    objPose = getObjectPose(req.objectName)
-    rate = req.rate
-    press_amount = req.movementMagnitude
-    orientation = req.orientation
-
-    hover_distance = 0.1
-    
-    # Process args
-    obj_z_val = copy.deepcopy(objPose.pose.position.z)  
-    startPose = copy.deepcopy(objPose)
-    endPose = copy.deepcopy(objPose)
-    startPose.pose.position.z = (obj_z_val + hover_distance)
-    endPose.pose.position.z = (obj_z_val + hover_distance - press_amount)
-
-    # Put args into hash object
-    argNames = ['gripper', 'startPose', 'endPose', 'rate']
-    argVals = [gripper, startPose, endPose, rate]
+    objName1 = req.objectName1
+    objName2 = req.objectName2
+    objPose1 = getObjectPose(objName1)
+    objPose2 = getObjectPose(objName2)
+    argNames = ['gripper', 'objPose1', 'objPose2']
+    argVals = [gripper, objPose1, objPose2]
     args = arg_list_to_hash(argNames, argVals)
 
-    pa.press(**args)
+    pa.cover_obj(**args)
 
 
-#### DROP ######################################################################
-# def drop(req):
-#     # Pull args
-#     gripper = req.gripper
-#     objPose = getObjectPose(req.objectName)
-#     drop_height = req.dropHeight
-#     # Process args
-#     obj_z_val = copy.deepcopy(objPose.pose.position.z)  
-#     dropPose = copy.deepcopy(objPose)
-#     dropPose.pose.position.z = (obj_z_val + drop_height)
-#     # Put args into hash object
-#     argNames = ['objPose', 'dropPose']
-#     argVals = [objPose, dropPose]
-#     args = arg_list_to_hash(argNames, argVals)
-#     return ActionExecutorSrvResponse(pa.drop(**args))
+#### SHAKE #####################################################################
+def stub_action(req):
+    no_action = req
 
-# #### GRASP #####################################################################
-# def grasp(req):
-#     gripper = req.gripper
-#     objPose = getObjectPose(req.objectName)
-#     return ActionExecutorSrvResponse(pa.grasp(objPose))
 
 ################################################################################
 ################################################################################
@@ -224,6 +201,8 @@ def param_action_executor(req):
 def pddl_action_executor(req):
     actionName = req.actionName
     args = req.argVals
+    # print("action name: " + str(actionName))
+    # print("args: " + str(args))
 
     actionInfo = actionInfoProxy(actionName).actionInfo
     argNames = actionInfo.executableArgNames
@@ -270,7 +249,58 @@ def main():
     rospy.spin()
 
     return 0 
-################################################################################
 
 if __name__ == "__main__":
     main()
+
+################################################################################
+################################################################################
+################################################################################
+
+
+#### PRESS #####################################################################
+# def press(req):
+#     gripper = req.gripper
+#     objPose = getObjectPose(req.objectName)
+#     rate = req.rate
+#     press_amount = req.movementMagnitude
+#     orientation = req.orientation
+
+#     hover_distance = 0.1
+    
+#     # Process args
+#     obj_z_val = copy.deepcopy(objPose.pose.position.z)  
+#     startPose = copy.deepcopy(objPose)
+#     endPose = copy.deepcopy(objPose)
+#     startPose.pose.position.z = (obj_z_val + hover_distance)
+#     endPose.pose.position.z = (obj_z_val + hover_distance - press_amount)
+
+#     # Put args into hash object
+#     argNames = ['gripper', 'startPose', 'endPose', 'rate']
+#     argVals = [gripper, startPose, endPose, rate]
+#     args = arg_list_to_hash(argNames, argVals)
+
+#     pa.press(**args)
+
+
+#### DROP ######################################################################
+# def drop(req):
+#     # Pull args
+#     gripper = req.gripper
+#     objPose = getObjectPose(req.objectName)
+#     drop_height = req.dropHeight
+#     # Process args
+#     obj_z_val = copy.deepcopy(objPose.pose.position.z)  
+#     dropPose = copy.deepcopy(objPose)
+#     dropPose.pose.position.z = (obj_z_val + drop_height)
+#     # Put args into hash object
+#     argNames = ['objPose', 'dropPose']
+#     argVals = [objPose, dropPose]
+#     args = arg_list_to_hash(argNames, argVals)
+#     return ActionExecutorSrvResponse(pa.drop(**args))
+
+# #### GRASP #####################################################################
+# def grasp(req):
+#     gripper = req.gripper
+#     objPose = getObjectPose(req.objectName)
+#     return ActionExecutorSrvResponse(pa.grasp(objPose))

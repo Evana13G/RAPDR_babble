@@ -6,7 +6,7 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <mass>6.0</mass>
         <inertia>
-          <ixx>5.0</ixx>
+<!--           <ixx>5.0</ixx>
           <ixy>5.0</ixy>
           <ixz>5.0</ixz>
           <iyx>5.0</iyx>
@@ -14,7 +14,7 @@
           <iyz>5.0</iyz>
           <izx>5.0</izx>
           <izy>5.0</izy>
-          <izz>5.0</izz>
+          <izz>5.0</izz> -->
 <!--           <ixx>0.2</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>

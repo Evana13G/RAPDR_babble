@@ -29,6 +29,11 @@ def solve_plan(solution, domainFilepath, problemFilepath):
     return
 
 def generate_plan(req):
+
+    if req.problem.goals == []:
+        print('Please specify at least one goal')
+        return PlanGeneratorSrvResponse(ActionExecutionInfoList([]))
+
     domainFile = req.filename + '_domain.pddl'
     problemFile = req.filename + '_problem.pddl'
     solutionFile = req.filename + '_problem.pddl.soln'
@@ -37,11 +42,10 @@ def generate_plan(req):
     dataFilepath = os.path.dirname(os.path.realpath(__file__)) + "/../data/"
     domainFilepath = dataFilepath + domainFile
     problemFilepath = dataFilepath + problemFile
-    # solutionFilepath = dataFilepath + solutionFile
 
     domain = KBDomainProxy(action_exclusions).domain
 
-    # # write to the files
+    # write to the files
     writeToDomainFile(domainFilepath, 
                       domain.name, 
                       domain.requirements,
@@ -56,27 +60,26 @@ def generate_plan(req):
                        req.problem.init, 
                        req.problem.goals)
 
-    # planner = Planner()
     actionList = []  
     solution = {'solution' : None}
-    t = Thread(target=solve_plan, args=(solution, domainFilepath, problemFilepath,))
 
     try: 
+        t = Thread(target=solve_plan, args=(solution, domainFilepath, problemFilepath,))
         t.start()
-        t.join(5)
-        # success = t.is_alive()
+        t.join(20)
+        success = t.is_alive() # Not currently used, 
+                               # BUT: True if its still running after 5 seconds
     except TimeOutException as ex:
         print('No PDDL Solution Found: ' + str(ex))
 
     solution = solution['solution']
+
     if solution is not None:
         plan = getPlanFromPDDLactionList(solution)
-
         locBindings = KBActionLocsProxy().locBindings
         bindings = {}
         for bind in locBindings.bindings:
           bindings[bind.actionName] = bind.endEffectorInfo
-
 
         for act in plan:
             name = act['actionName']
@@ -108,7 +111,7 @@ def execute_plan(req):
 
         if effects_met == False:
             failure_action = actionName
-            return PlanExecutionOutcome(execution_success, goal_complete, failure_action)
+            # return PlanExecutionOutcome(execution_success, goal_complete, failure_action)
 
     execution_success = True
     return PlanExecutionOutcome(execution_success, goal_complete, failure_action)  
