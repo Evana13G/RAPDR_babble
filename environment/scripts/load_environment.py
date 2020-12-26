@@ -100,7 +100,7 @@ def load_gazebo_models(env='default'):
     ###############################
     ########     COOK      ########
     elif env == 'cook':
-        with open (model_path + "cup_with_cover/cup_model_high_friction.sdf", "r") as cup_file:
+        with open (model_path + "cup_with_cover/cup_model.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')
         with open (model_path + "cup_with_cover/cover_model_high_friction.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
@@ -110,7 +110,7 @@ def load_gazebo_models(env='default'):
     ###############################
     #### COOK LOW FRICTION ########
     elif env == 'cook_low_friction':
-        with open (model_path + "cup_with_cover/cup_model_high_friction.sdf", "r") as cup_file:
+        with open (model_path + "cup_with_cover/cup_model.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')
         with open (model_path + "cup_with_cover/cover_model_low_friction.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')

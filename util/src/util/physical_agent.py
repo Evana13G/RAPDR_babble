@@ -72,9 +72,6 @@ class PhysicalAgent(object):
         if self._verbose:
             print("Enabling robot... ")
         self._rs.enable()
-
-        # self.orientationSolver = rospy.ServiceProxy("calc_gripper_orientation_pose", CalcGripperOrientationPoseSrv)
-
         self._pos_offsets_dict = dict({'right_front0': [0, 0.01, 0.075],
                                         'right_front1': [0.015, 0.005, -0.08],
                                         'right_left0': [0, 0.04, 0],
@@ -98,14 +95,6 @@ class PhysicalAgent(object):
 
 ####################################################################################################
 ############## Higher Level Action Primitives 
-
-    # def push(self, startPose, endPose, rate=100):
-    #     self._gripper_close("left")
-    #     self._hover_approach("left", startPose)
-    #     self._approach("left", startPose)
-    #     self._approach("left", endPose, rate=rate)
-    #     self._retract("left")
-    #     return 1
 
     def push(self, gripper, startPose, endPose, rate=10):
         gripper_name = gripper.replace('_gripper', '')
@@ -142,7 +131,6 @@ class PhysicalAgent(object):
         
         rospy.sleep(1)
         self._retract(gripper_name)
-        # return 1
 
     def grasp(self, gripper, objPose, orientation='left'):
         # Note: For left gripper the initial object dimensions was 0.4 by 0.4 
@@ -156,7 +144,7 @@ class PhysicalAgent(object):
 
         appr = copy.deepcopy(objPose)
 
-        for i in range(2):
+        for i in range(1):
             pos = self._pos_offsets_dict[orientationStr + str(i)]
             appr.pose.position.x += pos[0]
             appr.pose.position.y += pos[1]
@@ -181,13 +169,6 @@ class PhysicalAgent(object):
         limb_joints = limb.joint_names()
         joint_name= limb_joints[6] # gripper twist, left_w2
 
-        # GRIP OBJECT 
-        # self._gripper_open(gripper_name)
-        # self._hover_approach(gripper_name, objPose)
-        # self._approach(gripper_name, objPose)
-        # self._gripper_close(gripper_name)
-        # self._hover_approach(gripper_name, objPose)
-
         self.grasp(gripper_name, objPose, orientation)
         self._hover_approach(gripper_name, objPose) # increases z position to lift object up
 
@@ -209,7 +190,6 @@ class PhysicalAgent(object):
         self._approach(gripper_name, objPose)
         self._gripper_open(gripper_name)
         self._hover_approach(gripper_name, objPose)
-        # return 1
 
     def press(self, gripper, startPose, endPose, rate=100): 
         gripper_name = gripper.replace('_gripper', '')
@@ -217,7 +197,6 @@ class PhysicalAgent(object):
         self._approach(gripper_name, startPose)
         self._approach(gripper_name, endPose, rate=rate)
         self._retract(gripper_name)
-        # return 1
 
     def drop(self, gripper, objPose, dropPose):
         gripper_name = gripper.replace('_gripper', '')
@@ -227,7 +206,6 @@ class PhysicalAgent(object):
         self._gripper_close(gripper_name)
         self._approach(gripper_name, dropPose)
         self._gripper_open(gripper_name)
-        # return 1
 
     def cover_obj(self, gripper, objPose1, objPose2):
         gripper_name = gripper.replace('_gripper', '')
@@ -240,6 +218,7 @@ class PhysicalAgent(object):
         objPose2.pose.position.z += 0.06
         self._approach(gripper_name, objPose2)
         self._gripper_open(gripper_name)
+        self._hover_approach(gripper_name, objPose2)
         self._retract(gripper_name)
 
 
@@ -292,46 +271,6 @@ class PhysicalAgent(object):
         except (rospy.ServiceException, rospy.ROSException), e:
             rospy.logerr("Service call failed: %s" % (e,))
             return 0
-
-    def _set_joint_efforts(self):
-
-        # print(self._left_limb.endpoint_effort())
-        # efforts = []
-        # start_time = rospy.Time(0.0)
-        # start_time = rospy.Time.now()
-        # duration = rospy.Duration(5000.0)
-        # torques = {'head_pan' : 0.0, 
-        #            'l_gripper_l_finger_joint' : -0.035200525640670714,
-        #            'l_gripper_r_finger_joint' : -0.25935460745992633, 
-        #            'left_e0' : 47.77774881151675, 
-        #            'left_e1' : 23.51433066190589, 
-        #            'left_s0' : 11.794216672654034, 
-        #            'left_s1' : 23.60884891094095, 
-        #            'left_w0' : -10.76398527560869, 
-        #            'left_w1' : 15.0, 
-        #            'left_w2' : -0.8971144799225961, 
-        #            'r_gripper_l_finger_joint' : 0.0, 
-        #            'r_gripper_r_finger_joint' : 0.0, 
-        #            'right_e0' : -0.05173647335432463, 
-        #            'right_e1' : -0.10614423477850465, 
-        #            'right_s0' : 0.00023955770158679002, 
-        #            'right_s1' : -0.23776845263334678, 
-        #            'right_w0' : -0.009212185201725731, 
-        #            'right_w1' : 0.020528554873848748, 
-        #            'right_w2' : 0.0008220324551100333}
-        # l_torques = {'left_w0' : -10.76398527560869, 
-        #              'left_w1' : 15.0, 
-        #              'left_w2' : -0.8971144799225961}
-
-        # self._left_limb.set_joint_torques(l_torques)
-
-
-        self._left_limb._cartesian_effort= {
-            'force': Point(0.0,0.0,0.0),
-            'torque': Point(10.0, 0.0, 0.0),
-        }
-
-        rospy.sleep(2.0)
 
     ####################################################
 
