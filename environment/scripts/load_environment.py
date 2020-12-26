@@ -8,6 +8,7 @@ import sys
 import copy
 import rospy
 import rospkg
+import random
 
 from gazebo_msgs.srv import (
     SpawnModel,
@@ -52,7 +53,11 @@ def load_gazebo_models(env='default'):
     block_reference_frame="world"
     cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
     cover_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
+    #####--Marbles--#####
+    marbleB_pose=Pose(position=Point(x=0.5, y=0.0, z=0.75))
+    marbleR_pose=Pose(position=Point(x=0.5, y=0.0, z=0.75))
     reference_frame="world"
+
 
 
     # Get Models' Path
@@ -98,8 +103,15 @@ def load_gazebo_models(env='default'):
     ###############################
     ########### DEFAULT ########### 
     else:
-        with open (model_path + "cup_with_cover/cup_model.sdf", "r") as cup_file:
+        with open (model_path + "cup_with_cover/cup_model_hollow.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')
+
+        #####--Marbles--#####
+        with open (model_path + "marbles/marbleB.sdf", "r") as marble_file:
+            marbleB_xml=marble_file.read().replace('\n', '')
+        with open (model_path + "marbles/marbleR.sdf", "r") as marble_file:
+            marbleR_xml=marble_file.read().replace('\n', '')
+
         with open (model_path + "cup_with_cover/cover_model_high_friction.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
 
@@ -110,11 +122,16 @@ def load_gazebo_models(env='default'):
     try:
         spawn_sdf("cafe_table", table_xml, "/", table_pose, reference_frame)
         spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
-        spawn_sdf("cover", cover_xml, "/", cover_pose, reference_frame)
-        # spawn_sdf("cover2", cover_xml, "/", left_button_pose, reference_frame)
-        # spawn_sdf("cover3", cover_xml, "/", right_button_pose, reference_frame)
+        resp_sdf = spawn_sdf("marbleB", marbleB_xml, "/",
+                            marbleB_pose, reference_frame)
+        rospy.sleep(2)
+        # for i in range(num_marbles):
+        #     resp_sdf = spawn_sdf("marbleR_"+ str(i), marbleR_xml, "/",
+        #                         marbleR_pose, reference_frame)
+        # rospy.sleep(2)
+        # spawn_sdf("cover", cover_xml, "/", cover_pose, reference_frame)
 
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         rospy.logerr("Spawn URDF service call failed: {0}".format(e))
 
     resetPreds()
@@ -130,14 +147,16 @@ def delete_gazebo_models():
         pub_all.publish(False)
         
         delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
-        delete_model("cover")
+        # delete_model("cover")
+        rospy.sleep(1)
+        delete_model("marbleB")
         rospy.sleep(1)
         delete_model("cup")
         rospy.sleep(1)
         resetPreds()
         # delete_model("cafe_table")
 
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         rospy.loginfo("Delete Model service call failed: {0}".format(e))
 
 
@@ -150,7 +169,7 @@ def handle_environment_request(req):
             load_gazebo_models(environment)
             rospy.sleep(3)
             return HandleEnvironmentSrvResponse(1)
-        except rospy.ServiceException, e:
+        except rospy.ServiceException as e:
             rospy.logerr("Init environment call failed: {0}".format(e))
             return HandleEnvironmentSrvResponse(0)
 
@@ -160,7 +179,7 @@ def handle_environment_request(req):
             delete_gazebo_models()
             rospy.sleep(2)
             return HandleEnvironmentSrvResponse(1)
-        except rospy.ServiceException, e:
+        except rospy.ServiceException as e:
             rospy.logerr("Destroy environment call failed: {0}".format(e))
             return HandleEnvironmentSrvResponse(0)
 
@@ -173,7 +192,7 @@ def handle_environment_request(req):
             rospy.sleep(4)
             return HandleEnvironmentSrvResponse(1)
 
-        except rospy.ServiceException, e:
+        except rospy.ServiceException as e:
             rospy.logerr("Destroy environment call failed: {0}".format(e))
             return HandleEnvironmentSrvResponse(0)
     else:

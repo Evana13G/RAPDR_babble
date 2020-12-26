@@ -13,7 +13,7 @@
     <!--Start Execution Hardcodings -->
     <node name="execution_details" pkg="agent" type="execution_details.py"/>
     <!--Start Agent Brain-->
-    <!-- <node name="brain" pkg="agent" type="brain.py"/> -->
+    <node name="brain" pkg="agent" type="brain.py" output="screen"/> 
 
 
  <!-- ###################################################### -->
@@ -26,7 +26,8 @@
     <node name="scenario_data" pkg="environment" type="scenario_data.py"/>
 
 
- <!-- ###################################################### -->
+ <!-- ###################################################### -->                           
+ 
  <!-- ####### Start PDDL Nodes ####### -->
     <!--Start PDDL Planner Node-->
     <node name="planner" pkg="pddl" type="planner.py"/>
@@ -39,7 +40,7 @@
  <!-- ###################################################### -->
  <!-- ####### Start Action Primitive Variation Nodes ####### -->
     <!--Start Param Variation Tool-->
-    <node name="APV" pkg="action_primitive_variation" type="APV_server.py"/>
+    <node name="APV" pkg="action_primitive_variation" type="APV_server.py" output="screen"/>
 
  <!-- ###################################################### -->
  <!-- ####### Start Test Nodes ####### -->

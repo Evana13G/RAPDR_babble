@@ -46,7 +46,6 @@ pub_right_gripper_pose = rospy.Publisher('right_gripper_pose', PoseStamped, queu
 pub_cup_pose = rospy.Publisher('cup_pose', PoseStamped, queue_size = 10)
 pub_cover_pose = rospy.Publisher('cover_pose', PoseStamped, queue_size = 10)
 
-
 # def setPubAll(data):
 #     global pub_all
 #     pub_all = data.data
