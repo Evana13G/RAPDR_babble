@@ -135,22 +135,19 @@ def scenario_settings(req):
     if scenario == 'discover_strike':
         coverLoc = getObjLoc('cover').location
         goal = ['(not (at cover '+ poseStampedToString(coverLoc) + '))']
-        orig_scenario = 'default'
+        orig_scenario = 'discover_strike'
         novel_scenario = 'HH'
         T = 3
         additional_domain_locs = []
     elif scenario == 'discover_pour':
         goal = ['(not (touching cover cup))']
-        orig_scenario = 'default'
+        orig_scenario = 'discover_pour'
         novel_scenario = 'high_friction'
         T = 5
         additional_domain_locs = []
     elif scenario == 'cook':
-        # goal = ['(cooking cup)']
-        # goal = ['(food_cooked)']
         goal = ['(cooking cup)']
         orig_scenario = 'cook'
-        # orig_scenario = 'cook_low_friction'
         novel_scenario = 'cook_low_friction'
         T = 3
         additional_domain_locs = []

@@ -147,7 +147,7 @@ def load_gazebo_models(env='default'):
         except rospy.ServiceException, e:
             rospy.logerr("Spawn URDF service call failed: {0}".format(e))
     
-    elif env in ['discover_strike', 'discover_pour']:
+    elif env in ['discover_strike', 'discover_pour', 'HH']:
         try:
             spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
             rospy.sleep(0.5)
@@ -189,7 +189,7 @@ def handle_environment_request(req):
         try:
             rospy.sleep(1)
             load_gazebo_models(environment)
-            rospy.sleep(3)
+            rospy.sleep(2)
             return HandleEnvironmentSrvResponse(1)
         except rospy.ServiceException, e:
             rospy.logerr("Init environment call failed: {0}".format(e))

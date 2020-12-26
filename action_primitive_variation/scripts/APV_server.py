@@ -16,8 +16,6 @@ scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
 addActionToKB = rospy.ServiceProxy('add_action_to_KB_srv', AddActionToKBSrv)
 novelEffectChecker = rospy.ServiceProxy('novel_effect_srv', NovelEffectsSrv)
 
-
-
 #### Access functions
 def getObjectPose(object_name, pose_only=False):
     loc_pStamped = obj_location_srv(object_name)
@@ -96,7 +94,6 @@ def main():
     rospy.Service("APV_srv", APVSrv, set_up_variations)
     rospy.spin()
     return 0
-
 
 if __name__ == '__main__':
     sys.exit(main())
