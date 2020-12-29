@@ -22,7 +22,7 @@
        <pose frame=''>0 0 -0.013 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.05 0.05 0.002</size>
+            <size>0.05 0.05 0.004</size>
           </box>
         </geometry>
         <surface>
@@ -39,7 +39,7 @@
         <pose frame=''>0 0 -0.013 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.05 0.05 0.002</size>
+            <size>0.05 0.05 0.004</size>
           </box>
         </geometry>
         <material>
@@ -55,7 +55,7 @@
       <pose frame=''>0 0 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0 0 0 -0 0</pose>
-        <mass>1.0</mass>
+        <mass>6.0</mass>
         <inertia>
           <ixx>5.0</ixx>
           <ixy>5.0</ixy>
@@ -72,7 +72,7 @@
         <pose frame=''>-0.025 0 0 0 0 0</pose>
         <geometry>
           <box>
-           <size>0.0001 0.05 0.03</size>
+           <size>0.002 0.05 0.03</size>
           </box>
         </geometry>
         <surface>
@@ -89,7 +89,7 @@
         <pose frame=''>-0.025 0 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.0001 0.05 0.03</size>
+            <size>0.002 0.05 0.03</size>
           </box>
         </geometry>
         <material>
@@ -110,7 +110,7 @@
       <pose frame=''>0 0 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0 0 0 -0 0</pose>
-        <mass>1.0</mass>
+        <mass>6.0</mass>
         <inertia>
           <ixx>5.0</ixx>
           <ixy>5.0</ixy>
@@ -127,7 +127,7 @@
       <pose frame=''>0.025 0 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.0001 0.05 0.03</size>
+            <size>0.002 0.05 0.03</size>
           </box>
         </geometry>
         <surface>
@@ -144,7 +144,7 @@
         <pose frame=''>0.025 0 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.0001 0.05 0.03</size>
+            <size>0.002 0.05 0.03</size>
           </box>
         </geometry>
         <material>
@@ -165,7 +165,7 @@
       <pose frame=''>0 0 0 0 0 0</pose>
       <inertial>
         <pose frame=''>0 0 0 0 0 0</pose>
-        <mass>1.0</mass>
+        <mass>6.0</mass>
         <inertia>
           <ixx>5.0</ixx>
           <ixy>5.0</ixy>
@@ -182,7 +182,7 @@
        <pose frame=''>0.0 0.025 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.05 0.0001 0.03</size>
+            <size>0.05 0.002 0.03</size>
           </box>
         </geometry>
         <surface>
@@ -199,7 +199,7 @@
         <pose frame=''>0.0 0.025 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.05 0.0001 0.03</size>
+            <size>0.05 0.002 0.03</size>
           </box>
         </geometry>
         <material>
@@ -220,7 +220,7 @@
       <pose frame=''>0 0 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0 0 0 -0 0</pose>
-        <mass>1.0</mass>
+        <mass>6.0</mass>
         <inertia>
           <ixx>5.0</ixx>
           <ixy>5.0</ixy>
@@ -237,7 +237,7 @@
        <pose frame=''>0.0 -0.025 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.05 0.05 0.03</size>
+             <size>0.05 0.002 0.03</size>
           </box>
         </geometry>
         <surface>
@@ -254,7 +254,7 @@
         <pose frame=''>0.0 -0.025 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.05 0.0001 0.03</size>
+            <size>0.05 0.002 0.03</size>
           </box>
         </geometry>
         <material>
@@ -270,6 +270,8 @@
       <parent link="base"/>
       <child link="right_wall"/>
     </joint>
+
+
 
   </model>
 </sdf>

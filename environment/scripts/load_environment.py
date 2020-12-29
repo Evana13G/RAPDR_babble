@@ -9,6 +9,8 @@ import copy
 import rospy
 import rospkg
 import random
+import time
+
 
 from gazebo_msgs.srv import (
     SpawnModel,
@@ -38,6 +40,7 @@ from environment.srv import *
 from agent.srv import MoveToStartSrv
 
 environment = 'default'
+num_marbles = 30
 
 pub_all = rospy.Publisher('models_loaded', Bool, queue_size=10)
 moveToStartProxy = rospy.ServiceProxy('move_to_start_srv', MoveToStartSrv)
@@ -53,11 +56,11 @@ def load_gazebo_models(env='default'):
     block_reference_frame="world"
     cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
     cover_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
-    #####--Marbles--#####
-    marbleB_pose=Pose(position=Point(x=0.5, y=0.0, z=0.75))
-    marbleR_pose=Pose(position=Point(x=0.5, y=0.0, z=0.75))
     reference_frame="world"
-
+    #####--Marbles--#####
+    marbleB_pose=Pose(position=Point(x=0.0 + random.uniform(0.001,0.009), y=0.0 + random.uniform(0.001,0.009), z = 0.04))
+    marbleR_pose=Pose(position=Point(x=0.0, y=0, z = 0.04))
+    marble_reference_frame = "cup"
 
 
     # Get Models' Path
@@ -66,6 +69,8 @@ def load_gazebo_models(env='default'):
     table_xml = ''
     cup_xml = ''
     cover_xml = ''
+    marbleB_xml = ''
+    marbleR_xml = ''
 
 
     moveToStartProxy('both')
@@ -120,16 +125,21 @@ def load_gazebo_models(env='default'):
     spawn_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
 
     try:
+
         spawn_sdf("cafe_table", table_xml, "/", table_pose, reference_frame)
         spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
-        resp_sdf = spawn_sdf("marbleB", marbleB_xml, "/",
-                            marbleB_pose, reference_frame)
+
+        for i in range(num_marbles):
+            resp_sdf = spawn_sdf("marbleB_"+ str(i), marbleB_xml, "/",
+                                marbleB_pose, marble_reference_frame)
         rospy.sleep(2)
-        # for i in range(num_marbles):
-        #     resp_sdf = spawn_sdf("marbleR_"+ str(i), marbleR_xml, "/",
-        #                         marbleR_pose, reference_frame)
-        # rospy.sleep(2)
-        # spawn_sdf("cover", cover_xml, "/", cover_pose, reference_frame)
+
+        for i in range(num_marbles):
+            resp_sdf = spawn_sdf("marbleR_"+ str(i), marbleR_xml, "/",
+                                marbleR_pose, marble_reference_frame)
+        rospy.sleep(2)
+        spawn_sdf("cover", cover_xml, "/", cover_pose, reference_frame)
+        rospy.sleep(2)
 
     except rospy.ServiceException as e:
         rospy.logerr("Spawn URDF service call failed: {0}".format(e))
@@ -145,14 +155,19 @@ def delete_gazebo_models():
     # available since Gazebo has been killed, it is fine to error out
     try:
         pub_all.publish(False)
-        
         delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
-        # delete_model("cover")
-        rospy.sleep(1)
-        delete_model("marbleB")
-        rospy.sleep(1)
+
+        delete_model("cover")
+        rospy.logerr("deleting cover")
+        for i in range(num_marbles):
+            delete_model("marbleR_"+ str(i))
+            rospy.logerr("deleting marble_R"+ str(i))
+        rospy.sleep(4)
+        for i in range(num_marbles):
+            delete_model("marbleB_"+ str(i))
+            rospy.logerr("deleting marble_B" + str(i))
+        rospy.sleep(4)
         delete_model("cup")
-        rospy.sleep(1)
         resetPreds()
         # delete_model("cafe_table")
 
