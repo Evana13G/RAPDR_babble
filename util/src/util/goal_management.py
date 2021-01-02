@@ -1,5 +1,8 @@
 from util.physical_agent import PhysicalAgent 
 import os 
+import random 
+import math 
+import numpy as np
 
 def goalAccomplished(goalList, currentState):
     numGoalsAccomplished = 0
@@ -90,4 +93,34 @@ def generateAllCombos(T, scenario):
          #new = trial.append(None)
          #    replaceAPV.append(trial.append(None))
     #APVtrials = replaceAPV
+
+
+
+############################################
+## Prob need to move this to a service 
+def generateAllCombos_dev(T, plan):
+    APVtrials = []
+    selections = []
+    mu = len(plan)
+    sd = 3.0
+
+    selection = -1.0
+    while len(plan) > 0:
+        selection = int(random.gauss(mu, sd))
+        if (0 <= selection < mu):
+            selections.append(plan[selection])
+            del plan[selection]
+            mu = len(plan) 
+
+    for a in selections:
+        formatted = []
+        formatted.append(a.actionName)
+        formatted.append(a.argVals)
+        formatted.append('rate')
+        formatted.append(T)
+        APVtrials.append(formatted)
+
+# (['push', ['left_gripper', 'cover'], 'rate', T]) 
+    # APVtrials.append(['push', ['left_gripper', 'cover'], 'rate', T]) 
+    return APVtrials  
 ############################################

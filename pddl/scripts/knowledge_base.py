@@ -61,8 +61,6 @@ def handle_get_pddl_instatiations(req):
     name = req.actionName
     action = KB.getAction(name)
     args = req.orderedArgs 
-    # info = executionInfo('cover', 'left')
-    # info2 = orientationSolver('left_gripper', 'cover', 'left')
 
     # This is not a correct assumption to make
     # locs = [poseStampedToString(getObjLoc(x).location) for x in args]
@@ -94,19 +92,6 @@ def add_action_to_KB(req):
 
     for i in range(len(new_effects)):
         effect = new_effects[i]
-
-        # if 'not' not in effect:
-        #     operator = effect[1:].split()[0]
-        #     instatiated_pred_args = effect.replace(operator, '')[:-1].split()
-        #     static_pred_args, new_args = parse_and_map_predicate_args(instatiated_pred_args, args, pddl_args)
-        #     pred = StaticPredicate(operator, static_pred_args)
-        # else:
-        #     operator = effect[6:].split()[0]
-        #     instatiated_pred_args = effect.replace(('(not (' + operator), '')[:-2].split()
-        #     static_pred_args, new_args = parse_and_map_predicate_args(instatiated_pred_args, args, pddl_args)
-        #     pred = StaticPredicate('not', [StaticPredicate(operator, static_pred_args)])
-
-
         operator = effect[1:].split()[0] if 'not' not in effect else effect[6:].split()[0]
         instatiated_pred_args = effect.replace(operator, '')[:-1].split() if 'not' not in effect else  effect.replace(('(not (' + operator), '')[:-2].split()
         static_pred_args, new_args = parse_and_map_predicate_args(instatiated_pred_args, args, pddl_args)
