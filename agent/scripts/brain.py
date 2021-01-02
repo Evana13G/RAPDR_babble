@@ -47,21 +47,20 @@ def handle_trial(req):
     attemptsTime = []
     totalTimeStart = 0 ## TODO: Change this to SIM time. 
     task = req.runName
-    scenario_settings = getScenarioSettings(req.scenario)
+    scenario = req.scenario
+    scenario_settings = getScenarioSettings(scenario)
     goal = scenario_settings.goal
     orig_env = scenario_settings.orig_scenario
     novel_env = scenario_settings.novel_scenario
     T = scenario_settings.T
     additionalDomainLocs = scenario_settings.additional_domain_locs
 
-
     mode = ['diffsOnly', 'noLoc']
     algoMode = 'APV'
     newPrims = []
     gripperExecutingNewPrim = 'left_gripper'
-    # gripperExecutionValidity = True
-    
-    envProxy('restart', orig_env)
+
+    if scenario != 'discover_strike': envProxy('restart', orig_env)
     
     currentState = scenarioData() # A bit of a hack for now
     
@@ -72,7 +71,7 @@ def handle_trial(req):
         print('#### ------------------------------------------ ')
         print("#### -- Original Scenario: ")
         # envProxy('restart', orig_env)
-        outcome = single_attempt_execution(task, goal, orig_env, additional_locs=additionalDomainLocs)
+        outcome = single_attempt_execution(task, goal, orig_env)
 
     except rospy.ServiceException, e:
         print("Service call failed: %s"%e)
@@ -88,7 +87,7 @@ def handle_trial(req):
         while(goalAccomplished(goal, currentState.init) == False):
             
             # trialStart = rospy.get_time()
-            outcome = single_attempt_execution(task, goal, novel_env, attempt, additionalDomainLocs, action_exclusions)
+            outcome = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions=action_exclusions)
 
             if (outcome.goal_complete == True): break 
             currentState = scenarioData() #For the while loop (end on resetting this)

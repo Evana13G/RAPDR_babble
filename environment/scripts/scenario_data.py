@@ -149,21 +149,21 @@ def updatePhysicalStateBasedPredicates():
     item_on_burner = []
     covered_item = []
 
-    if is_touching(CoverPose, BurnerPose, 0.1):
+    if is_touching(CoverPose, BurnerPose, 0.1, 0.06):
         new_predicates.append(Predicate(operator="touching", objects=['cover', 'burner1'], locationInformation=None)) 
         new_predicates.append(Predicate(operator="on_burner", objects=['cover', 'burner1'], locationInformation=None)) 
         item_on_burner.append('cover')
 
-    if is_touching(CupPose, BurnerPose, 0.1):
+    if is_touching(CupPose, BurnerPose, 0.1, 0.06):
         new_predicates.append(Predicate(operator="touching", objects=['cup', 'burner1'], locationInformation=None)) 
         new_predicates.append(Predicate(operator="on_burner", objects=['cup', 'burner1'], locationInformation=None)) 
         item_on_burner.append('cup')
 
-    if is_pressed(CupPose, CoverPose, 0.1, [0.05, None]):
+    if is_pressed(CupPose, CoverPose, 0.1, [0.07, None]):
         new_predicates.append(Predicate(operator="covered", objects=['cover'], locationInformation=None)) 
         covered_item.append('cover')
 
-    if is_pressed(CoverPose, CupPose, 0.1, [0.05, None]):
+    if is_pressed(CoverPose, CupPose, 0.1, [0.07, None]):
         new_predicates.append(Predicate(operator="covered", objects=['cup'], locationInformation=None)) 
         covered_item.append('cup')
 

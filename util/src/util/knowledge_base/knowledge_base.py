@@ -66,7 +66,13 @@ class KnowledgeBase(object):
         push.addArg(Variable('?o', 'obj'))
         push.addPreCond(StaticPredicate('at', ['?o', '?loc0']))
         push.addEffect(StaticPredicate('not', [StaticPredicate('at', ['?o', '?loc0'])]))
-        push_p1 = Parameter('rate', 5.0, 1.0, 150.0)
+        push_p1 = Parameter('rate', 10.0, 3.0, 100.0)
+        # push_p1 = Parameter('rate', 3.0, 5.0, 100.0) # Low friction, stays on table
+        # push_p1 = Parameter('rate', 5.0, 5.0, 100.0) # Low friction, stays on table
+        # push_p1 = Parameter('rate', 6.0, 5.0, 100.0) # Low friction, leaves table
+        # push_p1 = Parameter('rate', 10.0, 5.0, 100.0) # Low friction, leaves table
+        # push_p1 = Parameter('rate', 10.0, 3.0, 150.0) # High friction, stays on table
+
         push_p2 = Parameter('movementMagnitude', 0.4, 0.1, 0.6)
         push_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front', 'back'])
         push.addParam(push_p1)
