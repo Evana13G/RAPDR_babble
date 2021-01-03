@@ -12,7 +12,7 @@
  <!-- ###################################################### -->
  <!-- ####### Start Agent Nodes ####### -->
    <!--Start Agent Proxy-->
-   <!-- <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py" respawn="true" respawn_delay="5"/> -->
+   <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py" respawn="true" respawn_delay="5"/>
    <!--Start Agent Vision Processing Mechanism-->
    <node name="vision" pkg="agent" type="vision.py" respawn="true"/>
    <!--Start Execution Hardcodings -->

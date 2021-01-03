@@ -41,13 +41,11 @@ def test(req):
         # envProxy('restart', 'cook')
         envProxy('restart', 'cook_low_friction')
         actionName = 'push'
-        args = ['left_gripper', 'cup']
+        args = ['left_gripper', 'cover']
+
         preconditions = scenarioData().init
         paramToVary = 'orientation'
-        paramAssignment = 'right' 
-        # pddlActionExecutorProxy(actionName, args)
-
-
+        paramAssignment = 'left' 
         paramActionExecutionProxy(actionName, args, [paramToVary], [str(paramAssignment)])
         effects = scenarioData().init
 
