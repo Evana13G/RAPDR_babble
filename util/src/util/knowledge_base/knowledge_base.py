@@ -74,7 +74,8 @@ class KnowledgeBase(object):
         # push_p1 = Parameter('rate', 10.0, 3.0, 150.0) # High friction, stays on table
 
         push_p2 = Parameter('movementMagnitude', 0.4, 0.1, 0.6)
-        push_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front', 'back'])
+        # push_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front', 'back'])
+        push_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top'])
         push.addParam(push_p1)
         push.addParam(push_p2)
         push.addParam(push_p3)
@@ -88,7 +89,8 @@ class KnowledgeBase(object):
         shake.addEffect(StaticPredicate('shaken', ['?o']))
         shake_p1 = Parameter('rate', 15.0, 1.0, 20.0)
         shake_p2 = Parameter('movementMagnitude', 1.0, 0.0, 5.0)
-        shake_p3 = Parameter('orientation', 'top', None, None, ['left', 'right', 'top', 'front', 'back'])
+        # shake_p3 = Parameter('orientation', 'top', None, None, ['left', 'right', 'top', 'front', 'back'])
+        shake_p3 = Parameter('orientation', 'top', None, None, ['left', 'right', 'top'])
         shake.addParam(shake_p1)
         shake.addParam(shake_p2)
         shake.addParam(shake_p3)

@@ -34,7 +34,7 @@ def process_intervals(actionInfo, paramToVary, T):
     paramVals = []
 
     if paramToVary == 'orientation':
-        if T > 5: T = 5
+        if T > 3: T = 3
         choices = paramDiscreteChoices[i_paramToVary].discretizedParamVals
         paramVals = random.sample(choices, k=T)
     else:

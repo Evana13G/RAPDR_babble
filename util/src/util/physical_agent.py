@@ -82,14 +82,20 @@ class PhysicalAgent(object):
                                         'right_right1': [-0.038, 0.05, 0],
                                         'right_top0': [0, 0, 0.1],
                                         'right_top1': [0, 0, -0.09],
+
                                         'left_front0': [0, -0.01, 0.075],
                                         'left_front1': [0.015, -0.01, -0.08],
-                                        'left_left0': [-0.055, 0.1, -0.01],
-                                        'left_left1': [0, -0.15, 0],
+
+
+                                        'left_left0': [-0.053, 0.05, 0],
+                                        'left_left1': [-0.053, -0.05, 0],
+
                                         'left_back0': [0.005, 0.005, 0],
                                         'left_back1': [0, 0, 0],
-                                        'left_right0': [-0.1, -0.02, -0.015],
-                                        'left_right1': [0.01, 0.115],
+
+                                        'left_right0': [0, 0, 0.115],
+                                        'left_right1': [0, 0, 0],
+                                        
                                         'left_top0': [0, -0.0197, 0.01],
                                         'left_top1': [0, -0.0197, -0.01]})
 
@@ -142,10 +148,11 @@ class PhysicalAgent(object):
         # Approach two different positions for smooth grasp action
         orientationStr = gripper_name + '_' + orientation
 
-        appr = copy.deepcopy(objPose)
+        # appr = copy.deepcopy(objPose)
 
-        for i in range(1):
+        for i in range(2):
             pos = self._pos_offsets_dict[orientationStr + str(i)]
+            appr = copy.deepcopy(objPose)
             appr.pose.position.x += pos[0]
             appr.pose.position.y += pos[1]
             appr.pose.position.z += pos[2]

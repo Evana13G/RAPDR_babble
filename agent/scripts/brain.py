@@ -190,7 +190,7 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', additional_lo
         objs = pddlObjectsStringFormat_fromDict(initObjsIncludingLoc)
         init = initStateInfo.init
         init = [x for x in init if 'right_gripper' not in x]
-        problem = Problem(task_name, KBDomainProxy().domain.name, objs, init, goal)
+        problem = Problem(task_name, KBDomainProxy(action_exclusions).domain.name, objs, init, goal)
         plan = planGenerator(problem, filename, action_exclusions)
      
         if plan.plan.actions == []:

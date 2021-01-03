@@ -5,26 +5,50 @@ import rospy
 from agent.srv import *
 from environment.srv import *
 from pddl.srv import *
-# from action_primitive_variation.srv import *
-
-# from util.goal_management import *
 
 #### Service Proxies
-
 checkerProxy = rospy.ServiceProxy('check_effects_srv', CheckEffectsSrv)
 scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
 pddlActionExecutorProxy = rospy.ServiceProxy('pddl_action_executor_srv', PddlExecutorSrv)
+paramActionExecutionProxy = rospy.ServiceProxy('param_action_executor_srv', ParamActionExecutorSrv)
+envProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
 
+#### ---- push, [rate]: 3.0
+#### ---- push, [rate]: 51.5
+#### ---- push, [rate]: 100.0
+#### ---- push, [movementMagnitude]: 0.1
+#### ---- push, [movementMagnitude]: 0.35
+#### ---- push, [movementMagnitude]: 0.6
+#### ---- shake, [rate]: 1.0
+#### ---- shake, [rate]: 10.5
+#### ---- shake, [rate]: 20.0
+#### ---- shake, [movementMagnitude]: 0.0
+#### ---- shake, [movementMagnitude]: 2.5
+#### ---- shake, [movementMagnitude]: 5.0
+
+#### ---- push, [orientation]: left
+#### ---- push, [orientation]: right
+#### ---- push, [orientation]: front
+#### ---- shake, [orientation]: top
+#### ---- shake, [orientation]: right
+#### ---- shake, [orientation]: left
 
 def test(req):
     print("--------------------------------------")
     print("----- TESTING PDDL CHECKER -----")
 
     try:
+        # envProxy('restart', 'cook')
+        envProxy('restart', 'cook_low_friction')
         actionName = 'push'
-        args = ['left_gripper', 'cover']
+        args = ['left_gripper', 'cup']
         preconditions = scenarioData().init
-        pddlActionExecutorProxy(actionName, args)
+        paramToVary = 'orientation'
+        paramAssignment = 'right' 
+        # pddlActionExecutorProxy(actionName, args)
+
+
+        paramActionExecutionProxy(actionName, args, [paramToVary], [str(paramAssignment)])
         effects = scenarioData().init
 
         resp = checkerProxy(actionName, args, preconditions, effects)
@@ -43,5 +67,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 

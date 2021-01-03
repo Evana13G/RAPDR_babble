@@ -12,7 +12,7 @@
  <!-- ###################################################### -->
  <!-- ####### Start Agent Nodes ####### -->
    <!--Start Agent Proxy-->
-   <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py" respawn="true" respawn_delay="5"/>
+   <!-- <node name="physical_agent_executor" pkg="agent" type="physical_agent_executor.py" respawn="true" respawn_delay="5"/> -->
    <!--Start Agent Vision Processing Mechanism-->
    <node name="vision" pkg="agent" type="vision.py" respawn="true"/>
    <!--Start Execution Hardcodings -->
@@ -34,7 +34,7 @@
     <!--Start PDDL Planner Node-->
     <node name="planner" pkg="pddl" type="planner.py" respawn="true" respawn_delay="5"/>
     <!--Start PDDL Checker Node-->
-    <node name="pddl_checker" pkg="pddl" type="pddl_checker.py" respawn="true" respawn_delay="5"/>
+    <!-- <node name="pddl_checker" pkg="pddl" type="pddl_checker.py" respawn="true" respawn_delay="5"/> -->
     <!--Start Knowledge Base Interface Node-->
     <node name="knowledge_base" pkg="pddl" type="knowledge_base.py" respawn="true" respawn_delay="5"/>
 

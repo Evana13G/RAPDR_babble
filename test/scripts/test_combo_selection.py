@@ -32,9 +32,11 @@ def test(req):
         init = initStateInfo.init
         init = [x for x in init if 'right_gripper' not in x]
         init = [x for x in init if 'table' not in x]
-        problem = Problem(task_name, KBDomainProxy().domain.name, objs, init, goal)
+        kb = KBDomainProxy(['test'])
+        problem = Problem(task_name, kb.domain.name, objs, init, goal)
         plan = planGenerator(problem, filename, [])
         plan = plan.plan.actions
+        print(plan)
         combos = generateAllCombos_dev(5, plan)
         for c in combos:
             print(c)

@@ -16,8 +16,6 @@ executionInfo = rospy.ServiceProxy('get_offset', GetHardcodedOffsetSrv)
 orientationSolver = rospy.ServiceProxy('calc_gripper_orientation_pose', CalcGripperOrientationPoseSrv)
 
 def handle_domain_req(req):
-    print('handle_domain_req')
-    print(req.action_exclusions)
     domainDict = KB.getDomainData(req.action_exclusions)
     domainName = domainDict['domain']
     types = domainDict['types']
@@ -135,7 +133,7 @@ def get_param_options(req):
 def main():
     rospy.init_node("knowledge_base_node")
 
-    rospy.Service("get_KB_domain_srv", GetKBDomainSrv, handle_domain_req)
+    rospy.Service("get_KB_domain_srv", GetKBDomain, handle_domain_req)
     rospy.Service("get_KB_action_info_srv", GetKBActionInfoSrv, get_action_info)
     rospy.Service("get_KB_action_locs", GetKBActionLocsSrv, handle_action_locs_req)
     rospy.Service("get_KB_pddl_locs", GetKBPddlLocsSrv, handle_pddlLocs_req)
