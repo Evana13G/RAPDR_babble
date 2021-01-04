@@ -27,6 +27,8 @@ predicatesPublisher = rospy.Publisher('predicate_values', PredicateList, queue_s
 imageConverter = ImageConverter()
 # isVisible = rospy.ServiceProxy('is_visible_srv', IsVisibleSrv)
 
+CupPose = None
+CoverPose = None
 LeftGripperPose = None
 RightGripperPose = None
 TablePose = None
@@ -39,6 +41,16 @@ cup_pressed = False
 predicates_list = []
 
 ########################################################
+def setPoseCup(data):
+    global CupPose
+    CupPose = data
+    updatePredicates("cup", data)
+
+def setPoseCover(data):
+    global CoverPose
+    CoverPose = data
+    updatePredicates("cover", data)
+
 def setPoseGripperLeft(data):
     global LeftGripperPose
     translate(data)
@@ -98,12 +110,32 @@ def updateVisionBasedPredicates():
 
     # Need to update the image converter to deal with more objects and to be more sophisticated. 
     # For the image recognition part, every object MUST have a different color to identify it  
-
-
-    # if (imageConverter.getObjectPixelCount('breakable_obj') > 0):
+    ##
+    ## SHOULD update and do burner and breakable object
+    ##
+    
     # if (imageConverter.is_visible('breakable_obj') == True):
     #     new_predicates.append(Predicate(operator="is_visible", objects=["breakable_obj"], locationInformation=None)) 
 
+    # if (imageConverter.getObjectPixelCount('cup') > 0):
+    if (imageConverter.is_visible('cup') == True):
+        new_predicates.append(Predicate(operator="is_visible", objects=["cup"], locationInformation=None)) 
+    # if (imageConverter.getObjectPixelCount('cover') > 0):
+    if (imageConverter.is_visible('cover') == True):
+        new_predicates.append(Predicate(operator="is_visible", objects=["cover"], locationInformation=None)) 
+    
+    predicates_list = new_predicates
+
+def updateVisionBasedPredicates():
+    global predicates_list
+    new_predicates = []
+    for pred in predicates_list:
+        if not (pred.operator == "is_visible"):
+            new_predicates.append(pred)
+
+    # Need to update the image converter to deal with more objects and to be more sophisticated. 
+    # For the image recognition part, every object MUST have a different color to identify it  
+    
     # if (imageConverter.getObjectPixelCount('cup') > 0):
     if (imageConverter.is_visible('cup') == True):
         new_predicates.append(Predicate(operator="is_visible", objects=["cup"], locationInformation=None)) 
@@ -176,6 +208,7 @@ def updatePhysicalStateBasedPredicates():
 
     predicates_list = new_predicates
 
+
 def getPredicates(data):
     return ScenarioDataSrvResponse(pddlStringFormat(predicates_list), 
                                    pddlObjectsStringFormat(predicates_list),
@@ -186,6 +219,8 @@ def getObjectLocation(data):
     obj = data.obj
     obj_choices = {
         'breakable_obj': Breakable_Obj_Pose,
+        'cup': CupPose,
+        'cover': CoverPose,
         'left_gripper': LeftGripperPose,
         'right_gripper': RightGripperPose, 
         'table': TablePose,
