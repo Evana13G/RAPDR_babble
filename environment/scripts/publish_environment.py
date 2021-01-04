@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-# Modified from RethinkRobotics website
-
 import argparse
 import struct
 import sys
@@ -50,6 +48,7 @@ pub_breakable_obj_pose = rospy.Publisher('breakable_obj_pose', PoseStamped, queu
 pub_cup_pose = rospy.Publisher('cup_pose', PoseStamped, queue_size = 10)
 pub_cover_pose = rospy.Publisher('cover_pose', PoseStamped, queue_size = 10)
 pub_burner_pose = rospy.Publisher('burner1_pose', PoseStamped, queue_size = 10)
+
         
 def poseFromPoint(poseVar):
     newPose = poseVar.pose
