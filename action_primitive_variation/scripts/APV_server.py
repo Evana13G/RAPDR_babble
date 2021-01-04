@@ -56,8 +56,11 @@ def execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment
     preconds = scenarioData().init
     paramActionExecutionProxy(actionToVary, args, [paramToVary], [str(paramAssignment)])
     effects = scenarioData().init
+    
     novelty = novelEffectChecker(actionToVary, args, preconds, effects) 
+
     is_novel = novelty.novel_action
+    # is_orig = novelty.same_effects_as_orig
     new_effects = novelty.new_effects
     return is_novel, new_effects
 

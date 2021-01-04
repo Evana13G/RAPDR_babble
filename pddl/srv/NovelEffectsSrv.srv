@@ -4,4 +4,5 @@ string[] preconditions
 string[] effects
 ---
 bool novel_action
+bool same_effects_as_orig
 string[] new_effects
