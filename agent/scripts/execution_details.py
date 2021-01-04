@@ -51,7 +51,7 @@ moveMagHelper = {'left' : {'x' : 0.0, 'y' : 1.0, 'z' : 0.0},
 #                  'shake' :  {'left': {'x' : 0.0, 'y' : 1.0, 'z' : 0.0},
 #                           'right': {'x' : 0.0, 'y' : 1.0, 'z' : 0.0}, 
 #                           'top': {'x' : 0.0, 'y' : 1.0, 'z' : 0.0}}} 
-#                      ^ IDK if these values matter for push
+#                      ^ IDK if these values matter for shake
 
 ################################################################################
 #### ACCESS FUNCTIONS ##########################################################
