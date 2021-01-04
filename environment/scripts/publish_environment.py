@@ -46,10 +46,10 @@ pub_cafe_table_pose = rospy.Publisher('cafe_table_pose', PoseStamped, queue_size
 pub_block_pose = rospy.Publisher('block_pose', PoseStamped, queue_size = 10)
 pub_left_gripper_pose = rospy.Publisher('left_gripper_pose', PoseStamped, queue_size = 10)
 pub_right_gripper_pose = rospy.Publisher('right_gripper_pose', PoseStamped, queue_size = 10)
+pub_breakable_obj_pose = rospy.Publisher('breakable_obj_pose', PoseStamped, queue_size = 10)
 pub_cup_pose = rospy.Publisher('cup_pose', PoseStamped, queue_size = 10)
 pub_cover_pose = rospy.Publisher('cover_pose', PoseStamped, queue_size = 10)
 pub_burner_pose = rospy.Publisher('burner1_pose', PoseStamped, queue_size = 10)
-
         
 def poseFromPoint(poseVar):
     newPose = poseVar.pose
@@ -73,8 +73,18 @@ def publish(environment='default'):
         poseStamped_cafe_table = PoseStamped(header=header_cafe_table, pose=pose_cafe_table)
         pub_cafe_table_pose.publish(poseStamped_cafe_table)
 
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         rospy.logerr("get_model_state for cafe_table service call failed: {0}".format(e))
+
+    try:
+        resp_breakable_obj_ms = getModelState("breakable_obj", ""); 
+        pose_breakable_obj = resp_breakable_obj_ms.pose
+        header_breakable_obj = resp_breakable_obj_ms.header
+        header_breakable_obj.frame_id = frameid_var
+        poseStamped_breakable_obj = PoseStamped(header=header_breakable_obj, pose=pose_breakable_obj)
+        pub_breakable_obj_pose.publish(poseFromPoint(poseStamped_breakable_obj))
+    except rospy.ServiceExceptin as e:
+        rospy.logerr("get_model_state for block service call failed: {0}".format(e))
 
     try:
         resp_cover_ms = getModelState("cover", "");
@@ -94,6 +104,7 @@ def publish(environment='default'):
         poseStamped_cup = PoseStamped(header=header_cup, pose=pose_cup)
         pub_cup_pose.publish(poseFromPoint(poseStamped_cup))
     except rospy.ServiceException, e:
+
         rospy.logerr("get_model_state for block service call failed: {0}".format(e))
 
 
@@ -121,7 +132,7 @@ def publish(environment='default'):
     try:
         resp_lglf_link_state = getLinkState('l_gripper_l_finger', 'world')
         pose_lglf = resp_lglf_link_state.link_state.pose
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         rospy.logerr("get_link_state for l_gripper_l_finger: {0}".format(e))
     try:
         resp_lgrf_link_state = getLinkState('l_gripper_r_finger', 'world')
@@ -187,4 +198,5 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
+
 

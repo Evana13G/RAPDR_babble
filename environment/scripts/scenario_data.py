@@ -33,6 +33,7 @@ LeftGripperPose = None
 RightGripperPose = None
 TablePose = None
 BurnerPose = None
+Breakable_Obj_Pose = None
 
 cover_pressed = False
 cup_pressed = False
@@ -74,6 +75,11 @@ def setPoseBurner(data):
     BurnerPose = data
     updatePredicates("burner1", data)
 
+def setPoseBreakable_Obj(data):
+    global Breakable_Obj_Pose
+    Breakable_Obj_Pose = data
+    updatePredicates("breakable_obj", data)
+    
 def translate(objPose, z_amt=-1.0):
     objPose.pose.position.z += z_amt
 
@@ -93,6 +99,31 @@ def updateLocationPredicates(oprtr, obj, locInf):
         if not((pred.operator == oprtr) and (obj in pred.objects)): ## This needs to change
             new_predicates.append(pred)
     new_predicates.append(Predicate(operator=oprtr, objects=[obj], locationInformation=locInf)) 
+    predicates_list = new_predicates
+
+def updateVisionBasedPredicates():
+    global predicates_list
+    new_predicates = []
+    for pred in predicates_list:
+        if not (pred.operator == "is_visible"):
+            new_predicates.append(pred)
+
+    # Need to update the image converter to deal with more objects and to be more sophisticated. 
+    # For the image recognition part, every object MUST have a different color to identify it  
+    ##
+    ## SHOULD update and do burner and breakable object
+    ##
+    
+    # if (imageConverter.is_visible('breakable_obj') == True):
+    #     new_predicates.append(Predicate(operator="is_visible", objects=["breakable_obj"], locationInformation=None)) 
+
+    # if (imageConverter.getObjectPixelCount('cup') > 0):
+    if (imageConverter.is_visible('cup') == True):
+        new_predicates.append(Predicate(operator="is_visible", objects=["cup"], locationInformation=None)) 
+    # if (imageConverter.getObjectPixelCount('cover') > 0):
+    if (imageConverter.is_visible('cover') == True):
+        new_predicates.append(Predicate(operator="is_visible", objects=["cover"], locationInformation=None)) 
+    
     predicates_list = new_predicates
 
 def updateVisionBasedPredicates():
@@ -177,6 +208,7 @@ def updatePhysicalStateBasedPredicates():
 
     predicates_list = new_predicates
 
+
 def getPredicates(data):
     return ScenarioDataSrvResponse(pddlStringFormat(predicates_list), 
                                    pddlObjectsStringFormat(predicates_list),
@@ -186,6 +218,7 @@ def getPredicates(data):
 def getObjectLocation(data):
     obj = data.obj
     obj_choices = {
+        'breakable_obj': Breakable_Obj_Pose,
         'cup': CupPose,
         'cover': CoverPose,
         'left_gripper': LeftGripperPose,
@@ -204,8 +237,7 @@ def main():
     rospy.init_node("scenario_data_node")
     rospy.wait_for_service('is_visible_srv', timeout=60)
    
-    rospy.Subscriber("cup_pose", PoseStamped, setPoseCup)
-    rospy.Subscriber("cover_pose", PoseStamped, setPoseCover)
+    rospy.Subscriber("breakable_obj_pose", PoseStamped, setPoseBreakable_Obj)
     rospy.Subscriber("left_gripper_pose", PoseStamped, setPoseGripperLeft)
     rospy.Subscriber("right_gripper_pose", PoseStamped, setPoseGripperRight)
     rospy.Subscriber("cafe_table_pose", PoseStamped, setPoseTable)

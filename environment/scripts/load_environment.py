@@ -50,9 +50,11 @@ def load_gazebo_models(env='default'):
     right_button_pose=Pose(position=Point(x=0.525, y=-0.2715, z=0.8))
     left_button_pose=Pose(position=Point(x=0.525, y=0.1515, z=0.8))
     block_reference_frame="world"
+    breakable_obj_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
     cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
     cover_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
     burner_pose=Pose(position=Point(x=0.5, y=-0.11, z=0.8))
+
     reference_frame="world"
 
 
@@ -60,16 +62,15 @@ def load_gazebo_models(env='default'):
     model_path = rospkg.RosPack().get_path('environment')+"/models/"
 
     table_xml = ''
+    breakable_obj_xml = ''
     cup_xml = ''
     cover_xml = ''
     burner_xml = ''
-
 
     moveToStartProxy('both')
 
     with open (model_path + "cafe_table/model.sdf", "r") as table_file:
         table_xml=table_file.read().replace('\n', '')
-
 
     ###############################
     ############ HEAVY ############
@@ -117,6 +118,13 @@ def load_gazebo_models(env='default'):
         with open (model_path + "cook/burner_model.sdf", "r") as burner_file:
             burner_xml=burner_file.read().replace('\n', '')
 
+            
+    ###############################
+    #### BREAKABLE OBJ ############
+    elif env == 'breakable':
+        with open (model_path + "breakable_obj/test_model.sdf", "r") as breakable_obj_file:
+            breakable_obj_xml=breakable_obj_file.read().replace('\n', '')
+            
     ###############################
     ########### DEFAULT ########### 
     else:
@@ -124,6 +132,8 @@ def load_gazebo_models(env='default'):
             cup_xml=cup_file.read().replace('\n', '')
         with open (model_path + "cup_with_cover/cover_model_high_friction.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
+
+
 
     # Spawn Table SDF and other URDFs
     rospy.wait_for_service('/gazebo/spawn_sdf_model')
@@ -155,6 +165,12 @@ def load_gazebo_models(env='default'):
 
         except rospy.ServiceException, e:
             rospy.logerr("Spawn URDF service call failed: {0}".format(e))
+                
+    elif env in ['breakable']:
+        try:
+            spawn_sdf("breakable_obj", breakable_obj_xml, "/", breakable_obj_pose, reference_frame)
+        except rospy.ServiceException, e:
+            rospy.logerr("Spawn URDF service call failed: {0}".format(e))
 
     resetPreds()
     pub_all.publish(True)
@@ -175,10 +191,12 @@ def delete_gazebo_models():
         rospy.sleep(1)
         delete_model("burner1")
         rospy.sleep(1)
+        delete_model("breakable_obj")
+        rospy.sleep(1)
         resetPreds()
         # delete_model("cafe_table")
 
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         rospy.loginfo("Delete Model service call failed: {0}".format(e))
 
 

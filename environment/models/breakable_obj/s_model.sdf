@@ -1,0 +1,1066 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="breakable_test">
+    <pose>0 0 1 0 0 0</pose>
+    <link name="link_0_0">
+      <pose>0.0 0 0.0 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_0_0" type="revolute">
+      <parent>world</parent>
+      <child>link_0_0</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_0_0" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_0_1">
+      <pose>0.0 0 0.05 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_0_1" type="revolute">
+      <parent>world</parent>
+      <child>link_0_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_0_1" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_0_2">
+      <pose>0.0 0 0.1 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_0_2" type="revolute">
+      <parent>world</parent>
+      <child>link_0_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_0_2" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_0_3">
+      <pose>0.0 0 0.15000000000000002 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_0_3" type="revolute">
+      <parent>world</parent>
+      <child>link_0_3</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_0_3" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_1_0">
+      <pose>0.05 0 0.0 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_1_0" type="revolute">
+      <parent>world</parent>
+      <child>link_1_0</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_1_0" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_1_1">
+      <pose>0.05 0 0.05 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_1_1" type="revolute">
+      <parent>world</parent>
+      <child>link_1_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_1_1" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_1_2">
+      <pose>0.05 0 0.1 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_1_2" type="revolute">
+      <parent>world</parent>
+      <child>link_1_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_1_2" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_1_3">
+      <pose>0.05 0 0.15000000000000002 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_1_3" type="revolute">
+      <parent>world</parent>
+      <child>link_1_3</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_1_3" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_2_0">
+      <pose>0.1 0 0.0 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_2_0" type="revolute">
+      <parent>world</parent>
+      <child>link_2_0</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_2_0" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_2_1">
+      <pose>0.1 0 0.05 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_2_1" type="revolute">
+      <parent>world</parent>
+      <child>link_2_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_2_1" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_2_2">
+      <pose>0.1 0 0.1 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_2_2" type="revolute">
+      <parent>world</parent>
+      <child>link_2_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_2_2" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_2_3">
+      <pose>0.1 0 0.15000000000000002 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_2_3" type="revolute">
+      <parent>world</parent>
+      <child>link_2_3</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_2_3" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_3_0">
+      <pose>0.15000000000000002 0 0.0 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_3_0" type="revolute">
+      <parent>world</parent>
+      <child>link_3_0</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_3_0" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_3_1">
+      <pose>0.15000000000000002 0 0.05 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_3_1" type="revolute">
+      <parent>world</parent>
+      <child>link_3_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_3_1" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_3_2">
+      <pose>0.15000000000000002 0 0.1 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_3_2" type="revolute">
+      <parent>world</parent>
+      <child>link_3_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_3_2" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_3_3">
+      <pose>0.15000000000000002 0 0.15000000000000002 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_3_3" type="revolute">
+      <parent>world</parent>
+      <child>link_3_3</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_3_3" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_4_0">
+      <pose>0.2 0 0.0 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_4_0" type="revolute">
+      <parent>world</parent>
+      <child>link_4_0</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_4_0" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_4_1">
+      <pose>0.2 0 0.05 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_4_1" type="revolute">
+      <parent>world</parent>
+      <child>link_4_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_4_1" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_4_2">
+      <pose>0.2 0 0.1 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_4_2" type="revolute">
+      <parent>world</parent>
+      <child>link_4_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_4_2" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+    <link name="link_4_3">
+      <pose>0.2 0 0.15000000000000002 0 0 0</pose>
+      <inertial>
+        <mass>0.3375</mass>
+        <inertia>
+          <ixx>0.00014062500000000004</ixx>
+          <iyy>0.00014062500000000004</iyy>
+          <izz>0.00014062500000000004</izz>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyz>0.0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name="joint_4_3" type="revolute">
+      <parent>world</parent>
+      <child>link_4_3</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.0</lower>
+          <upper>0.0</upper>
+        </limit>
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <erp>1</erp>
+          <cfm>1</cfm>
+        </ode>
+      </physics>
+      <sensor name="force_torque" type="force_torque">
+        <always_on>true</always_on>
+        <update_rate>1000</update_rate>
+        <plugin name="breakable_4_3" filename="libBreakableJointPlugin.so">
+          <breaking_force_N>50</breaking_force_N>
+        </plugin>
+      </sensor>
+    </joint>
+  </model>
+</sdf>
