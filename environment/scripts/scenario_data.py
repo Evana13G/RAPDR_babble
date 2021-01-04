@@ -27,11 +27,11 @@ predicatesPublisher = rospy.Publisher('predicate_values', PredicateList, queue_s
 imageConverter = ImageConverter()
 # isVisible = rospy.ServiceProxy('is_visible_srv', IsVisibleSrv)
 
-Breakable_Obj_Pose = None
-
 LeftGripperPose = None
 RightGripperPose = None
 TablePose = None
+BurnerPose = None
+Breakable_Obj_Pose = None
 
 cover_pressed = False
 cup_pressed = False
@@ -39,12 +39,6 @@ cup_pressed = False
 predicates_list = []
 
 ########################################################
-def setPoseBreakable_Obj(data):
-    global Breakable_Obj_Pose
-    Breakable_Obj_Pose = data
-    updatePredicates("breakable_obj", data)
-
-
 def setPoseGripperLeft(data):
     global LeftGripperPose
     translate(data)
@@ -63,6 +57,17 @@ def setPoseTable(data):
     TablePose = data
     updatePredicates("table", data)
 
+def setPoseBurner(data):
+    global BurnerPose
+    # translate(data, -0.2)
+    BurnerPose = data
+    updatePredicates("burner1", data)
+
+def setPoseBreakable_Obj(data):
+    global Breakable_Obj_Pose
+    Breakable_Obj_Pose = data
+    updatePredicates("breakable_obj", data)
+    
 def translate(objPose, z_amt=-1.0):
     objPose.pose.position.z += z_amt
 
@@ -93,14 +98,23 @@ def updateVisionBasedPredicates():
 
     # Need to update the image converter to deal with more objects and to be more sophisticated. 
     # For the image recognition part, every object MUST have a different color to identify it  
-    
-    # if (imageConverter.getObjectPixelCount('breakable_obj') > 0):
-    if (imageConverter.is_visible('breakable_obj') == True):
-        new_predicates.append(Predicate(operator="is_visible", objects=["breakable_obj"], locationInformation=None)) 
 
+
+    # if (imageConverter.getObjectPixelCount('breakable_obj') > 0):
+    # if (imageConverter.is_visible('breakable_obj') == True):
+    #     new_predicates.append(Predicate(operator="is_visible", objects=["breakable_obj"], locationInformation=None)) 
+
+    # if (imageConverter.getObjectPixelCount('cup') > 0):
+    if (imageConverter.is_visible('cup') == True):
+        new_predicates.append(Predicate(operator="is_visible", objects=["cup"], locationInformation=None)) 
+    # if (imageConverter.getObjectPixelCount('cover') > 0):
+    if (imageConverter.is_visible('cover') == True):
+        new_predicates.append(Predicate(operator="is_visible", objects=["cover"], locationInformation=None)) 
+    
+    predicates_list = new_predicates
 
 def updatePhysicalStateBasedPredicates():
-    physical_operators = ['pressed', 'obtained', 'touching'] #grasped?
+    physical_operators = ['pressed', 'obtained', 'touching', 'on', 'on_burner', 'covered', 'cooking'] #grasped?
 
     # Physical state choices
     global predicates_list
@@ -126,13 +140,39 @@ def updatePhysicalStateBasedPredicates():
     if is_touching(RightGripperPose, CoverPose, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'cover'], locationInformation=None)) 
 
-    if is_pressed(LeftGripperPose, CoverPose, 0.05, [0.01, None]):
+    if is_pressed(LeftGripperPose, CoverPose, 0.08, [0.01, None]):
         cover_pressed = True
-    if is_pressed(RightGripperPose, CoverPose, 0.05, [0.01, None]):
+    if is_pressed(RightGripperPose, CoverPose, 0.08, [0.01, None]):
         cover_pressed = True
+
+    item_on_burner = []
+    covered_item = []
+
+    if is_touching(CoverPose, BurnerPose, 0.1, 0.06):
+        new_predicates.append(Predicate(operator="touching", objects=['cover', 'burner1'], locationInformation=None)) 
+        new_predicates.append(Predicate(operator="on_burner", objects=['cover', 'burner1'], locationInformation=None)) 
+        item_on_burner.append('cover')
+
+    if is_touching(CupPose, BurnerPose, 0.1, 0.06):
+        new_predicates.append(Predicate(operator="touching", objects=['cup', 'burner1'], locationInformation=None)) 
+        new_predicates.append(Predicate(operator="on_burner", objects=['cup', 'burner1'], locationInformation=None)) 
+        item_on_burner.append('cup')
+
+    if is_pressed(CupPose, CoverPose, 0.1, [0.07, None]):
+        new_predicates.append(Predicate(operator="covered", objects=['cover'], locationInformation=None)) 
+        covered_item.append('cover')
+
+    if is_pressed(CoverPose, CupPose, 0.1, [0.07, None]):
+        new_predicates.append(Predicate(operator="covered", objects=['cup'], locationInformation=None)) 
+        covered_item.append('cup')
 
     if cover_pressed == True:
         new_predicates.append(Predicate(operator="pressed", objects=['cover'], locationInformation=None)) 
+
+    if item_on_burner is not []:
+        for item in item_on_burner:
+            if (item in covered_item) == True:
+                new_predicates.append(Predicate(operator="cooking", objects=[item], locationInformation=None)) 
 
     predicates_list = new_predicates
 
@@ -148,7 +188,8 @@ def getObjectLocation(data):
         'breakable_obj': Breakable_Obj_Pose,
         'left_gripper': LeftGripperPose,
         'right_gripper': RightGripperPose, 
-        'table': TablePose
+        'table': TablePose,
+        'burner1': BurnerPose
     }
     return obj_choices.get(obj)
 
@@ -165,6 +206,7 @@ def main():
     rospy.Subscriber("left_gripper_pose", PoseStamped, setPoseGripperLeft)
     rospy.Subscriber("right_gripper_pose", PoseStamped, setPoseGripperRight)
     rospy.Subscriber("cafe_table_pose", PoseStamped, setPoseTable)
+    rospy.Subscriber("burner1_pose", PoseStamped, setPoseBurner)
 
     rospy.Service("scenario_data_srv", ScenarioDataSrv, getPredicates)
     rospy.Service("object_location_srv", ObjectLocationSrv, getObjectLocation)

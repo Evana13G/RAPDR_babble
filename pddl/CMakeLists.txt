@@ -36,7 +36,7 @@ add_service_files(
   PlanExecutorSrv.srv 
   PlanGeneratorSrv.srv 
   GetKBActionLocsSrv.srv
-  GetKBDomainSrv.srv
+  GetKBDomain.srv
   GetKBPddlLocsSrv.srv
   GetKBActionInfoSrv.srv
   GetActionPDDLBindingSrv.srv

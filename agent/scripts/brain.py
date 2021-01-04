@@ -29,40 +29,49 @@ getScenarioSettings = rospy.ServiceProxy('scenario_settings_srv', GetScenarioSet
 
 def handle_trial(req):
 
-    print("\n#######################################################################################")
-    print("#######################################################################################")
-    print('## Action Primivitive Discovery in Robotic Agents through Action Parameter Variation ##')
-    print('## -- a proof of concept model for knowledge aquisition in intelligent agents        ##')
-    print('## -- Evana Gizzi, Amel Hassan, Jivko Sinapov, 2020                                  ##')
-    print("#######################################################################################")
-    print("#######################################################################################")
+    print("\n########################################################")
+    print("########################################################")
+    print('##   Action Primivitive Discovery in Robotic Agents   ##') 
+    print('##         through Action Parameter Variation         ##')
+    print('##                                                    ##')
+    print('## -- a proof of concept model for knowledge          ##')
+    print('##    aquisition in intelligent agents                ##')
+    print('##                                                    ##')
+    print('## -- Evana Gizzi, Amel Hassan, Willy Lin,            ##')
+    print('##    Keenan Rhea, Jivko Sinapov, 2020                ##')
+    print('##                                                    ##')
+    print("########################################################")
+    print("########################################################\n")
+
 
     attemptsTime = []
     totalTimeStart = 0 ## TODO: Change this to SIM time. 
     task = req.runName
-    scenario_settings = getScenarioSettings(req.scenario)
+    scenario = req.scenario
+    scenario_settings = getScenarioSettings(scenario)
     goal = scenario_settings.goal
     orig_env = scenario_settings.orig_scenario
     novel_env = scenario_settings.novel_scenario
     T = scenario_settings.T
     additionalDomainLocs = scenario_settings.additional_domain_locs
 
-
     mode = ['diffsOnly', 'noLoc']
     algoMode = 'APV'
     newPrims = []
     gripperExecutingNewPrim = 'left_gripper'
-    # gripperExecutionValidity = True
 
+    if scenario != 'discover_strike': envProxy('restart', orig_env)
+    
     currentState = scenarioData() # A bit of a hack for now
     
     try:
-        print("\n\n################################################")
+        print("################################################")
         print('#### ------------------------------------------ ')
         print("#### Goal: " + str(goal))
         print('#### ------------------------------------------ ')
         print("#### -- Original Scenario: ")
-        outcome = single_attempt_execution(task, goal, orig_env, additional_locs=additionalDomainLocs)
+        # envProxy('restart', orig_env)
+        outcome = single_attempt_execution(task, goal, orig_env)
 
     except rospy.ServiceException, e:
         print("Service call failed: %s"%e)
@@ -78,7 +87,7 @@ def handle_trial(req):
         while(goalAccomplished(goal, currentState.init) == False):
             
             # trialStart = rospy.get_time()
-            outcome = single_attempt_execution(task, goal, novel_env, attempt, additionalDomainLocs, action_exclusions)
+            outcome = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions=action_exclusions)
 
             if (outcome.goal_complete == True): break 
             currentState = scenarioData() #For the while loop (end on resetting this)
@@ -95,8 +104,7 @@ def handle_trial(req):
                 comboChoice = random.randint(0, len(APVtrials) - 1)
                 comboToExecute = APVtrials[comboChoice]
                 comboToExecute.append(novel_env)
-                # print("#### ---- Combo # " + str(trialNo) + ': ' + str(comboToExecute))
-                print(comboToExecute)
+                # print("#### -- " + str(comboToExecute))
                 resp = APVproxy(*comboToExecute)
                 del APVtrials[comboChoice]
                 trialNo = trialNo + 1 
@@ -177,19 +185,25 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', additional_lo
         initStateInfo = scenarioData()
         initObjsIncludingLoc = extendInitLocs(initStateInfo, additional_locs)
         initObjsIncludingLoc['gripper'] = ['left_gripper']
+        initObjsIncludingLoc['obj'] = ['cup', 'cover']
+
         objs = pddlObjectsStringFormat_fromDict(initObjsIncludingLoc)
         init = initStateInfo.init
         init = [x for x in init if 'right_gripper' not in x]
-
-        problem = Problem(task_name, KBDomainProxy().domain.name, objs, init, goal)
+        problem = Problem(task_name, KBDomainProxy(action_exclusions).domain.name, objs, init, goal)
         plan = planGenerator(problem, filename, action_exclusions)
      
         if plan.plan.actions == []:
-            print("#### ---- No Plan Found") 
+            print("#### ---- No Plan Found ") 
+            # print("#### ---- " + "\033[0m" + "No Plan Found" + "\033[1m") 
             return outcome
 
-        print("#### -- " + str([act.actionName for act in plan.plan.actions])) 
-
+        for a in [act.actionName for act in plan.plan.actions]:
+            print("#### ---- " + str(a))
+        print("#### ---- ")
+            # print("#### ---- " + "\033[1m" + str(a) + "\033[0m")
+        # print("#### -- " + str([act.actionName for act in plan.plan.actions])) 
+        # print(plan.plan.actions)
         outcome = planExecutor(plan.plan).execution_outcome
         endStateInfo = scenarioData().init
         outcome.goal_complete = goalAccomplished(goal, endStateInfo)

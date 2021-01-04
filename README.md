@@ -19,8 +19,9 @@ Setup each of the following, in order:
         git clone https://github.com/Evana13G/RAPDR_babble.git
         
 6. Run the setup.sh script in RAPDR_babble (Only need to run once after installation)
-        cd RAPDR_babble && ./setup.sh
 
+        cd RAPDR_babble && ./setup.sh
+        
 7. Build:
 
         cd ~/catkin_ws
