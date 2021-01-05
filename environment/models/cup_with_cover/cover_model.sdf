@@ -22,12 +22,12 @@
           </box>
         </geometry>
         <surface>
-          <friction>
+<!--           <friction>
             <ode>
-              <mu>4.0</mu>
-              <mu2>4.0</mu2>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
             </ode>
-          </friction>
+          </friction> -->
         </surface>
       </collision>
       <visual name='base_link_visual'>

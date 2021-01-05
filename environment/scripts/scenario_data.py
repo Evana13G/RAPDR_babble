@@ -33,7 +33,7 @@ LeftGripperPose = None
 RightGripperPose = None
 TablePose = None
 BurnerPose = None
-Breakable_Obj_Pose = None
+# Breakable_Obj_Pose = None
 
 cover_pressed = False
 cup_pressed = False
@@ -75,10 +75,10 @@ def setPoseBurner(data):
     BurnerPose = data
     updatePredicates("burner1", data)
 
-def setPoseBreakable_Obj(data):
-    global Breakable_Obj_Pose
-    Breakable_Obj_Pose = data
-    updatePredicates("breakable_obj", data)
+# def setPoseBreakable_Obj(data):
+#     global Breakable_Obj_Pose
+#     Breakable_Obj_Pose = data
+#     updatePredicates("breakable_obj", data)
     
 def translate(objPose, z_amt=-1.0):
     objPose.pose.position.z += z_amt
@@ -218,7 +218,7 @@ def getPredicates(data):
 def getObjectLocation(data):
     obj = data.obj
     obj_choices = {
-        'breakable_obj': Breakable_Obj_Pose,
+        # 'breakable_obj': Breakable_Obj_Pose,
         'cup': CupPose,
         'cover': CoverPose,
         'left_gripper': LeftGripperPose,
@@ -237,7 +237,7 @@ def main():
     rospy.init_node("scenario_data_node")
     rospy.wait_for_service('is_visible_srv', timeout=60)
    
-    rospy.Subscriber("breakable_obj_pose", PoseStamped, setPoseBreakable_Obj)
+    # rospy.Subscriber("breakable_obj_pose", PoseStamped, setPoseBreakable_Obj)
     rospy.Subscriber("left_gripper_pose", PoseStamped, setPoseGripperLeft)
     rospy.Subscriber("right_gripper_pose", PoseStamped, setPoseGripperRight)
     rospy.Subscriber("cafe_table_pose", PoseStamped, setPoseTable)

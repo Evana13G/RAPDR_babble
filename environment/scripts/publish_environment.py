@@ -76,15 +76,15 @@ def publish(environment='default'):
     except rospy.ServiceException as e:
         rospy.logerr("get_model_state for cafe_table service call failed: {0}".format(e))
 
-    try:
-        resp_breakable_obj_ms = getModelState("breakable_obj", ""); 
-        pose_breakable_obj = resp_breakable_obj_ms.pose
-        header_breakable_obj = resp_breakable_obj_ms.header
-        header_breakable_obj.frame_id = frameid_var
-        poseStamped_breakable_obj = PoseStamped(header=header_breakable_obj, pose=pose_breakable_obj)
-        pub_breakable_obj_pose.publish(poseFromPoint(poseStamped_breakable_obj))
-    except rospy.ServiceExceptin as e:
-        rospy.logerr("get_model_state for block service call failed: {0}".format(e))
+    # try:
+    #     resp_breakable_obj_ms = getModelState("breakable_obj", ""); 
+    #     pose_breakable_obj = resp_breakable_obj_ms.pose
+    #     header_breakable_obj = resp_breakable_obj_ms.header
+    #     header_breakable_obj.frame_id = frameid_var
+    #     poseStamped_breakable_obj = PoseStamped(header=header_breakable_obj, pose=pose_breakable_obj)
+    #     pub_breakable_obj_pose.publish(poseFromPoint(poseStamped_breakable_obj))
+    # except rospy.ServiceExceptin as e:
+    #     rospy.logerr("get_model_state for block service call failed: {0}".format(e))
 
     try:
         resp_cover_ms = getModelState("cover", "");

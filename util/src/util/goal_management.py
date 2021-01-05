@@ -66,35 +66,7 @@ def generateAllCombos_orig(T, scenario):
         APVtrials.append(['shake', ['left_gripper', 'cup'], 'rate', T]) 
         APVtrials.append(['shake', ['left_gripper', 'cup'], 'orientation', T]) 
         APVtrials.append(['shake', ['left_gripper', 'cup'], 'movementMagnitude', T]) 
-
     return APVtrials  
-    ##### BOTH need this #####
-    #objectsToIterate = pddlObjects(currentState.predicateList.predicates, False)
-    #for action in KB.getActions():#
-    ############ UNDER CONSTRUCTION ############
-    #    args = action.getNonLocationVars()
-    #    actionTrials = []
-    #    actionTrial = []
-    #    actionTrial.append(action.getName())
-    #    actionTrial.append('left_gripper')
-    #    actionTrials.append(actionTrial)
-    #    lenTrials = len(actionTrials)
-    #    newTrials = [] 
-    #    for i in range(len(args)-1):
-    #        for j in range(lenTrials):
-    #            for argChoice in objectsToIterate[args[i+1]]:
-    #                newTrial = copy.deepcopy(actionTrials[j])
-    #                newTrial.append(argChoice)
-    #                newTrials.append(newTrial)
-    #        actionTrials = newTrials
-    #    APVtrials.append(actionTrials)
-    #addNones = copy.deepcopy(APVtrials)
-    #replaceAPV = []
-    #for trial in addNones:
-         #new = trial.append(None)
-         #    replaceAPV.append(trial.append(None))
-    #APVtrials = replaceAPV
-
 
 
 ############################################
@@ -122,9 +94,8 @@ def generateAllCombos(T, plan, exploration_mode='focused'):
                 formatted.append(parsed_arg_vals)
                 formatted.append(param)
                 formatted.append(T)
+                formatted.append(exploration_mode)
                 APVtrials.append(formatted)
 
-# (['push', ['left_gripper', 'cover'], 'rate', T]) 
-    # APVtrials.append(['push', ['left_gripper', 'cover'], 'rate', T]) 
     return APVtrials  
 ############################################

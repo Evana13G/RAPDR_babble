@@ -2,6 +2,7 @@ string actionName
 string[] args
 string param 
 int64 T
+string exploration_mode
 string environment
 ---
-bool validity
+string[] novel_action_names

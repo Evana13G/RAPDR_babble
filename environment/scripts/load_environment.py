@@ -73,21 +73,12 @@ def load_gazebo_models(env='default'):
         table_xml=table_file.read().replace('\n', '')
 
     ###############################
-    ############ HEAVY ############
-    if env == 'heavy': 
-        with open (model_path + "cup_with_cover/cup_model_heavy.sdf", "r") as cup_file:
+    #### DISCOVER STRIKE ##########
+    if env == 'discover_strike':
+        with open (model_path + "cup_with_cover/cup_model.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')
-        with open (model_path + "cup_with_cover/cover_model_heavy.sdf", "r") as cover_file:
+        with open (model_path + "cup_with_cover/cover_model.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
-
-    ###############################
-    ######## HIGH FRICTION ########
-    elif env == 'high_friction':
-        with open (model_path + "cup_with_cover/cup_model_high_friction.sdf", "r") as cup_file:
-            cup_xml=cup_file.read().replace('\n', '')
-        with open (model_path + "cup_with_cover/cover_model_high_friction.sdf", "r") as cover_file:
-            cover_xml=cover_file.read().replace('\n', '')
-
 
     ###############################
     ######## HEAVY HIGH FRICTION ##
@@ -173,11 +164,11 @@ def load_gazebo_models(env='default'):
         except rospy.ServiceException, e:
             rospy.logerr("Spawn URDF service call failed: {0}".format(e))
       
-    elif env in ['breakable']:
-        try:
-            spawn_sdf("breakable_obj", breakable_obj_xml, "/", breakable_obj_pose, reference_frame)
-        except rospy.ServiceException, e:
-            rospy.logerr("Spawn URDF service call failed: {0}".format(e))
+    # elif env in ['breakable']:
+    #     try:
+    #         spawn_sdf("breakable_obj", breakable_obj_xml, "/", breakable_obj_pose, reference_frame)
+    #     except rospy.ServiceException, e:
+    #         rospy.logerr("Spawn URDF service call failed: {0}".format(e))
 
     resetPreds()
     pub_all.publish(True)
@@ -198,8 +189,8 @@ def delete_gazebo_models():
         rospy.sleep(1)
         delete_model("burner1")
         rospy.sleep(1)
-        delete_model("breakable_obj")
-        rospy.sleep(1)
+        # delete_model("breakable_obj")
+        # rospy.sleep(1)
         resetPreds()
         # delete_model("cafe_table")
 

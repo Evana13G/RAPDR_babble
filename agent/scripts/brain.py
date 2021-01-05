@@ -42,9 +42,6 @@ def handle_trial(req):
     print("########################################################")
     print("########################################################\n")
 
-
-    attemptsTime = []
-    totalTimeStart = 0 ## TODO: Change this to SIM time. 
     task = req.runName
     scenario = req.scenario
     scenario_settings = getScenarioSettings(scenario)
@@ -52,8 +49,9 @@ def handle_trial(req):
     orig_env = scenario_settings.orig_scenario
     novel_env = scenario_settings.novel_scenario
     T = scenario_settings.T
-
-    if scenario != 'discover_strike': envProxy('restart', orig_env)
+    envProxy('restart', orig_env)
+    # Sim sensitive goals need to be re-calculated
+    if scenario in ['discover_strike']: goal = getScenarioSettings(scenario).goal  # Hack!
     
     currentState = scenarioData() # A bit of a hack for now
     
@@ -67,7 +65,7 @@ def handle_trial(req):
 
     # except rospy.ServiceException, e:
     #     print("Service call failed: %s"%e)
-    #     return BrainSrvResponse([1], 1)
+    #     return BrainSrvResponse([], 0)
 
     try:
         print("#### -- Novel Scenario: ")
@@ -112,8 +110,8 @@ def handle_trial(req):
 
 
             # comboChoice = random.randint(0, len(APVtrials) - 1)
-            # comboToExecute = APVtrials[comboChoice]
-            comboToExecute = APVtrials[0]
+            comboChoice = 0
+            comboToExecute = APVtrials[comboChoice]
 
             just_cup_hack = ((novel_env in ['cook', 'cook_low_friction']) and (comboToExecute[0] == 'shake')) == True
             failure_env = novel_env  ## Need to do this dynamically... Maybe someday. RIP
@@ -123,7 +121,7 @@ def handle_trial(req):
             
             # Timing Sequence
             exploration_start = rospy.get_time()
-            resp = APVproxy(*comboToExecute)
+            new_actions = APVproxy(*comboToExecute)
             exploration_end = rospy.get_time()
             exploration_times.append(exploration_end - exploration_start)
 
@@ -162,6 +160,7 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclus
         print("#### -- [ATTEMPT " + str(attempt)+ "] ") 
     filename = task_name + '_' + str(attempt)
     outcome = PlanExecutionOutcome(False, False, None)  
+    truncated_plan = []
 
     try:
         envProxy('restart', env) if attempt != 'orig' else envProxy('no_action', env) 
@@ -181,13 +180,15 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclus
         init = initStateInfo.init
         init = [x for x in init if 'right_gripper' not in x]
         problem = Problem(task_name, KBDomainProxy(action_exclusions).domain.name, objs, init, goal)
-        plan = planGenerator(problem, filename, action_exclusions)
-     
-        if plan.plan.actions == []:
-            print("#### ---- No Plan Found ") 
-            return outcome, []
 
-        action_names = [act.actionName for act in plan.plan.actions]
+        plan = planGenerator(problem, filename, action_exclusions)
+        action_list = plan.plan.actions
+
+        if action_list == []:
+            print("#### ---- No Plan Found ") 
+            return outcome, truncated_plan
+
+        action_names = [act.actionName for act in action_list]
         for a in action_names:
             print("#### ---- " + str(a))
         print("#### ---- ")
@@ -196,7 +197,12 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclus
         endStateInfo = scenarioData().init
         outcome.goal_complete = goalAccomplished(goal, endStateInfo)
 
-        truncated_plan = plan.plan.actions[:action_names.index(outcome.failure_action)]
+        if (outcome.failure_action != ''):
+            if (outcome.failure_action is not None):
+                af_index = action_names.index(outcome.failure_action) + 1
+                truncated_plan = action_list[:af_index]  
+        else:
+            truncated_plan = action_list
 
         print('#### ---- Plan execution: ' + str(outcome.execution_success))
         print('#### ---- Goal Accomplished: ' + str(outcome.goal_complete))
