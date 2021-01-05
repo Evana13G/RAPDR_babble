@@ -110,8 +110,11 @@ def handle_trial(req):
 
             comboChoice = random.randint(0, len(APVtrials) - 1)
             comboToExecute = APVtrials[comboChoice]
+
             just_cup_hack = ((novel_env in ['cook', 'cook_low_friction']) and (comboToExecute[0] == 'shake')) == True
-            failure_env = 'just_cup' if (novel_env in ['cook', 'cook_low_friction']) else novel_env ## need to do this dynamically... maybe someday 
+            failure_env = novel_env  ## Need to do this dynamically... Maybe someday. RIP
+            if just_cup_hack: failure_env = 'just_cup' 
+
             comboToExecute.append(failure_env)
             
             # Timing Sequence
@@ -125,11 +128,9 @@ def handle_trial(req):
             # Setup for attempt
             action_exclusions = [comboToExecute[0]] # The one we are currently testing
 
-
             print("#### -- APV mode: COMPLETE")
             print('#### ------------------------------------------ ')
             attempt += 1
-
 
         experiment_end = rospy.get_time()
         total_experiment_time = experiment_end - experiment_start
