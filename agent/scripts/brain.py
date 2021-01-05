@@ -137,8 +137,7 @@ def handle_trial(req):
         experiment_end = rospy.get_time()
         total_experiment_time = experiment_end - experiment_start
 
-        # compileResults(brainFilePath, req.runName)
-        # processLogData(logFilePath, logData)        
+        # compileResults(brainFilePath, task)  
 
         return BrainSrvResponse(exploration_times, total_experiment_time)
     
