@@ -53,7 +53,7 @@ def compileResults(brainRunDirectory, runName):
     except rospy.ServiceException, e:
         logData.append(("Unable to compile results: %s"%e))
 
-def generateAllCombos(T, scenario):
+def generateAllCombos_orig(T, scenario):
     APVtrials = []
     if scenario == 'discover_strike':
         APVtrials.append(['push', ['left_gripper', 'cover'], 'rate', T]) 
@@ -99,7 +99,7 @@ def generateAllCombos(T, scenario):
 
 ############################################
 ## Prob need to move this to a service 
-def generateAllCombos_dev(T, plan):
+def generateAllCombos(T, plan, exploration_mode='focused'):
     APVtrials = []
     selections = []
     mu = len(plan)
@@ -118,7 +118,8 @@ def generateAllCombos_dev(T, plan):
             for param in ['rate', 'orientation', 'movementMagnitude']:
                 formatted = []
                 formatted.append(a.actionName)
-                formatted.append(a.argVals)
+                parsed_arg_vals = [x for x in a.argVals if '.' not in x] # Hack! Deadline in a week... send HALP
+                formatted.append(parsed_arg_vals)
                 formatted.append(param)
                 formatted.append(T)
                 APVtrials.append(formatted)

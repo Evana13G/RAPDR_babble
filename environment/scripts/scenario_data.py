@@ -242,7 +242,9 @@ def main():
     rospy.Subscriber("right_gripper_pose", PoseStamped, setPoseGripperRight)
     rospy.Subscriber("cafe_table_pose", PoseStamped, setPoseTable)
     rospy.Subscriber("burner1_pose", PoseStamped, setPoseBurner)
-
+    rospy.Subscriber("cup_pose", PoseStamped, setPoseCup)
+    rospy.Subscriber("cover_pose", PoseStamped, setPoseCover)
+    
     rospy.Service("scenario_data_srv", ScenarioDataSrv, getPredicates)
     rospy.Service("object_location_srv", ObjectLocationSrv, getObjectLocation)
     rospy.Service("reset_env_preds", EmptySrvReq, reset)

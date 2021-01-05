@@ -3,7 +3,6 @@
 import rospy
 import time
 import random
-import multiprocessing
 
 from agent.srv import *
 from action_primitive_variation.srv import *
@@ -53,111 +52,96 @@ def handle_trial(req):
     orig_env = scenario_settings.orig_scenario
     novel_env = scenario_settings.novel_scenario
     T = scenario_settings.T
-    additionalDomainLocs = scenario_settings.additional_domain_locs
-
-    mode = ['diffsOnly', 'noLoc']
-    algoMode = 'APV'
-    newPrims = []
-    gripperExecutingNewPrim = 'left_gripper'
 
     if scenario != 'discover_strike': envProxy('restart', orig_env)
     
     currentState = scenarioData() # A bit of a hack for now
     
-    try:
-        print("################################################")
-        print('#### ------------------------------------------ ')
-        print("#### Goal: " + str(goal))
-        print('#### ------------------------------------------ ')
-        print("#### -- Original Scenario: ")
-        # envProxy('restart', orig_env)
-        outcome = single_attempt_execution(task, goal, orig_env)
+    # try:
+    #     print("################################################")
+    #     print('#### ------------------------------------------ ')
+    #     print("#### Goal: " + str(goal))
+    #     print('#### ------------------------------------------ ')
+    #     print("#### -- Original Scenario: ")
+    #     outcome, _ = single_attempt_execution(task, goal, orig_env)
 
-    except rospy.ServiceException, e:
-        print("Service call failed: %s"%e)
-        return BrainSrvResponse([1], 1)
+    # except rospy.ServiceException, e:
+    #     print("Service call failed: %s"%e)
+    #     return BrainSrvResponse([1], 1)
 
     try:
         print("#### -- Novel Scenario: ")
+
+        # Global to Experiment. To be modified throughout experiment
         attempt = 0
-        totalTimeStart = rospy.get_time()
-        # currentState = scenarioData()
+        exploration_mode = 'focused'
+        APVtrials = []
         action_exclusions = []
+        trial_times = []
+        exploration_times = []
+        experiment_start = rospy.get_time()
 
         while(goalAccomplished(goal, currentState.init) == False):
-            
-            # trialStart = rospy.get_time()
-            outcome = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions=action_exclusions)
-
-            if (outcome.goal_complete == True): break 
-            currentState = scenarioData() #For the while loop (end on resetting this)
-            action_exclusions.append(outcome.failure_action)
 
             #####################################################################################
+            ## Attempt
+            ##
+            # Timing Sequence
+            trial_start = rospy.get_time()
+            outcome, truncated_plan = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions=action_exclusions)
+            trial_end = rospy.get_time()
+            trial_times.append(trial_end - trial_start)
+            
+            if (outcome.goal_complete == True): break 
+            currentState = scenarioData() # post trial scenario, set it now. This is what you want evaluated
+            #####################################################################################
+
+            #####################################################################################
+            ## Exploration
+            ##
+            ### Cleanup from attempt
             momentOfFailurePreds = scenarioData().predicates
-            APVtrials = generateAllCombos(T, req.scenario)
-            print("#### -- APV mode: " + str(len(APVtrials)) + " total combo(s) found")
 
-            trialNo = 1
+            # init set or reset after exhausting. If its a reset, flip the exploration mode
+            if APVtrials == []:
+                if attempt > 0: exploration_mode = 'defocused'
+                APVtrials = generateAllCombos(T, truncated_plan, exploration_mode)  
+                print("#### -- APV mode: " + str(len(APVtrials)) + " total combo(s) found")
 
-            while(len(APVtrials) >= 1): 
-                comboChoice = random.randint(0, len(APVtrials) - 1)
-                comboToExecute = APVtrials[comboChoice]
-                comboToExecute.append(novel_env)
-                # print("#### -- " + str(comboToExecute))
-                resp = APVproxy(*comboToExecute)
-                del APVtrials[comboChoice]
-                trialNo = trialNo + 1 
+            comboChoice = random.randint(0, len(APVtrials) - 1)
+            comboToExecute = APVtrials[comboChoice]
+            just_cup_hack = ((novel_env in ['cook', 'cook_low_friction']) and (comboToExecute[0] == 'shake')) == True
+            failure_env = 'just_cup' if (novel_env in ['cook', 'cook_low_friction']) else novel_env ## need to do this dynamically... maybe someday 
+            comboToExecute.append(failure_env)
+            
+            # Timing Sequence
+            exploration_start = rospy.get_time()
+            resp = APVproxy(*comboToExecute)
+            exploration_end = rospy.get_time()
+            exploration_times.append(exploration_end - exploration_start)
+
+            del APVtrials[comboChoice]
+
+            # Setup for attempt
+            action_exclusions = [comboToExecute[0]] # The one we are currently testing
+
 
             print("#### -- APV mode: COMPLETE")
             print('#### ------------------------------------------ ')
             attempt += 1
 
-        #         # MODE 1: start
-        #         algoMode = 'planAndRun'               
-        #     else:
-        #         if newPrims == []:
-        #             print('No Prims to Execute')
-        #             algoMode = 'APV' 
-        #         else:
-        #         # MODE 1: end
-        #         # Pretty much, can remove this for MODE 2
 
-        #             if gripperExecutionValidity == True:
-        #                 print('Executing a Primitive')
-        #                 if len(newPrims) == 1:
-        #                     actionIndex = 0
-        #                     actionToExecute = newPrims[actionIndex]
-        #                 else:
-        #                     actionIndex = random.randint(0, len(newPrims)-1)
-        #                     actionToExecute = newPrims[actionIndex] 
-        #                 resp_3 = partialActionExecutor(actionToExecute.getGripper(), actionToExecute.getExecutionParams()[0], actionToExecute.getExecutionParams()[1])
-        #                 gripperExecutingNewPrim = actionToExecute.getGripper()
-        #                 del newPrims[actionIndex]
-
-        #     currentState = scenarioData()
-        #     trialEnd = rospy.get_time()
-        #     attemptsTime.append(trialEnd - trialStart)
-        #     attempt = attempt + 1
-
-        # print('\nGoal accomplished!')
-
-        # totalTimeEnd = rospy.get_time()
-        # print("\nTimes for each trial (in s): ")
-        # print(str(attemptsTime))
-        # print("Total time elapsed: " + str(totalTimeEnd - totalTimeStart))
+        experiment_end = rospy.get_time()
+        total_experiment_time = experiment_end - experiment_start
 
         # compileResults(brainFilePath, req.runName)
         # processLogData(logFilePath, logData)        
-        # return BrainSrvResponse(attemptsTime, totalTimeEnd - totalTimeStart) 
-        return BrainSrvResponse([1], 1) # temp
+
+        return BrainSrvResponse(exploration_times, total_experiment_time)
     
     except rospy.ServiceException, e:
         print("Service call failed: %s"%e)
-        return BrainSrvResponse([1], 1) # temp
-        # totalTimeEnd = rospy.get_time()
-        # processLogData(logFilePath, logData)        
-        # return BrainSrvResponse(attemptsTime, totalTimeEnd - totalTimeStart) 
+        return BrainSrvResponse([], 0)
 
     
 #############################################################################
@@ -195,18 +179,18 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', additional_lo
      
         if plan.plan.actions == []:
             print("#### ---- No Plan Found ") 
-            # print("#### ---- " + "\033[0m" + "No Plan Found" + "\033[1m") 
-            return outcome
+            return outcome, []
 
-        for a in [act.actionName for act in plan.plan.actions]:
+        action_names = [act.actionName for act in plan.plan.actions]
+        for a in action_names:
             print("#### ---- " + str(a))
         print("#### ---- ")
-            # print("#### ---- " + "\033[1m" + str(a) + "\033[0m")
-        # print("#### -- " + str([act.actionName for act in plan.plan.actions])) 
-        # print(plan.plan.actions)
+
         outcome = planExecutor(plan.plan).execution_outcome
         endStateInfo = scenarioData().init
         outcome.goal_complete = goalAccomplished(goal, endStateInfo)
+
+        truncated_plan = plan.plan.actions[:action_names.index(outcome.failure_action)]
 
         print('#### ---- Plan execution: ' + str(outcome.execution_success))
         print('#### ---- Goal Accomplished: ' + str(outcome.goal_complete))
@@ -216,12 +200,12 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', additional_lo
         print("Service call failed: %s"%e)
         moveToStartProxy()
 
-    return outcome
+    return outcome, truncated_plan
 
 
 def main():
     rospy.init_node("agent_brain")
-    s = rospy.Service("brain_srv", BrainSrv, handle_trial)
+    rospy.Service("brain_srv", BrainSrv, handle_trial)
     rospy.spin()
     return 0 
 

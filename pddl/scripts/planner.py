@@ -106,7 +106,6 @@ def execute_plan(req):
             failure_action = actionName
             return PlanExecutionOutcome(execution_success, goal_complete, failure_action)
 
-        print(action_success)
         if action_success == 0:
             failure_action = actionName
             return PlanExecutionOutcome(execution_success, goal_complete, failure_action)

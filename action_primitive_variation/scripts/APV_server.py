@@ -76,6 +76,7 @@ def set_up_variations(req):
 
     actionInfo = actionInfoProxy(actionToVary).actionInfo
     argNames = actionInfo.executableArgNames
+
     assert(len(argNames) == len(args))
 
     paramVals = process_intervals(actionInfo, paramToVary, T)

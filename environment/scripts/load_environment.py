@@ -110,7 +110,8 @@ def load_gazebo_models(env='default'):
 
     ###############################
     #### COOK LOW FRICTION ########
-    elif env == 'cook_low_friction':
+    #### JUST CUP          ########
+    elif env in ['cook_low_friction', 'just_cup']:
         with open (model_path + "cup_with_cover/cup_model.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')
         with open (model_path + "cup_with_cover/cover_model_low_friction.sdf", "r") as cover_file:
@@ -118,7 +119,6 @@ def load_gazebo_models(env='default'):
         with open (model_path + "cook/burner_model.sdf", "r") as burner_file:
             burner_xml=burner_file.read().replace('\n', '')
 
-            
     ###############################
     #### BREAKABLE OBJ ############
     elif env == 'breakable':
@@ -165,7 +165,14 @@ def load_gazebo_models(env='default'):
 
         except rospy.ServiceException, e:
             rospy.logerr("Spawn URDF service call failed: {0}".format(e))
-                
+
+    elif env in ['just_cup']:
+        try: 
+            spawn_sdf("burner1", burner_xml, "/", burner_pose, reference_frame)
+            spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
+        except rospy.ServiceException, e:
+            rospy.logerr("Spawn URDF service call failed: {0}".format(e))
+      
     elif env in ['breakable']:
         try:
             spawn_sdf("breakable_obj", breakable_obj_xml, "/", breakable_obj_pose, reference_frame)
