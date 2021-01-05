@@ -88,7 +88,7 @@ def handle_trial(req):
             ##
             # Timing Sequence
             trial_start = rospy.get_time()
-            outcome, truncated_plan = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions=action_exclusions)
+            outcome, truncated_plan = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions)
             trial_end = rospy.get_time()
             trial_times.append(trial_end - trial_start)
             
@@ -107,9 +107,13 @@ def handle_trial(req):
                 if attempt > 0: exploration_mode = 'defocused'
                 APVtrials = generateAllCombos(T, truncated_plan, exploration_mode)  
                 print("#### -- APV mode: " + str(len(APVtrials)) + " total combo(s) found")
+            else:
+                print("#### -- APV mode: START ")
 
-            comboChoice = random.randint(0, len(APVtrials) - 1)
-            comboToExecute = APVtrials[comboChoice]
+
+            # comboChoice = random.randint(0, len(APVtrials) - 1)
+            # comboToExecute = APVtrials[comboChoice]
+            comboToExecute = APVtrials[0]
 
             just_cup_hack = ((novel_env in ['cook', 'cook_low_friction']) and (comboToExecute[0] == 'shake')) == True
             failure_env = novel_env  ## Need to do this dynamically... Maybe someday. RIP
@@ -151,7 +155,7 @@ def handle_trial(req):
 #############################################################################
 
 
-def single_attempt_execution(task_name, goal, env, attempt='orig', additional_locs=[], action_exclusions=[]):
+def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclusions=[]):
     
     # print('#### ------------------------------------------ ')
     if (attempt != 'orig' and attempt != 0):
@@ -161,6 +165,7 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', additional_lo
 
     try:
         envProxy('restart', env) if attempt != 'orig' else envProxy('no_action', env) 
+        rospy.sleep(1)
     except rospy.ServiceException, e:
         print("Reset Environment Service call failed: %s"%e)
         return outcome
@@ -168,7 +173,7 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', additional_lo
     try:
         totalTimeStart = rospy.get_time()
         initStateInfo = scenarioData()
-        initObjsIncludingLoc = extendInitLocs(initStateInfo, additional_locs)
+        initObjsIncludingLoc = extendInitLocs(initStateInfo, [])
         initObjsIncludingLoc['gripper'] = ['left_gripper']
         initObjsIncludingLoc['obj'] = ['cup', 'cover']
 
