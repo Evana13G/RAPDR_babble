@@ -55,17 +55,17 @@ def handle_trial(req):
     
     currentState = scenarioData() # A bit of a hack for now
     
-    # try:
-    #     print("################################################")
-    #     print('#### ------------------------------------------ ')
-    #     print("#### Goal: " + str(goal))
-    #     print('#### ------------------------------------------ ')
-    #     print("#### -- Original Scenario: ")
-    #     outcome, _ = single_attempt_execution(task, goal, orig_env)
+    try:
+        print("################################################")
+        print('#### ------------------------------------------ ')
+        print("#### Goal: " + str(goal))
+        print('#### ------------------------------------------ ')
+        print("#### -- Original Scenario: ")
+        outcome, _ = single_attempt_execution(task, goal, orig_env)
 
-    # except rospy.ServiceException, e:
-    #     print("Service call failed: %s"%e)
-    #     return BrainSrvResponse([], 0)
+    except rospy.ServiceException, e:
+        print("Service call failed: %s"%e)
+        return BrainSrvResponse([], 0)
 
     try:
         print("#### -- Novel Scenario: ")
