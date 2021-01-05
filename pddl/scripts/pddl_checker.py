@@ -65,11 +65,11 @@ def novel_effect(req):
     same_effects_as_orig = effects_met
     new_effects = relevant_novel_effects
 
-    print('------------------------------------------------------')
-    print("is_novel: " + str(is_novel))
-    print("same_effects_as_orig: " + str(same_effects_as_orig))
-    print("new_effects: " + str(new_effects))
-    print('------------------------------------------------------')
+    # print('------------------------------------------------------')
+    # print("is_novel: " + str(is_novel))
+    # print("same_effects_as_orig: " + str(same_effects_as_orig))
+    # print("new_effects: " + str(new_effects))
+    # print('------------------------------------------------------')
 
     return is_novel, same_effects_as_orig, new_effects
 

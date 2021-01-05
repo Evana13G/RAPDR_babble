@@ -60,9 +60,9 @@ def execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment
     novelty = novelEffectChecker(actionToVary, args, preconds, effects) 
 
     is_novel = novelty.novel_action
-    # is_orig = novelty.same_effects_as_orig
+    same_effects_as_orig = novelty.same_effects_as_orig
     new_effects = novelty.new_effects
-    return is_novel, new_effects
+    return is_novel, same_effects_as_orig, new_effects
 
 def set_up_variations(req):
     actionToVary = req.actionName
@@ -70,22 +70,40 @@ def set_up_variations(req):
     paramToVary = req.param
     T = req.T  
     env = req.environment
+    exploration_mode = req.exploration_mode
 
     if paramToVary == None or paramToVary == '':
         return APVSrvResponse(False)
 
     actionInfo = actionInfoProxy(actionToVary).actionInfo
     argNames = actionInfo.executableArgNames
+
     assert(len(argNames) == len(args))
 
     paramVals = process_intervals(actionInfo, paramToVary, T)
+    added_actions = []
 
     for paramAssignment in paramVals:
-        validity, new_effects = execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment, env)
-        if validity == True:
-            newName = str(actionToVary) + '-' + str(paramToVary) + ':' + str(paramAssignment).split('.')[0]
-            addActionToKB(actionToVary, newName, args, [paramToVary], [str(paramAssignment)], new_effects)
-    return APVSrvResponse(validity)
+        novel, accomplishes_OG_effects, new_effects = execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment, env)
+        newName = str(actionToVary) + '-' + str(paramToVary) + ':' + str(paramAssignment).split('.')[0]
+        
+        if accomplishes_OG_effects == True: 
+
+            if exploration_mode == 'focused':
+                if (novel == False): # Only add those which accomplish the same thing as the orig action
+                    addActionToKB(actionToVary, newName, args, [paramToVary], [str(paramAssignment)], new_effects)
+                    added_actions.append(newName)
+
+            elif exploration_mode == 'defocused':
+                if (novel == True): # Add any actions which both: accomplish the same thing as the orig action, AND something novel
+                    addActionToKB(actionToVary, newName, args, [paramToVary], [str(paramAssignment)], new_effects)
+                    added_actions.append(newName)
+            else: # If nothing specified, add it whether it is novel or not... this condition cant be reached in our research case
+                addActionToKB(actionToVary, newName, args, [paramToVary], [str(paramAssignment)], new_effects)
+                added_actions.append(newName)
+    print('#### ---- ')
+    print('#### ---- Newly added actions: ' + str(added_actions))
+    return APVSrvResponse(added_actions)
 
 ###################################################################################### 
 # def generateAllCombos(req):

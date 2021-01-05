@@ -128,7 +128,6 @@ def cover_obj(req):
 
     pa.cover_obj(**args)
 
-
 #### SHAKE #####################################################################
 def stub_action(req):
     no_action = req
@@ -201,8 +200,6 @@ def param_action_executor(req):
 def pddl_action_executor(req):
     actionName = req.actionName
     args = req.argVals
-    # print("action name: " + str(actionName))
-    # print("args: " + str(args))
 
     actionInfo = actionInfoProxy(actionName).actionInfo
     argNames = actionInfo.executableArgNames
