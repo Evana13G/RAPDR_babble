@@ -24,7 +24,7 @@
    <!--Start Agent Brain-->
    <node name="brain" pkg="agent" type="brain.py" respawn="true" output="screen"/>
    <!--Start Experiments Service-->
-   <node name="run_experiments" pkg="agent" type="run_experiments.py" respawn="true"/>
+   <node name="run_experiment" pkg="agent" type="run_experiment.py" respawn="true" output="screen"/>
 
  <!-- ###################################################### -->
  <!-- ####### Start Environment Nodes ####### -->

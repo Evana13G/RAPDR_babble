@@ -1,5 +1,6 @@
 string runName
 string scenario
+bool demo_mode
 ---
 int64[] timePerAttempt
 int64 totalTime
