@@ -28,44 +28,33 @@ getScenarioSettings = rospy.ServiceProxy('scenario_settings_srv', GetScenarioSet
 
 def handle_trial(req):
 
-    print("\n########################################################")
-    print("########################################################")
-    print('##   Action Primivitive Discovery in Robotic Agents   ##') 
-    print('##         through Action Parameter Variation         ##')
-    print('##                                                    ##')
-    print('## -- a proof of concept model for knowledge          ##')
-    print('##    aquisition in intelligent agents                ##')
-    print('##                                                    ##')
-    print('## -- Evana Gizzi, Amel Hassan, Willy Lin,            ##')
-    print('##    Keenan Rhea, Jivko Sinapov, 2020                ##')
-    print('##                                                    ##')
-    print("########################################################")
-    print("########################################################\n")
-
     task = req.runName
     scenario = req.scenario
+    demo_mode = req.demo_mode
     scenario_settings = getScenarioSettings(scenario)
     goal = scenario_settings.goal
     orig_env = scenario_settings.orig_scenario
     novel_env = scenario_settings.novel_scenario
     T = scenario_settings.T
+
     envProxy('restart', orig_env)
     # Sim sensitive goals need to be re-calculated
     if scenario in ['discover_strike']: goal = getScenarioSettings(scenario).goal  # Hack!
     
     currentState = scenarioData() # A bit of a hack for now
     
-    try:
-        print("################################################")
-        print('#### ------------------------------------------ ')
-        print("#### Goal: " + str(goal))
-        print('#### ------------------------------------------ ')
-        print("#### -- Original Scenario: ")
-        outcome, _ = single_attempt_execution(task, goal, orig_env)
+    if demo_mode == True:
+        try:
+            print("################################################")
+            print('#### ------------------------------------------ ')
+            print("#### Goal: " + str(goal))
+            print('#### ------------------------------------------ ')
+            print("#### -- Original Scenario: ")
+            outcome, _ = single_attempt_execution(task, goal, orig_env)
 
-    except rospy.ServiceException, e:
-        print("Service call failed: %s"%e)
-        return BrainSrvResponse([], 0)
+        except rospy.ServiceException, e:
+            print("Service call failed: %s"%e)
+            return BrainSrvResponse([], 0)
 
     try:
         print("#### -- Novel Scenario: ")
@@ -102,6 +91,13 @@ def handle_trial(req):
 
             # init set or reset after exhausting. If its a reset, flip the exploration mode
             if APVtrials == []:
+                if exploration_mode == 'defocused':
+                    print("#### -- APV mode: COMPLETE")
+                    print('#### ------------------------------------------ ')
+                    print("#### -- None of the candidate actions worked! ")
+                    print('#### ------------------------------------------ ')
+                    break
+
                 if attempt > 0: exploration_mode = 'defocused'
                 APVtrials = generateAllCombos(T, truncated_plan, exploration_mode)  
                 print("#### -- APV mode: " + str(len(APVtrials)) + " total combo(s) found")
