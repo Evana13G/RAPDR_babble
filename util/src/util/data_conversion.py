@@ -27,6 +27,12 @@ from std_msgs.msg import (
 )
 
 from knowledge_base.action import Action
+from agent.msg import SuccessAction
+
+def rawActionList_toSuccessActionList(action_list):
+    new_list = [SuccessAction(item.actionName, item.argVals) for item in action_list]
+    return new_list
+
 
 def getPredicateLocation(predList, _oprtr, _obj):
     for pred in predList:

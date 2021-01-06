@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
 FILES
 HardcodedOffset.msg
+SuccessAction.msg
 )
 
 add_service_files(

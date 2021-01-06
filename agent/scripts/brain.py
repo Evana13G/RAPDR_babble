@@ -26,7 +26,6 @@ getScenarioSettings = rospy.ServiceProxy('scenario_settings_srv', GetScenarioSet
 getScenarioGoal = rospy.ServiceProxy('scenario_goal_srv', GetScenarioGoalSrv)
 
 def handle_trial(req):
-
     task = req.runName
     scenario = req.scenario
     demo_mode = req.demo_mode
@@ -50,10 +49,10 @@ def handle_trial(req):
     if demo_mode == True:
         try:
             print("#### -- Original Scenario: ")
-            outcome, _ = single_attempt_execution(task, goal, orig_env)
+            outcome, _, _ = single_attempt_execution(task, goal, orig_env)
         except rospy.ServiceException, e:
             print("Service call failed: %s"%e)
-            return BrainSrvResponse([], 0)
+            return BrainSrvResponse([], 0, [])
 
     try:
         print("#### -- Novel Scenario: ")
@@ -65,7 +64,7 @@ def handle_trial(req):
         action_exclusions = []
         trial_times = []
         exploration_times = []
-
+        success_plan = None
         # new_actions = []
         # new_actions_which_failed = []
         
@@ -78,10 +77,10 @@ def handle_trial(req):
             ##
             # Timing Sequence
             trial_start = rospy.get_time()
-            outcome, truncated_plan = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions)
+            outcome, truncated_plan, full_plan = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions)
             trial_end = rospy.get_time()
             trial_times.append(trial_end - trial_start)
-            
+            success_plan = full_plan
             if (outcome.goal_complete == True): break 
             currentState = scenarioData() # post trial scenario, set it now. This is what you want evaluated
             #####################################################################################
@@ -146,20 +145,14 @@ def handle_trial(req):
         experiment_end = rospy.get_time()
         total_experiment_time = experiment_end - experiment_start
 
-        # compileResults(brainFilePath, task)  
-
-        return BrainSrvResponse(exploration_times, total_experiment_time)
+        return BrainSrvResponse(exploration_times, total_experiment_time, rawActionList_toSuccessActionList(success_plan))
     
     except rospy.ServiceException, e:
         print("Service call failed: %s"%e)
-        return BrainSrvResponse([], 0)
+        return BrainSrvResponse([], 0, [])
 
-    
 #############################################################################
 #############################################################################
-#############################################################################
-#############################################################################
-
 
 def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclusions=[]):
     
@@ -169,6 +162,7 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclus
     filename = task_name + '_' + str(attempt)
     outcome = PlanExecutionOutcome(False, False, None)  
     truncated_plan = []
+    action_list = []
 
     try:
         envProxy('restart', env) if attempt != 'orig' else envProxy('no_action', env) 
@@ -194,7 +188,7 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclus
 
         if action_list == []:
             print("#### ---- No Plan Found ") 
-            return outcome, truncated_plan
+            return outcome, truncated_plan, action_list
 
         action_names = [act.actionName for act in action_list]
         for a in action_names:
@@ -220,7 +214,7 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclus
         print("Service call failed: %s"%e)
         moveToStartProxy()
 
-    return outcome, truncated_plan
+    return outcome, truncated_plan, action_list
 
 
 def main():
