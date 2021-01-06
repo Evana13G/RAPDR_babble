@@ -19,7 +19,7 @@
  <!-- ###################################################### -->
  <!-- ####### Start Environment Nodes ####### -->
     <!--Start Loading Environment Elements-->
-    <node name="load_environment" pkg="environment" type="load_environment.py"/>
+    <node name="load_environment" pkg="environment" type="load_environment.py" output="screen"/>
     <!--Start Publishing Environment Elements-->
     <node name="publish_environment" pkg="environment" type="publish_environment.py"/>
     <!--Start Data Conversion Module-->

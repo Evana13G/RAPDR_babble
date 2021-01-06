@@ -40,7 +40,7 @@ from environment.srv import *
 from agent.srv import MoveToStartSrv
 
 environment = 'default'
-num_marbles = 30
+num_marbles = 35
 
 pub_all = rospy.Publisher('models_loaded', Bool, queue_size=10)
 moveToStartProxy = rospy.ServiceProxy('move_to_start_srv', MoveToStartSrv)
@@ -158,15 +158,15 @@ def delete_gazebo_models():
         delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
 
         delete_model("cover")
-        rospy.logerr("deleting cover")
+        rospy.loginfo("deleting cover")
         for i in range(num_marbles):
             delete_model("marbleR_"+ str(i))
-            rospy.logerr("deleting marble_R"+ str(i))
-        rospy.sleep(4)
+            rospy.loginfo("deleting marble_R"+ str(i))
+        rospy.sleep(2)
         for i in range(num_marbles):
             delete_model("marbleB_"+ str(i))
-            rospy.logerr("deleting marble_B" + str(i))
-        rospy.sleep(4)
+            rospy.loginfo("deleting marble_B" + str(i))
+        rospy.sleep(2)
         delete_model("cup")
         resetPreds()
         # delete_model("cafe_table")
