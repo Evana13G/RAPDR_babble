@@ -316,6 +316,15 @@ class KnowledgeBase(object):
             newAction.setName(new_name)
         self.actions.append(newAction)
 
+    def removeAction(self, actionName):
+        index_to_delete = 0
+        while index_to_delete < len(self.actions):
+            if self.actions[i].getName() == actionName:
+                break
+            index_to_delete += 1
+            
+        del self.actions[index_to_delete]
+
     def __str__(self):
         s = ''
         for a in self.actions:

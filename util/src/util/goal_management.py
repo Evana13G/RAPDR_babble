@@ -44,7 +44,7 @@ def generateAllCombos(T, plan, exploration_mode='focused'):
     selections = []
     mu = len(plan)
     sd = 3.0
-
+    
     selection = -1.0
     while len(plan) > 0:
         selection = int(random.gauss(mu, sd))
@@ -67,6 +67,7 @@ def generateAllCombos(T, plan, exploration_mode='focused'):
                 formatted.append(T)
                 formatted.append(exploration_mode)
                 APVtrials.append(formatted)
+                del params[i]
 
     return APVtrials  
 ############################################

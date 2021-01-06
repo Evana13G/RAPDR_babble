@@ -138,35 +138,43 @@ def get_moveMag(req):
     vals = moveMagHelper[orientation]
     return HardcodedOffset(vals['x'], vals['y'], vals['z'])
 
-def scenario_settings(req):
+def scenario_goal(req):
     scenario = req.scenario
     if scenario == 'discover_strike':
         coverLoc = getObjLoc('cover').location
         goal = ['(not (at cover '+ poseStampedToString(coverLoc) + '))']
+    elif scenario == 'discover_pour':
+        goal = ['(not (touching cover cup))']
+    elif scenario == 'cook':
+        goal = ['(cooking cup)']
+    else:
+        goal = []
+    return GetScenarioGoalSrvResponse(goal)
+
+
+def scenario_settings(req):
+    scenario = req.scenario
+    if scenario == 'discover_strike':
         orig_scenario = 'discover_strike'
         novel_scenario = 'HH'
         T = 3
         additional_domain_locs = []
     elif scenario == 'discover_pour':
-        goal = ['(not (touching cover cup))']
         orig_scenario = 'discover_pour'
         novel_scenario = 'high_friction'
         T = 5
         additional_domain_locs = []
     elif scenario == 'cook':
-        goal = ['(cooking cup)']
         orig_scenario = 'cook'
         novel_scenario = 'cook_low_friction'
         T = 3
         additional_domain_locs = []
     else:
-        goal = []
         orig_scenario = ''
         novel_scenario = ''
         T = 0
         additional_domain_locs = []
-    return GetScenarioSettingsSrvResponse(goal, 
-                                          orig_scenario, 
+    return GetScenarioSettingsSrvResponse(orig_scenario, 
                                           novel_scenario, 
                                           T, 
                                           additional_domain_locs)
@@ -179,6 +187,7 @@ def main():
     rospy.Service("get_movemag_unit_srv", GetMoveMagUnitSrv, get_moveMag)
     rospy.Service("calc_gripper_orientation_pose", CalcGripperOrientationPoseSrv, orientation_solver)
     rospy.Service("scenario_settings_srv", GetScenarioSettingsSrv, scenario_settings)
+    rospy.Service("scenario_goal_srv", GetScenarioGoalSrv, scenario_goal)
     rospy.spin()
 
     return 0 

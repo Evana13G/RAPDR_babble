@@ -65,6 +65,7 @@ def run_experiments(req):
 
 def main():
     rospy.init_node("experiments_node")
+    # rospy.wait_for_service('/brain_srv', timeout=60)
     rospy.Service("experiments_srv", RunExperimentSrv, run_experiments)
     rospy.spin()
     return 0 

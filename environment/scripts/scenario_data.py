@@ -216,6 +216,7 @@ def getPredicates(data):
                                    PredicateList(predicates_list))
 
 def getObjectLocation(data):
+    print(data)
     obj = data.obj
     obj_choices = {
         # 'breakable_obj': Breakable_Obj_Pose,

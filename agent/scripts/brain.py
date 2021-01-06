@@ -18,13 +18,12 @@ APVproxy = rospy.ServiceProxy('APV_srv', APVSrv)
 planGenerator = rospy.ServiceProxy('plan_generator_srv', PlanGeneratorSrv)
 planExecutor = rospy.ServiceProxy('plan_executor_srv', PlanExecutorSrv)
 scenarioData = rospy.ServiceProxy('scenario_data_srv', ScenarioDataSrv)
-getObjLoc = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
 KBDomainProxy = rospy.ServiceProxy('get_KB_domain_srv', GetKBDomainSrv)
 KBPddlLocsProxy = rospy.ServiceProxy('get_KB_pddl_locs', GetKBPddlLocsSrv)
 envProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
 moveToStartProxy = rospy.ServiceProxy('move_to_start_srv', MoveToStartSrv)
 getScenarioSettings = rospy.ServiceProxy('scenario_settings_srv', GetScenarioSettingsSrv)
-
+getScenarioGoal = rospy.ServiceProxy('scenario_goal_srv', GetScenarioGoalSrv)
 
 def handle_trial(req):
 
@@ -32,26 +31,26 @@ def handle_trial(req):
     scenario = req.scenario
     demo_mode = req.demo_mode
     scenario_settings = getScenarioSettings(scenario)
-    goal = scenario_settings.goal
     orig_env = scenario_settings.orig_scenario
     novel_env = scenario_settings.novel_scenario
     T = scenario_settings.T
 
     envProxy('restart', orig_env)
+    goal = getScenarioGoal(scenario).goal
+
     # Sim sensitive goals need to be re-calculated
-    if scenario in ['discover_strike']: goal = getScenarioSettings(scenario).goal  # Hack!
+    # if scenario in ['discover_strike']: goal = getScenarioSettings(scenario).goal  # Hack!
     
     currentState = scenarioData() # A bit of a hack for now
     
+    print("################################################")
+    print('#### ------------------------------------------ ')
+    print("#### Goal: " + str(goal))
+    print('#### ------------------------------------------ ')
     if demo_mode == True:
         try:
-            print("################################################")
-            print('#### ------------------------------------------ ')
-            print("#### Goal: " + str(goal))
-            print('#### ------------------------------------------ ')
             print("#### -- Original Scenario: ")
             outcome, _ = single_attempt_execution(task, goal, orig_env)
-
         except rospy.ServiceException, e:
             print("Service call failed: %s"%e)
             return BrainSrvResponse([], 0)
@@ -66,6 +65,8 @@ def handle_trial(req):
         action_exclusions = []
         trial_times = []
         exploration_times = []
+        new_actions = []
+        new_actions_which_failed = []
         experiment_start = rospy.get_time()
 
         while(goalAccomplished(goal, currentState.init) == False):
@@ -88,6 +89,13 @@ def handle_trial(req):
             ##
             ### Cleanup from attempt
             momentOfFailurePreds = scenarioData().predicates
+            new_action_names = [act.actionName for act in truncated_plan]
+            new_action_names = [x for x in new_action_names if ':' in x]
+
+            new_actions_which_failed.extend(new_action_names)
+            
+            if new_action_names != []:
+                new_actions.remove(new_action_names)
 
             # init set or reset after exhausting. If its a reset, flip the exploration mode
             if APVtrials == []:
@@ -98,33 +106,36 @@ def handle_trial(req):
                     print('#### ------------------------------------------ ')
                     break
 
-                if attempt > 0: exploration_mode = 'defocused'
+                if attempt > 0: 
+                    exploration_mode = 'defocused'
                 APVtrials = generateAllCombos(T, truncated_plan, exploration_mode)  
                 print("#### -- APV mode: " + str(len(APVtrials)) + " total combo(s) found")
             else:
                 print("#### -- APV mode: START ")
 
 
-            # comboChoice = random.randint(0, len(APVtrials) - 1)
-            comboChoice = 0
-            comboToExecute = APVtrials[comboChoice]
+            if new_actions == []:
+                comboChoice = 0
+                comboToExecute = APVtrials[comboChoice]
 
-            just_cup_hack = ((novel_env in ['cook', 'cook_low_friction']) and (comboToExecute[0] == 'shake')) == True
-            failure_env = novel_env  ## Need to do this dynamically... Maybe someday. RIP
-            if just_cup_hack: failure_env = 'just_cup' 
+                just_cup_hack = ((novel_env in ['cook', 'cook_low_friction']) and (comboToExecute[0] == 'shake')) == True
+                failure_env = novel_env  ## Need to do this dynamically... Maybe someday. RIP
+                if just_cup_hack: failure_env = 'just_cup' 
 
-            comboToExecute.append(failure_env)
+                comboToExecute.append(failure_env)
             
-            # Timing Sequence
-            exploration_start = rospy.get_time()
-            new_actions = APVproxy(*comboToExecute)
-            exploration_end = rospy.get_time()
-            exploration_times.append(exploration_end - exploration_start)
+                # Timing Sequence
+                exploration_start = rospy.get_time()
+                new_actions = APVproxy(*comboToExecute)
+                exploration_end = rospy.get_time()
+                exploration_times.append(exploration_end - exploration_start)
 
-            del APVtrials[comboChoice]
+                del APVtrials[comboChoice]
 
-            # Setup for attempt
-            action_exclusions = [comboToExecute[0]] # The one we are currently testing
+                # Setup for attempt
+                action_exclusions = [comboToExecute[0]] # The one we are currently testing
+            
+            action_exclusions.extend(new_actions_which_failed)
 
             print("#### -- APV mode: COMPLETE")
             print('#### ------------------------------------------ ')

@@ -31,6 +31,7 @@ BrainSrv.srv
 GetScenarioSettingsSrv.srv
 GetMoveMagUnitSrv.srv
 RunExperimentSrv.srv
+GetScenarioGoalSrv.srv
 )
 
 catkin_python_setup()
