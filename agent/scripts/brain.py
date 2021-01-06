@@ -28,20 +28,6 @@ getScenarioSettings = rospy.ServiceProxy('scenario_settings_srv', GetScenarioSet
 
 def handle_trial(req):
 
-    print("\n########################################################")
-    print("########################################################")
-    print('##   Action Primivitive Discovery in Robotic Agents   ##') 
-    print('##         through Action Parameter Variation         ##')
-    print('##                                                    ##')
-    print('## -- a proof of concept model for knowledge          ##')
-    print('##    aquisition in intelligent agents                ##')
-    print('##                                                    ##')
-    print('## -- Evana Gizzi, Amel Hassan, Willy Lin,            ##')
-    print('##    Keenan Rhea, Jivko Sinapov, 2020                ##')
-    print('##                                                    ##')
-    print("########################################################")
-    print("########################################################\n")
-
     task = req.runName
     scenario = req.scenario
     scenario_settings = getScenarioSettings(scenario)

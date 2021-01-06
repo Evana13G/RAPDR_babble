@@ -30,6 +30,7 @@ IsVisibleSrv.srv
 BrainSrv.srv
 GetScenarioSettingsSrv.srv
 GetMoveMagUnitSrv.srv
+RunExperimentSrv.srv
 )
 
 catkin_python_setup()

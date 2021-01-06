@@ -1,0 +1,5 @@
+string experiment_name
+int64 num_discover_strike_runs
+int64 num_cook_runs
+---
+bool experiment_complete
