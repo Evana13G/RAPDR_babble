@@ -65,8 +65,10 @@ def handle_trial(req):
         action_exclusions = []
         trial_times = []
         exploration_times = []
-        new_actions = []
-        new_actions_which_failed = []
+
+        # new_actions = []
+        # new_actions_which_failed = []
+        
         experiment_start = rospy.get_time()
 
         while(goalAccomplished(goal, currentState.init) == False):
@@ -89,13 +91,11 @@ def handle_trial(req):
             ##
             ### Cleanup from attempt
             momentOfFailurePreds = scenarioData().predicates
-            new_action_names = [act.actionName for act in truncated_plan]
-            new_action_names = [x for x in new_action_names if ':' in x]
-
-            new_actions_which_failed.extend(new_action_names)
-            
-            if new_action_names != []:
-                new_actions.remove(new_action_names)
+            # new_action_names = [act.actionName for act in truncated_plan]
+            # new_action_names = [x for x in new_action_names if ':' in x]
+            # new_actions_which_failed.extend(new_action_names)
+            # if new_action_names != []:
+            #     new_actions.remove(new_action_names)
 
             # init set or reset after exhausting. If its a reset, flip the exploration mode
             if APVtrials == []:
@@ -114,28 +114,30 @@ def handle_trial(req):
                 print("#### -- APV mode: START ")
 
 
-            if new_actions == []:
-                comboChoice = 0
-                comboToExecute = APVtrials[comboChoice]
+            #####################################################################################
+            # if new_actions == []:
+            comboChoice = 0
+            comboToExecute = APVtrials[comboChoice]
 
-                just_cup_hack = ((novel_env in ['cook', 'cook_low_friction']) and (comboToExecute[0] == 'shake')) == True
-                failure_env = novel_env  ## Need to do this dynamically... Maybe someday. RIP
-                if just_cup_hack: failure_env = 'just_cup' 
+            just_cup_hack = ((novel_env in ['cook', 'cook_low_friction']) and (comboToExecute[0] == 'shake')) == True
+            failure_env = novel_env  ## Need to do this dynamically... Maybe someday. RIP
+            if just_cup_hack: failure_env = 'just_cup' 
 
-                comboToExecute.append(failure_env)
-            
-                # Timing Sequence
-                exploration_start = rospy.get_time()
-                new_actions = APVproxy(*comboToExecute)
-                exploration_end = rospy.get_time()
-                exploration_times.append(exploration_end - exploration_start)
+            comboToExecute.append(failure_env)
+        
+            # Timing Sequence
+            exploration_start = rospy.get_time()
+            new_actions = APVproxy(*comboToExecute)
+            exploration_end = rospy.get_time()
+            exploration_times.append(exploration_end - exploration_start)
 
-                del APVtrials[comboChoice]
+            del APVtrials[comboChoice]
 
-                # Setup for attempt
-                action_exclusions = [comboToExecute[0]] # The one we are currently testing
-            
-            action_exclusions.extend(new_actions_which_failed)
+            # Setup for attempt
+            action_exclusions = [comboToExecute[0]] # The one we are currently testing
+            #####################################################################################
+        
+            # action_exclusions.extend(new_actions_which_failed)
 
             print("#### -- APV mode: COMPLETE")
             print('#### ------------------------------------------ ')

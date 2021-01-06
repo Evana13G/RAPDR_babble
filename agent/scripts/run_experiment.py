@@ -23,7 +23,8 @@ def run_experiments(req):
     num_discover_strike_runs = req.num_discover_strike_runs
     num_cook_runs = req.num_cook_runs
     demo_mode = req.demo_mode
-    results = {'exploration_times' : [], 'total_time': []}
+    results = {'discover_strike' : {'exploration_times' : [], 'total_time': []},
+               'cook' : {'exploration_times' : [], 'total_time': []}}
 
     if demo_mode == True:
         num_discover_strike_runs = 1
@@ -38,19 +39,19 @@ def run_experiments(req):
             rospy.sleep(1)
             exploration_times = result.timePerAttempt
             total_time = result.totalTime
-            results['exploration_times'].append(exploration_times)
-            results['total_time'].append(total_time)
+            results['discover_strike']['exploration_times'].append(exploration_times)
+            results['discover_strike']['total_time'].append(total_time)
         rospy.sleep(1)
 
-        # Discover Strike
-        for i in range(num_discover_strike_runs):
+        # Cook
+        for i in range(num_cook_runs):
             run_name = experimentName + '_' + str(i)
             result = BrainProxy(run_name, 'cook', demo_mode)
             rospy.sleep(1)
             exploration_times = result.timePerAttempt
             total_time = result.totalTime
-            results['exploration_times'].append(exploration_times)
-            results['total_time'].append(total_time)
+            results['cook']['exploration_times'].append(exploration_times)
+            results['cook']['total_time'].append(total_time)
 
         rospy.sleep(1)
 

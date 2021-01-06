@@ -39,6 +39,7 @@ def get_param_options(req):
 
 def get_action_info(req):
     name = req.actionName
+
     action = KB.getAction(name)
     argNames = action.getExecutionArgNames()
     paramNames = [x.getName() for x in action.getParams()]
@@ -75,7 +76,6 @@ def handle_get_pddl_instatiations(req):
 
 
 def add_action_to_KB(req):  
-
     new_name = req.new_action_name
     args = req.args
     param_names = req.param_names
@@ -109,9 +109,9 @@ def add_action_to_KB(req):
 
     # except:
     #     return AddActionToKBSrvResponse(False)
-def remove_action(req):
-    action_name = req.actionName
-    KB.removeAction(action_name)
+# def remove_action(req):
+#     action_name = req.actionName
+#     KB.removeAction(action_name)
 
 def parse_and_map_predicate_args(instatiated_pred_args, args, pddl_args):            
     static_pred_args =[]

@@ -85,7 +85,9 @@ def set_up_variations(req):
 
     for paramAssignment in paramVals:
         novel, accomplishes_OG_effects, new_effects = execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment, env)
-        newName = str(actionToVary) + '-' + str(paramToVary) + ':' + str(paramAssignment).split('.')[0]
+        newName = str(actionToVary) + '-' + str(paramToVary) + ':' + str(paramAssignment)
+        # newName = str(actionToVary) + '-' + str(paramToVary) + ':' + str(paramAssignment).split('.')[0]
+        # newName = str(actionToVary) + '-' + str(paramToVary) + ':' + str(paramAssignment).replace('.', '*')[0]
         
         if accomplishes_OG_effects == True: 
 
