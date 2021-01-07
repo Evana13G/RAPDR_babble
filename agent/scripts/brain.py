@@ -24,8 +24,10 @@ envProxy = rospy.ServiceProxy('load_environment', HandleEnvironmentSrv)
 moveToStartProxy = rospy.ServiceProxy('move_to_start_srv', MoveToStartSrv)
 getScenarioSettings = rospy.ServiceProxy('scenario_settings_srv', GetScenarioSettingsSrv)
 getScenarioGoal = rospy.ServiceProxy('scenario_goal_srv', GetScenarioGoalSrv)
+resetKB = rospy.ServiceProxy("reset_KB_srv", ResetKBSrv)
 
 def handle_trial(req):
+    resetKB()
     task = req.runName
     scenario = req.scenario
     demo_mode = req.demo_mode
@@ -62,13 +64,14 @@ def handle_trial(req):
         exploration_mode = 'focused'
         APVtrials = []
         action_exclusions = []
-        trial_times = []
+
+        execution_times = []
         exploration_times = []
+        trial_times = []
         success_plan = None
-        # new_actions = []
-        # new_actions_which_failed = []
-        
-        experiment_start = rospy.get_time()
+
+        new_actions = []
+        failed = []
 
         while(goalAccomplished(goal, currentState.init) == False):
 
@@ -76,11 +79,11 @@ def handle_trial(req):
             ## Attempt
             ##
             # Timing Sequence
-            trial_start = rospy.get_time()
-            outcome, truncated_plan, full_plan = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions)
-            trial_end = rospy.get_time()
-            trial_times.append(trial_end - trial_start)
-            success_plan = full_plan
+            attempt_time = 0.0
+            outcome, truncated_plan, success_plan = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions)
+            execution_times.append(outcome.execution_time)
+            attempt_time += outcome.execution_time
+
             if (outcome.goal_complete == True): break 
             currentState = scenarioData() # post trial scenario, set it now. This is what you want evaluated
             #####################################################################################
@@ -90,13 +93,18 @@ def handle_trial(req):
             ##
             ### Cleanup from attempt
             momentOfFailurePreds = scenarioData().predicates
-            # new_action_names = [act.actionName for act in truncated_plan]
-            # new_action_names = [x for x in new_action_names if ':' in x]
-            # new_actions_which_failed.extend(new_action_names)
-            # if new_action_names != []:
-            #     new_actions.remove(new_action_names)
+            new_actions_executed = [act.actionName for act in truncated_plan if ':' in act.actionName]
+            print("new actions executed: " + str(new_actions_executed))
+            failed.extend(new_actions_executed)
+            print("failed: " + str(failed))
+            if new_actions_executed != []: new_actions.remove(new_actions_executed)
+            print("new actions: " + str(new_actions))
 
             # init set or reset after exhausting. If its a reset, flip the exploration mode
+
+            #####################################################################################
+            ###### Generate New APV Combos list
+            ###### Will eventually be for switching into defocused mode 
             if APVtrials == []:
                 if exploration_mode == 'defocused':
                     print("#### -- APV mode: COMPLETE")
@@ -109,43 +117,48 @@ def handle_trial(req):
                     exploration_mode = 'defocused'
                 APVtrials = generateAllCombos(T, truncated_plan, exploration_mode)  
                 print("#### -- APV mode: " + str(len(APVtrials)) + " total combo(s) found")
-            else:
+
+            #####################################################################################
+            ###### If there are no new actions to try
+            ###### go into APV mode
+            if new_actions == []:
                 print("#### -- APV mode: START ")
+                comboChoice = 0
+                comboToExecute = APVtrials[comboChoice]
 
+                just_cup_hack = ((novel_env in ['cook', 'cook_low_friction']) and (comboToExecute[0] == 'shake')) == True
+                failure_env = novel_env  ## Need to do this dynamically... Maybe someday. RIP
+                if just_cup_hack: failure_env = 'just_cup' 
 
+                comboToExecute.append(failure_env)
+            
+                # Timing Sequence
+
+                APVresults = APVproxy(*comboToExecute)
+                
+                new_actions = APVresults.novel_action_names
+                exploration_time = APVresults.exploration_time
+                variation_times = APVresults.variation_times
+
+                exploration_times.append(exploration_time)
+                attempt_time += exploration_time
+
+                del APVtrials[comboChoice]
+
+                # Setup for attempt
+                action_exclusions = [comboToExecute[0]] # The one we are currently testing
+                action_exclusions.extend(failed)
+                print("action exclusions: " + str(action_exclusions))
+
+                print("#### -- APV mode: COMPLETE")
+                print('#### ------------------------------------------ ')
+                attempt += 1
             #####################################################################################
-            # if new_actions == []:
-            comboChoice = 0
-            comboToExecute = APVtrials[comboChoice]
+            trial_times.append(attempt_time)
 
-            just_cup_hack = ((novel_env in ['cook', 'cook_low_friction']) and (comboToExecute[0] == 'shake')) == True
-            failure_env = novel_env  ## Need to do this dynamically... Maybe someday. RIP
-            if just_cup_hack: failure_env = 'just_cup' 
+        total_experiment_time = sum(trial_times)
 
-            comboToExecute.append(failure_env)
-        
-            # Timing Sequence
-            exploration_start = rospy.get_time()
-            new_actions = APVproxy(*comboToExecute)
-            exploration_end = rospy.get_time()
-            exploration_times.append(exploration_end - exploration_start)
-
-            del APVtrials[comboChoice]
-
-            # Setup for attempt
-            action_exclusions = [comboToExecute[0]] # The one we are currently testing
-            #####################################################################################
-        
-            # action_exclusions.extend(new_actions_which_failed)
-
-            print("#### -- APV mode: COMPLETE")
-            print('#### ------------------------------------------ ')
-            attempt += 1
-
-        experiment_end = rospy.get_time()
-        total_experiment_time = experiment_end - experiment_start
-
-        return BrainSrvResponse(exploration_times, total_experiment_time, rawActionList_toSuccessActionList(success_plan))
+        return BrainSrvResponse(trial_times, total_experiment_time, rawActionList_toSuccessActionList(success_plan))
     
     except rospy.ServiceException, e:
         print("Service call failed: %s"%e)
@@ -160,7 +173,7 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclus
     if (attempt != 'orig' and attempt != 0):
         print("#### -- [ATTEMPT " + str(attempt)+ "] ") 
     filename = task_name + '_' + str(attempt)
-    outcome = PlanExecutionOutcome(False, False, None)  
+    outcome = PlanExecutionOutcome(False, False, None, 0.0)  
     truncated_plan = []
     action_list = []
 
@@ -172,7 +185,6 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclus
         return outcome
 
     try:
-        totalTimeStart = rospy.get_time()
         initStateInfo = scenarioData()
         initObjsIncludingLoc = extendInitLocs(initStateInfo, [])
         initObjsIncludingLoc['gripper'] = ['left_gripper']

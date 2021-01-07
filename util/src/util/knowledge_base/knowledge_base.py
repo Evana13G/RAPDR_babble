@@ -321,16 +321,17 @@ class KnowledgeBase(object):
     #     while index_to_delete < len(self.actions):
     #         if self.actions[i].getName() == actionName:
     #             break
-    #         index_to_delete += 1
-            
+    #         index_to_delete += 1        
     #     del self.actions[index_to_delete]
+
+    def reset(self):
+        self.actions = [x for x in self.actions if ':' not in x.getName()]
 
     def __str__(self):
         s = ''
         for a in self.actions:
             s = s + str(a) + '\n'
         return s
-
 
 ######################################################################
 ######################################################################

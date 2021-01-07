@@ -6,3 +6,5 @@ string exploration_mode
 string environment
 ---
 string[] novel_action_names
+float64 exploration_time
+float64[] variation_times

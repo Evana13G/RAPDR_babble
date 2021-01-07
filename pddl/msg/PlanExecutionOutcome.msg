@@ -1,3 +1,4 @@
 bool execution_success
 bool goal_complete
 string failure_action
+float64 execution_time

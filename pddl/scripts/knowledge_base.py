@@ -131,6 +131,11 @@ def get_param_options(req):
     action = KB.getAction(req.actionName)
     vals = action.getParam(req.paramName).getPossibleVals()
     return vals
+
+def reset_KB(req):
+    KB.reset()
+    return True
+
 ################################################################################
 
 def main():
@@ -144,6 +149,7 @@ def main():
     rospy.Service("add_action_to_KB_srv", AddActionToKBSrv, add_action_to_KB)
     rospy.Service("get_param_options_srv", GetParamOptionsSrv, get_param_options)
     # rospy.Service("remove_action_from_KB_srv", RemoveActionFromKBSrv, remove_action)
+    rospy.Service("reset_KB_srv", ResetKBSrv, reset_KB)
 
     rospy.spin()
 
