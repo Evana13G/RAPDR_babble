@@ -40,7 +40,7 @@ from environment.srv import *
 from agent.srv import MoveToStartSrv
 
 environment = 'default'
-num_marbles = 35
+num_marbles = 10
 
 pub_all = rospy.Publisher('models_loaded', Bool, queue_size=10)
 moveToStartProxy = rospy.ServiceProxy('move_to_start_srv', MoveToStartSrv)
