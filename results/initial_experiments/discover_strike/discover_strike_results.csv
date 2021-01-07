@@ -1,0 +1,4 @@
+scenario run_name total_time num_trails avg_trial_time success_actions
+discover_strike run_0 151.79800000000068 1 94.72100000000137 ['push-orientation:right']
+discover_strike run_1 151.8119999999999 1 94.66900000000169 ['push-orientation:right']
+discover_strike run_2 138.9369999999999 1 81.82999999999993 ['push-orientation:right']

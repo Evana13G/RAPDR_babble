@@ -1,3 +1,4 @@
 *.pyc
 pddl/data/*.pddl
+# results/*
 # util/src/util/pddl_parser/

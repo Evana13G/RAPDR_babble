@@ -44,6 +44,8 @@ add_service_files(
   CheckEffectsSrv.srv
   NovelEffectsSrv.srv
   GetParamOptionsSrv.srv
+  RemoveActionFromKBSrv.srv
+  ResetKBSrv.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs gazebo_msgs)

@@ -1,6 +1,5 @@
 string scenario
 ---
-string[] goal
 string orig_scenario
 string novel_scenario 
 int64 T

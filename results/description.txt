@@ -1,0 +1,1 @@
+This file serves as a stub to keep data directory from being included in gitignore, while ignoring all of its results contents

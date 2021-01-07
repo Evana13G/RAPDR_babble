@@ -94,6 +94,7 @@ def execute_plan(req):
     goal_complete = None
     failure_action = None
 
+    trial_start = rospy.get_time()
     for action in req.actions.actions:
         actionName = action.actionName
         args = action.argVals 
@@ -104,11 +105,13 @@ def execute_plan(req):
             action_success = pddlActionExecutorProxy(actionName, args)
         except:
             failure_action = actionName
-            return PlanExecutionOutcome(execution_success, goal_complete, failure_action)
+            trial_end = rospy.get_time()
+            return PlanExecutionOutcome(execution_success, goal_complete, failure_action, trial_end - trial_start)
 
         if action_success == 0:
             failure_action = actionName
-            return PlanExecutionOutcome(execution_success, goal_complete, failure_action)
+            trial_end = rospy.get_time()
+            return PlanExecutionOutcome(execution_success, goal_complete, failure_action, trial_end - trial_start)
 
         effects = scenarioData().init
         effects_met = checkPddlEffects(actionName, args, preconditions, effects).effects_met
@@ -117,8 +120,9 @@ def execute_plan(req):
             failure_action = actionName
             # return PlanExecutionOutcome(execution_success, goal_complete, failure_action)
 
+    trial_end = rospy.get_time()
     execution_success = True
-    return PlanExecutionOutcome(execution_success, goal_complete, failure_action)  
+    return PlanExecutionOutcome(execution_success, goal_complete, failure_action, trial_end - trial_start)  
 
 ###########################################################################
 def main():

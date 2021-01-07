@@ -281,8 +281,8 @@ class KnowledgeBase(object):
 
         return data
 
-
     def getAction(self, name):
+        acts = [a.getName() for a in self.actions]
         for action in self.actions:
             if action.getName() == name:
                 return action
@@ -316,98 +316,24 @@ class KnowledgeBase(object):
             newAction.setName(new_name)
         self.actions.append(newAction)
 
+    # def removeAction(self, actionName):
+    #     index_to_delete = 0
+    #     while index_to_delete < len(self.actions):
+    #         if self.actions[i].getName() == actionName:
+    #             break
+    #         index_to_delete += 1        
+    #     del self.actions[index_to_delete]
+
+    def reset(self):
+        self.actions = [x for x in self.actions if ':' not in x.getName()]
+
     def __str__(self):
         s = ''
         for a in self.actions:
             s = s + str(a) + '\n'
         return s
 
-
 ######################################################################
 ######################################################################
 ######################################################################
 
-        #####################################################################################################
-        #####################################################################################################
-        ## PRESS
-        # press = Action('press', [], [], [], []) # All default, add after 
-        # press.addArg(Variable('?g', 'gripper'))
-        # press.addArg(Variable('?o', 'obj'))
-        # press_p1 = Parameter('rate', 100.0, 50.0, 1000.0)
-        # press_p2 = Parameter('movementMagnitude', 0.1, 0.03, 0.3)
-        # press_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front', 'back'])
-        # press.addPreCond(StaticPredicate('is_visible', ['?o']))
-        # press.addEffect(StaticPredicate('pressed', ['?o']))
-        # press.addParam(press_p1)
-        # press.addParam(press_p2)
-        # press.addParam(press_p3)
-        # press.setExecutionArgNames(['gripper', 'objectName'])
-        #####################################################################################################
-        #####################################################################################################
-        # ## GRASP
-        # grasp = Action('grasp', [], [], [], []) # All default, add after 
-        # grasp.addArg(Variable('?g', 'gripper'))
-        # grasp.addArg(Variable('?o', 'obj'))
-        # grasp_p1 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top', 'front', 'back'])
-        # grasp.addParam(grasp_p1)
-        # grasp.addEffect(StaticPredicate('grasped', ['?o']))
-        # grasp.setExecutionArgNames(['gripper', 'objectName'])
-        # ## DROP
-        # drop = Action('drop', [], [], [], []) # All default, add after 
-        # drop.addArg(Variable('?g', 'gripper'))
-        # drop.addArg(Variable('?o', 'obj'))
-        # drop_p1 = Parameter('dropHeight', 0.1, 0.01, 0.3)
-        # drop.addParam(drop_p1)
-        # drop.setExecutionArgNames(['gripper', 'objectName'])
-        #####################################################################################################
-        #####################################################################################################
-
-        # # REMOVE FROM BURNER
-        # remove_from_burner = Action('remove_from_burner', [], [], [], []) # All default, add after 
-        # remove_from_burner.addArg(Variable('?g', 'gripper'))
-        # remove_from_burner.addArg(Variable('?o', 'obj'))
-        # remove_from_burner.addArg(Variable('?b', 'burner'))
-        # # remove_from_burner.addPreCond(StaticPredicate('on_burner', ['?o', '?b']))
-        # remove_from_burner.addPreCond(StaticPredicate('cooked', ['?o']))
-        # remove_from_burner.addEffect(StaticPredicate('not', [StaticPredicate('on_burner', ['?o', '?b'])]))
-        # remove_from_burner.setExecutionArgNames(['gripper', 'objectName1', 'objectName2'])
-
-        # # UNCOVER OBJECT
-        # uncover_obj = Action('uncover_obj', [], [], [], []) # All default, add after 
-        # uncover_obj.addArg(Variable('?g', 'gripper'))
-        # uncover_obj.addArg(Variable('?o', 'obj'))
-        # uncover_obj.addArg(Variable('?b', 'burner'))
-        # uncover_obj.addPreCond(StaticPredicate('not', [StaticPredicate('on_burner', ['?o', '?b'])]))
-        # # uncover_obj.addPreCond(StaticPredicate('covered', ['?o']))
-        # uncover_obj.addEffect(StaticPredicate('not', [StaticPredicate('covered', ['?o'])]))
-        # uncover_obj.setExecutionArgNames(['gripper', 'objectName'])
-
-        # # SERVE FOOD
-        # serve_food = Action('serve_food', [], [], [], []) # All default, add after 
-        # serve_food.addArg(Variable('?g', 'gripper'))
-        # serve_food.addArg(Variable('?o', 'obj'))
-        # serve_food.addPreCond(StaticPredicate('cooked', ['?o']))
-        # # serve_food.addPreCond(StaticPredicate('not', [StaticPredicate('covered', ['?o'])]))
-        # serve_food.addEffect(StaticPredicate('meal_complete', ['?o']))
-        # serve_food.setExecutionArgNames(['objectName'])
-
-        # # CLEAR ITEM
-        # clear_table_item = Action('clear_table_item', [], [], [], []) # All default, add after 
-        # clear_table_item.addArg(Variable('?g', 'gripper'))
-        # clear_table_item.addArg(Variable('?o', 'obj'))
-        # # clear_table_item.addPreCond(StaticPredicate('cooked', ['?o']))
-        # clear_table_item.addEffect(StaticPredicate('not', [StaticPredicate('is_visible', ['?o'])]))
-        # clear_table_item.setExecutionArgNames(['gripper', 'objectName'])
-
-        # _actions.append(remove_from_burner)
-        # _actions.append(uncover_obj)
-        # _actions.append(serve_food)
-        # _actions.append(clear_table_item)
-
-        # _actions.append(press)
-        # _actions.append(grasp)
-        # _actions.append(drop)
-
-######################################################################
-######################################################################
-######################################################################

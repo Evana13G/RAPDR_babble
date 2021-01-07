@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
 FILES
 HardcodedOffset.msg
+SuccessAction.msg
 )
 
 add_service_files(
@@ -30,6 +31,8 @@ IsVisibleSrv.srv
 BrainSrv.srv
 GetScenarioSettingsSrv.srv
 GetMoveMagUnitSrv.srv
+RunExperimentSrv.srv
+GetScenarioGoalSrv.srv
 )
 
 catkin_python_setup()

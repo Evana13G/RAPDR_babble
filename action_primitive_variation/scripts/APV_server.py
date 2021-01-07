@@ -54,15 +54,18 @@ def execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment
     envResetProxy('restart', env)
     print('#### ---- ' + str(actionToVary) + ', [' + str(paramToVary) + ']: ' + str(paramAssignment))
     preconds = scenarioData().init
+    exploration_start = rospy.get_time()
     paramActionExecutionProxy(actionToVary, args, [paramToVary], [str(paramAssignment)])
-    effects = scenarioData().init
+    exploration_end = rospy.get_time()
     
+    exploration_time = exploration_end - exploration_start
+    effects = scenarioData().init
     novelty = novelEffectChecker(actionToVary, args, preconds, effects) 
 
     is_novel = novelty.novel_action
     same_effects_as_orig = novelty.same_effects_as_orig
     new_effects = novelty.new_effects
-    return is_novel, same_effects_as_orig, new_effects
+    return is_novel, same_effects_as_orig, new_effects, exploration_time
 
 def set_up_variations(req):
     actionToVary = req.actionName
@@ -72,8 +75,11 @@ def set_up_variations(req):
     env = req.environment
     exploration_mode = req.exploration_mode
 
+    exploration_time = 0.0
+    variation_times = []
+
     if paramToVary == None or paramToVary == '':
-        return APVSrvResponse(False)
+        return APVSrvResponse(False, exploration_time, variation_times)
 
     actionInfo = actionInfoProxy(actionToVary).actionInfo
     argNames = actionInfo.executableArgNames
@@ -84,8 +90,14 @@ def set_up_variations(req):
     added_actions = []
 
     for paramAssignment in paramVals:
-        novel, accomplishes_OG_effects, new_effects = execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment, env)
-        newName = str(actionToVary) + '-' + str(paramToVary) + ':' + str(paramAssignment).split('.')[0]
+
+        novel, accomplishes_OG_effects, new_effects, variation_time = execute_and_evaluate_action(actionToVary, args, paramToVary, paramAssignment, env)
+        variation_times.append(variation_time)
+        exploration_time += variation_time
+
+        newName = str(actionToVary) + '-' + str(paramToVary) + ':' + str(paramAssignment)
+        # newName = str(actionToVary) + '-' + str(paramToVary) + ':' + str(paramAssignment).split('.')[0]
+        # newName = str(actionToVary) + '-' + str(paramToVary) + ':' + str(paramAssignment).replace('.', '*')[0]
         
         if accomplishes_OG_effects == True: 
 
@@ -103,7 +115,7 @@ def set_up_variations(req):
                 added_actions.append(newName)
     print('#### ---- ')
     print('#### ---- Newly added actions: ' + str(added_actions))
-    return APVSrvResponse(added_actions)
+    return APVSrvResponse(added_actions, exploration_time, variation_times)
 
 ###################################################################################### 
 # def generateAllCombos(req):
