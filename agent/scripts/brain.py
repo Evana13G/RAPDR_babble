@@ -149,6 +149,8 @@ def handle_trial(req):
 
                 # Setup for attempt
                 action_exclusions = [comboToExecute[0]] # The one we are currently testing
+                if '-' in comboToExecute[0]: 
+                    action_exclusions.append(comboToExecute[0].split('-')[0])
 
                 print("#### -- APV mode: COMPLETE")
                 print('#### ------------------------------------------ ')

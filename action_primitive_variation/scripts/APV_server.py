@@ -35,7 +35,7 @@ def process_intervals(actionInfo, paramToVary, T):
 
     if paramToVary == 'orientation':
         if T > 3: T = 3
-        choices = paramDiscreteChoices[i_paramToVary].discretizedParamVals
+        choices = paramDiscreteChoices[i_paramToVary].discretizedParamVals#.remove('left') # remove = Hack 
         paramVals = random.sample(choices, k=T)
     else:
         paramMin = float(paramMins[i_paramToVary])
