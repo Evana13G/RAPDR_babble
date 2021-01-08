@@ -17,7 +17,10 @@ def quantify_run_result(scenarioName, run_name, result):
     attempt_times = result.timePerAttempt
     total_time = result.totalTime
     total_attempts = len(attempt_times)
-    average_attempt_time = sum(attempt_times) / len(attempt_times)
+    if len(attempt_times ) > 0:
+        average_attempt_time = sum(attempt_times) / len(attempt_times)
+    else:
+        average_attempt_time = 0.0
     raw_plan = result.success_plan
     novel_names = [a.actionName for a in raw_plan]
     novel_names = [n for n in novel_names if ':' in n]
