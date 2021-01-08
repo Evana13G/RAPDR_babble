@@ -259,7 +259,7 @@ class KnowledgeBase(object):
         _preds = []
         _acts = []
         _locs = []
-
+        print(action_exclusions)
         for r in self.requirements:
             _reqs.append(':' + r)
         for t in self.types:
@@ -267,11 +267,14 @@ class KnowledgeBase(object):
         for p in self.predicates:
             _preds.append(str(p))
         for a in self.actions:
+            print(a.getName())
             if a.getName() not in action_exclusions:
                 _acts.append(str(a))
+            else:
+                print('excluded')
         for l in self.pddlLocs:
             _locs.append(str(l))
-            
+        
         data['domain'] = self.domain
         data['requirements'] = _reqs
         data['types'] = _types
@@ -282,10 +285,12 @@ class KnowledgeBase(object):
         return data
 
     def getAction(self, name):
+        print("get action: " + str(name))
         acts = [a.getName() for a in self.actions]
+        print('current acts: ' + str(acts))
         for action in self.actions:
             if action.getName() == name:
-                return action
+                return copy.deepcopy(action)
 
     def getActions(self):
         return copy.deepcopy(self.actions)

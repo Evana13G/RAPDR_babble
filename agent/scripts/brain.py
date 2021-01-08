@@ -79,6 +79,7 @@ def handle_trial(req):
             ## Attempt
             ##
             # Timing Sequence
+            print("action exclusions: " + str(action_exclusions))
             attempt_time = 0.0
             outcome, truncated_plan, success_plan = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions)
             execution_times.append(outcome.execution_time)
@@ -96,8 +97,16 @@ def handle_trial(req):
             new_actions_executed = [act.actionName for act in truncated_plan if ':' in act.actionName]
             print("new actions executed: " + str(new_actions_executed))
             failed.extend(new_actions_executed)
+            failed = list(set(failed))
+
             print("failed: " + str(failed))
-            if new_actions_executed != []: new_actions.remove(new_actions_executed)
+            
+            temp = []
+            for a in new_actions:
+                if a not in failed: 
+                    temp.append(a)
+            new_actions = temp
+            
             print("new actions: " + str(new_actions))
 
             # init set or reset after exhausting. If its a reset, flip the exploration mode
@@ -147,12 +156,11 @@ def handle_trial(req):
 
                 # Setup for attempt
                 action_exclusions = [comboToExecute[0]] # The one we are currently testing
-                action_exclusions.extend(failed)
-                print("action exclusions: " + str(action_exclusions))
 
                 print("#### -- APV mode: COMPLETE")
                 print('#### ------------------------------------------ ')
-                attempt += 1
+            action_exclusions.extend(failed)
+            attempt += 1
             #####################################################################################
             trial_times.append(attempt_time)
 
