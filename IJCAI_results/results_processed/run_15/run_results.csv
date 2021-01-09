@@ -1,0 +1,2 @@
+exploration_times total_time success_plan
+"[351.79100000000005, 142.67399999999986, 248.79700000000003, 57.569999999999936, 109.09999999999991, 115.6510000000003]" 1025.583 [['push-movementmagnitude:0.1',['left_gripper','0.5,0.0,-0.1','cover']],['uncover_obj',['left_gripper','cover','0.5,0.0,-0.1','cup']],['shake',['left_gripper','cup']],['prep_food',['left_gripper','cup']],['place_on_burner',['left_gripper','cup','burner1']],['cover_obj',['left_gripper','cover','0.5,0.0,-0.1','cup']],['cook',['left_gripper','cup','burner1']]]
