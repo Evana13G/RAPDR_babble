@@ -40,8 +40,8 @@
         </geometry>
         <material>
           <script>
-            <name>Gazebo/Red</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>vrc/burner</name>
+            <uri>file://cook/materials/scripts/burner.material</uri>
           </script>
         </material>
       </visual>

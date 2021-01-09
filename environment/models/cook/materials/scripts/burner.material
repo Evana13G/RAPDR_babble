@@ -1,0 +1,14 @@
+material vrc/burner
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture stove.jpeg
+			}
+		}
+	}
+}
+

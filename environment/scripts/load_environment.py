@@ -96,7 +96,7 @@ def load_gazebo_models(env='default'):
             cup_xml=cup_file.read().replace('\n', '')
         with open (model_path + "cup_with_cover/cover_model_high_friction.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
-        with open (model_path + "cook/burner_model.sdf", "r") as burner_file:
+        with open (model_path + "mud_box/model.sdf", "r") as burner_file:
             burner_xml=burner_file.read().replace('\n', '')
 
     ###############################
@@ -107,11 +107,11 @@ def load_gazebo_models(env='default'):
             cup_xml=cup_file.read().replace('\n', '')
         with open (model_path + "cup_with_cover/cover_model_low_friction.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
-        with open (model_path + "cook/burner_model.sdf", "r") as burner_file:
+        with open (model_path + "mud_box3/model.sdf", "r") as burner_file:
             burner_xml=burner_file.read().replace('\n', '')
 
     ###############################
-    #### BREAKABLE OBJ ############
+    #### BREAKABLE OBJ ############--
     elif env == 'breakable':
         with open (model_path + "breakable_obj/test_model.sdf", "r") as breakable_obj_file:
             breakable_obj_xml=breakable_obj_file.read().replace('\n', '')
