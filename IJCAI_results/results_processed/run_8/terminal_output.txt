@@ -1,0 +1,44 @@
+################################################
+#### ------------------------------------------ 
+#### Goal: ['(cooking cup)']
+#### ------------------------------------------ 
+#### -- Novel Scenario: 
+#### ---- push
+#### ---- uncover_obj
+#### ---- shake
+#### ---- prep_food
+#### ---- place_on_burner
+#### ---- cover_obj
+#### ---- cook
+#### ---- 
+[ERROR] [1610119527.445321, 4352.489000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610119527.445861, 4352.490000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610119527.470371, 4352.512000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610119527.470776, 4352.513000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610119528.559947, 4353.531000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610119528.560238, 4353.531000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+#### ---- Plan execution: True
+#### ---- Goal Accomplished: False
+#### ------------------------------------------ 
+#### -- APV mode: 6 total combo(s) found
+#### -- APV mode: START 
+#### ---- push, [rate]: 3.0
+#### ---- push, [rate]: 76.5
+#### ---- push, [rate]: 150.0
+#### ---- 
+#### ---- Newly added actions: ['push-rate:76.5']
+#### -- APV mode: COMPLETE
+#### ------------------------------------------ 
+#### -- [ATTEMPT 1] 
+#### ---- push-rate:76.5
+#### ---- uncover_obj
+#### ---- shake
+#### ---- prep_food
+#### ---- place_on_burner
+#### ---- cover_obj
+#### ---- cook
+#### ---- 
+#### ---- Plan execution: True
+#### ---- Goal Accomplished: True
+#### ------------------------------------------ 
+################################################

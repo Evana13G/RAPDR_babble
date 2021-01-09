@@ -167,7 +167,7 @@ def scenario_settings(req):
     elif scenario == 'cook':
         orig_scenario = 'cook'
         novel_scenario = 'cook_low_friction'
-        T = 3
+        T = 5
         additional_domain_locs = []
     else:
         orig_scenario = ''

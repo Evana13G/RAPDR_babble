@@ -1,0 +1,57 @@
+########################################################
+########################################################
+##                                                    ##
+##   Action Primitive Discovery in Robotic Agents     ##
+##         through Action Parameter Variation         ##
+##                                                    ##
+## -- a proof of concept model for knowledge          ##
+##    acquisition in intelligent agents, 2021         ##
+##                                                    ##
+########################################################
+########################################################
+
+################################################
+#### ------------------------------------------ 
+#### Goal: ['(cooking cup)']
+#### ------------------------------------------ 
+#### -- Novel Scenario: 
+#### ---- push
+#### ---- uncover_obj
+#### ---- shake
+#### ---- prep_food
+#### ---- place_on_burner
+#### ---- cover_obj
+#### ---- cook
+#### ---- 
+[ERROR] [1610112313.257062, 162.831000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610112313.257411, 162.832000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610112313.273690, 162.848000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610112313.273939, 162.848000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610112314.335512, 163.864000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610112314.335838, 163.864000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+#### ---- Plan execution: True
+#### ---- Goal Accomplished: False
+#### ------------------------------------------ 
+#### -- APV mode: 6 total combo(s) found
+#### -- APV mode: START 
+#### ---- push, [movementmagnitude]: 0.1
+#### ---- push, [movementmagnitude]: 0.35
+#### ---- push, [movementmagnitude]: 0.6
+#### ---- 
+#### ---- Newly added actions: ['push-movementmagnitude:0.1']
+#### -- APV mode: COMPLETE
+#### ------------------------------------------ 
+#### -- [ATTEMPT 1] 
+#### ---- push-movementmagnitude:0.1
+#### ---- uncover_obj
+#### ---- shake
+#### ---- prep_food
+#### ---- place_on_burner
+#### ---- cover_obj
+#### ---- cook
+#### ---- 
+#### ---- Plan execution: True
+#### ---- Goal Accomplished: True
+#### ------------------------------------------ 
+################################################
+#### ------------------------------------------ 
