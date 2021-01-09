@@ -1,0 +1,86 @@
+#### ------------------------------------------ 
+################################################
+#### ------------------------------------------ 
+#### Goal: ['(cooking cup)']
+#### ------------------------------------------ 
+#### -- Novel Scenario: 
+#### ---- push
+#### ---- uncover_obj
+#### ---- shake
+#### ---- prep_food
+#### ---- place_on_burner
+#### ---- cover_obj
+#### ---- cook
+#### ---- 
+[ERROR] [1610181739.455047, 11118.420000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610181739.455340, 11118.420000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610181739.476322, 11118.436000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610181739.477236, 11118.437000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610181740.551132, 11119.458000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610181740.551751, 11119.459000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+#### ---- Plan execution: True
+#### ---- Goal Accomplished: False
+#### ------------------------------------------ 
+#### -- APV mode: 6 total combo(s) found
+#### -- APV mode: START 
+#### ---- shake, [orientation]: left
+#### ---- shake, [orientation]: right
+#### ---- shake, [orientation]: top
+#### ---- 
+#### ---- Newly added actions: []
+#### -- APV mode: COMPLETE
+#### ------------------------------------------ 
+#### -- [ATTEMPT 1] 
+#### ---- No Plan Found 
+#### -- APV mode: START 
+#### ---- shake, [movementmagnitude]: 0.01
+#### ---- shake, [movementmagnitude]: 0.841666666667
+#### ---- shake, [movementmagnitude]: 1.67333333333
+#### ---- shake, [movementmagnitude]: 2.505
+#### ---- shake, [movementmagnitude]: 3.33666666667
+#### ---- shake, [movementmagnitude]: 4.16833333333
+#### ---- shake, [movementmagnitude]: 5.0
+#### ---- 
+#### ---- Newly added actions: []
+#### -- APV mode: COMPLETE
+#### ------------------------------------------ 
+#### -- [ATTEMPT 2] 
+#### ---- No Plan Found 
+#### -- APV mode: START 
+#### ---- shake, [rate]: 1.0
+#### ---- shake, [rate]: 4.16666666667
+#### ---- shake, [rate]: 7.33333333333
+#### ---- shake, [rate]: 10.5
+#### ---- shake, [rate]: 13.6666666667
+#### ---- shake, [rate]: 16.8333333333
+#### ---- shake, [rate]: 20.0
+#### ---- 
+#### ---- Newly added actions: []
+#### -- APV mode: COMPLETE
+#### ------------------------------------------ 
+#### -- [ATTEMPT 3] 
+#### ---- No Plan Found 
+#### -- APV mode: START 
+#### ---- push, [rate]: 3.0
+#### ---- push, [rate]: 27.5
+#### ---- push, [rate]: 52.0
+#### ---- push, [rate]: 76.5
+#### ---- push, [rate]: 101.0
+#### ---- push, [rate]: 125.5
+#### ---- push, [rate]: 150.0
+#### ---- 
+#### ---- Newly added actions: ['push-rate:3.0', 'push-rate:27.5', 'push-rate:52.0', 'push-rate:76.5', 'push-rate:101.0', 'push-rate:125.5']
+#### -- APV mode: COMPLETE
+#### ------------------------------------------ 
+#### -- [ATTEMPT 4] 
+#### ---- push-rate:3.0
+#### ---- uncover_obj
+#### ---- shake
+#### ---- prep_food
+#### ---- place_on_burner
+#### ---- cover_obj
+#### ---- cook
+#### ---- 
+#### ---- Plan execution: True
+#### ---- Goal Accomplished: True
+#### ------------------------------------------ 
