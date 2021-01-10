@@ -71,7 +71,7 @@ def push(req):
     objName = req.objectName
     rate = req.rate
     orientation = req.orientation
-    moveMagScalar = req.movementMagnitude
+    moveMagScalar = req.movementmagnitude
     
     objPose = getObjectPose(req.objectName)
     offSets = getOffset(objName, orientation).hardcodings
@@ -105,7 +105,7 @@ def shake(req):
     objName = req.objectName
     objPose = getObjectPose(objName)
     rate = req.rate
-    twist_range = req.movementMagnitude
+    twist_range = req.movementmagnitude
     orientation = req.orientation
     startPose = orientationSolver(gripper, objName, orientation).configuration
 

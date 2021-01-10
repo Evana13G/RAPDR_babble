@@ -98,11 +98,9 @@ def generateAllCombos(T, plan, exploration_mode='focused'):
 
     for a in selections:
         if a.actionName not in ['uncover_obj', 'cover_obj', 'prep_food', 'cook', 'place_on_burner']:
-            # params = ['rate', 'orientation', 'movementMagnitude']
-            params = ['rate']
+            params = ['rate', 'orientation', 'movementmagnitude']
             while len(params) > 0:
-                # i = random.randint(0, len(params) - 1)
-                i = 0
+                i = random.randint(0, len(params) - 1)
                 param = params[i]
                 formatted = []
                 formatted.append(a.actionName)

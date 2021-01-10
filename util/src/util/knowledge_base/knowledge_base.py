@@ -68,7 +68,7 @@ class KnowledgeBase(object):
         push.addEffect(StaticPredicate('not', [StaticPredicate('at', ['?o', '?loc0'])]))
         push_p1 = Parameter('rate', 7.0, 3.0, 150.0) # Discover Strike
         # push_p1 = Parameter('rate', 7.0, 3.0, 50.0) # Cook
-        push_p2 = Parameter('movementMagnitude', 0.4, 0.1, 0.6)
+        push_p2 = Parameter('movementmagnitude', 0.4, 0.1, 0.6)
         push_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top'])
         push.addParam(push_p1)
         push.addParam(push_p2)
@@ -82,7 +82,7 @@ class KnowledgeBase(object):
         shake.addPreCond(StaticPredicate('not', [StaticPredicate('covered', ['?o'])]))
         shake.addEffect(StaticPredicate('shaken', ['?o']))
         shake_p1 = Parameter('rate', 15.0, 1.0, 20.0)
-        shake_p2 = Parameter('movementMagnitude', 1.0, 0.01, 5.0)
+        shake_p2 = Parameter('movementmagnitude', 1.0, 0.01, 5.0)
         shake_p3 = Parameter('orientation', 'top', None, None, ['left', 'right', 'top'])
         shake.addParam(shake_p1)
         shake.addParam(shake_p2)
@@ -259,7 +259,6 @@ class KnowledgeBase(object):
         _preds = []
         _acts = []
         _locs = []
-
         for r in self.requirements:
             _reqs.append(':' + r)
         for t in self.types:
@@ -271,7 +270,7 @@ class KnowledgeBase(object):
                 _acts.append(str(a))
         for l in self.pddlLocs:
             _locs.append(str(l))
-            
+        
         data['domain'] = self.domain
         data['requirements'] = _reqs
         data['types'] = _types
@@ -285,7 +284,7 @@ class KnowledgeBase(object):
         acts = [a.getName() for a in self.actions]
         for action in self.actions:
             if action.getName() == name:
-                return action
+                return copy.deepcopy(action)
 
     def getActions(self):
         return copy.deepcopy(self.actions)

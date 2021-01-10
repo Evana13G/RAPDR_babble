@@ -94,14 +94,16 @@ def handle_trial(req):
             ### Cleanup from attempt
             momentOfFailurePreds = scenarioData().predicates
             new_actions_executed = [act.actionName for act in truncated_plan if ':' in act.actionName]
-            print("new actions executed: " + str(new_actions_executed))
             failed.extend(new_actions_executed)
-            print("failed: " + str(failed))
-            if new_actions_executed != []: new_actions.remove(new_actions_executed)
-            print("new actions: " + str(new_actions))
+            failed = list(set(failed))
 
+            temp = []
+            for a in new_actions:
+                if a not in failed: 
+                    temp.append(a)
+            new_actions = temp
+            
             # init set or reset after exhausting. If its a reset, flip the exploration mode
-
             #####################################################################################
             ###### Generate New APV Combos list
             ###### Will eventually be for switching into defocused mode 
@@ -147,12 +149,13 @@ def handle_trial(req):
 
                 # Setup for attempt
                 action_exclusions = [comboToExecute[0]] # The one we are currently testing
-                action_exclusions.extend(failed)
-                print("action exclusions: " + str(action_exclusions))
+                if '-' in comboToExecute[0]: 
+                    action_exclusions.append(comboToExecute[0].split('-')[0])
 
                 print("#### -- APV mode: COMPLETE")
                 print('#### ------------------------------------------ ')
-                attempt += 1
+            action_exclusions.extend(failed)
+            attempt += 1
             #####################################################################################
             trial_times.append(attempt_time)
 
