@@ -1,2 +1,0 @@
-exploration_times total_time success_plan
-"[147.6869999999999, 102.66200000000026, 134.10199999999895, 171.75, 100.40099999999984]" 656.601999999999 [['push-rate:39.75',['left_gripper','0.5,0.0,-0.1','cover']],['uncover_obj',['left_gripper','cover','0.5,0.0,-0.1','cup']],['shake',['left_gripper','cup']],['prep_food',['left_gripper','cup']],['place_on_burner',['left_gripper','cup','burner1']],['cover_obj',['left_gripper','cover','0.5,0.0,-0.1','cup']],['cook',['left_gripper','cup','burner1']]]

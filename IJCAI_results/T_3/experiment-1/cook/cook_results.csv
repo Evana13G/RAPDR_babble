@@ -1,2 +1,0 @@
-scenario run_name total_time num_trails avg_trial_time success_actions
-cook run_0 311.136 2 155.568 ['push-rate:150.0']
