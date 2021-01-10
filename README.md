@@ -50,7 +50,7 @@ Each of the following should be run in a separate terminal window:
              num_discover_strike_runs: 1
              num_cook_runs: 0" 
 
-Name the experiment, which RAPDR will use to name the results in the results directory after running. Specify if you would like a demo of the agent accomplishing its goal in the 'original' scenario (demo_mode : true), otherwise the agent will enter the 'novel' scenerio. Specify the number of runs of each type of experiment you would like to run. 
+Name the experiment (experiment_name), which RAPDR will use to name the results in the results directory after running. Specify if you would like a demo of the agent accomplishing its goal in the 'original' scenario (demo_mode : true), otherwise the agent will enter the 'novel' scenerio. Specify the number of runs of each type of experiment you would like to run. 
 
 4. To run a test script: 
 
