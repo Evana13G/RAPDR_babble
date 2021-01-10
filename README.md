@@ -42,21 +42,27 @@ Each of the following should be run in a separate terminal window:
 
         roslaunch agent RAPDR.launch
         
-3. Call the brain service:
+3. Run an experiment:
 
-        rosservice call /brain_srv [tab complete for args]
+        rosservice call /experiments_srv [tab complete for args]
+            "experiment_name: 'experiment'
+             demo_mode: false
+             num_discover_strike_runs: 1
+             num_cook_runs: 0" 
 
-  
-To run test scripts:
+Name the experiment, which RAPDR will use to name the results in the results directory after running. Specify if you would like a demo of the agent accomplishing its goal in the 'original' scenario (demo_mode : true), otherwise the agent will enter the 'novel' scenerio. Specify the number of runs of each type of experiment you would like to run. 
 
-        rosservice call /test_service_name [tab complete for args]
+4. To run a test script: 
+
+        rosservice call /[test name] [tab complete for args]
 
 Examples:
 
-        rosservice call /test_actions_srv [No Args]
+        rosservice call /test_actions_srv "{}" [No Args]
         
-        rosservice call /test_action_settings_srv [No Args]
+        rosservice call /test_action_settings_srv "{}" [No Args]
         
+
 For more instructions on writing/running test nodes, see below which will redirect to the developers wiki. 
 
 #### DEVELOPMENT Run instructions <br />
