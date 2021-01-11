@@ -39,6 +39,9 @@ from agent.srv import MoveToStartSrv
 pub_all = None
 environment = 'default'
 
+#number of marbles
+num_marbles = 30
+
 getModelState = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
 getLinkState = rospy.ServiceProxy('/gazebo/get_link_state', GetLinkState)
 
@@ -50,6 +53,11 @@ pub_breakable_obj_pose = rospy.Publisher('breakable_obj_pose', PoseStamped, queu
 pub_cup_pose = rospy.Publisher('cup_pose', PoseStamped, queue_size = 10)
 pub_cover_pose = rospy.Publisher('cover_pose', PoseStamped, queue_size = 10)
 pub_burner_pose = rospy.Publisher('burner1_pose', PoseStamped, queue_size = 10)
+
+
+
+pub_marbleB_pose = rospy.Publisher('marbleB_pose', PoseStamped, queue_size= 10)
+pub_marbleR_pose = rospy.Publisher('marbleB_pose', PoseStamped, queue_size= 10)
         
 def poseFromPoint(poseVar):
     newPose = poseVar.pose
