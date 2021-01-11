@@ -81,7 +81,7 @@ def handle_trial(req):
             ##
             # Timing Sequence
             attempt_time = 0.0
-            
+
             outcome, truncated_plan, success_plan = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions, exploration_mode, test_action)
 
             execution_times.append(outcome.execution_time)
@@ -105,7 +105,7 @@ def handle_trial(req):
                 if a not in failed: 
                     temp.append(a)
             new_actions = temp
-            
+
             # init set or reset after exhausting. If its a reset, flip the exploration mode
             #####################################################################################
             ###### Generate New APV Combos list
@@ -122,7 +122,7 @@ def handle_trial(req):
                 # if attempt > 0: 
                 #     exploration_mode = 'defocused'
                 APVtrials = generateAllCombos(T, truncated_plan, exploration_mode)  
-                print(APVtrials)
+                print("APV Trials: " + str(APVtrials))
                 print("#### -- APV mode: " + str(len(APVtrials)) + " total combo(s) found")
 
             #####################################################################################
@@ -160,6 +160,9 @@ def handle_trial(req):
                 print("#### -- APV mode: COMPLETE")
                 print('#### ------------------------------------------ ')
 
+            if new_actions != []:
+                test_action = new_actions.pop()
+
             action_exclusions.extend(failed)
             attempt += 1
             #####################################################################################
@@ -194,6 +197,9 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclus
         return outcome, truncated_plan, action_list
 
     if exploration_mode == 'defocused':
+        if test_action == None:
+            return outcome, truncated_plan, action_list
+        action_exclusions = []
         try:
             test_action_plan = ActionExecutionInfoList([ActionExecutionInfo(test_action)]) # NEED to edit this 
             test_action_outcome = planExecutor(test_action_plan) 

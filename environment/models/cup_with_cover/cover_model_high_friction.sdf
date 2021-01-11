@@ -5,7 +5,7 @@
       <inertial>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <!-- <mass>0.5</mass> -->
-        <mass>0.3</mass>
+        <mass>1.0</mass>
         <inertia>
           <ixx>0.2</ixx>
           <ixy>0</ixy>

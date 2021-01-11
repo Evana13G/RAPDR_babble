@@ -48,12 +48,12 @@ resetPreds = rospy.ServiceProxy('reset_env_preds', EmptySrvReq)
 def load_gazebo_models(env='default'):
 
     table_pose=Pose(position=Point(x=0.78, y=0.0, z=0.0))
-    right_button_pose=Pose(position=Point(x=0.55, y=-0.2715, z=0.78))
-    left_button_pose=Pose(position=Point(x=0.55, y=0.1515, z=0.78))
+    right_button_pose=Pose(position=Point(x=0.6, y=-0.2715, z=0.775))
+    left_button_pose=Pose(position=Point(x=0.6, y=0.1515, z=0.775))
     breakable_obj_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
     cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
     cover_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
-    burner_pose=Pose(position=Point(x=0.5, y=-0.11, z=0.8))
+    burner_pose=Pose(position=Point(x=0.5, y=-0.11, z=0.775))
 
     reference_frame="world"
 

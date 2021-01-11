@@ -109,16 +109,18 @@ def generateAllCombos(T, plan, exploration_mode='focused'):
                                   ('right_button', '0.5,-0.3,-0.1')]
 
             while len(other_obj_entities) > 0:
-                i = random.randint(0, len(other_obj_entities) - 1)
+                i = random.randint(0, len(other_obj_entities)-1)
                 if a.actionName == 'push':
-                    new_args = copy.deepcopy(a.args)
+                    new_args = copy.deepcopy(a.argVals)
                     new_args[1] = other_obj_entities[i][1]
                     new_args[2] = other_obj_entities[i][0]
                 else:
-                    new_args = copy.deepcopy(a.args)
+                    new_args = copy.deepcopy(a.argVals)
                     new_args[1] = other_obj_entities[i][0]
-                expanded_parameterizables.append(a.actionName, new_args)
-                del other_obj_entities
+                a.argVals = new_args
+                expanded_parameterizables.append(a)
+                del other_obj_entities[i]
+        parameterizable_selections = expanded_parameterizables
 
     for a in parameterizable_selections:       
         params = ['rate', 'orientation', 'movementmagnitude']

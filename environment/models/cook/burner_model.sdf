@@ -1,5 +1,6 @@
 <sdf version='1.6'>
   <model name='cover'>
+    <static>true</static>
     <link name='base_link'>
       <pose frame=''>0 0 0 0 -0 0</pose>
       <inertial>
