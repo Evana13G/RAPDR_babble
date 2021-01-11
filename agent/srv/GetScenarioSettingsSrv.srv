@@ -3,4 +3,3 @@ string scenario
 string orig_scenario
 string novel_scenario 
 int64 T
-string[] additional_domain_locs

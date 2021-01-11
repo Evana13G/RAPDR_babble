@@ -72,6 +72,7 @@ def handle_trial(req):
 
         new_actions = []
         failed = []
+        test_action = None
 
         while(goalAccomplished(goal, currentState.init) == False):
 
@@ -80,7 +81,9 @@ def handle_trial(req):
             ##
             # Timing Sequence
             attempt_time = 0.0
-            outcome, truncated_plan, success_plan = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions)
+            
+            outcome, truncated_plan, success_plan = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions, exploration_mode, test_action)
+
             execution_times.append(outcome.execution_time)
             attempt_time += outcome.execution_time
 
@@ -154,6 +157,7 @@ def handle_trial(req):
 
                 print("#### -- APV mode: COMPLETE")
                 print('#### ------------------------------------------ ')
+
             action_exclusions.extend(failed)
             attempt += 1
             #####################################################################################
@@ -170,7 +174,7 @@ def handle_trial(req):
 #############################################################################
 #############################################################################
 
-def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclusions=[]):
+def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclusions=[], exploration_mode='focused', test_action=None):
     
     # print('#### ------------------------------------------ ')
     if (attempt != 'orig' and attempt != 0):
@@ -185,7 +189,16 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclus
         rospy.sleep(1)
     except rospy.ServiceException, e:
         print("Reset Environment Service call failed: %s"%e)
-        return outcome
+        return outcome, truncated_plan, action_list
+
+    if exploration_mode == 'defocused':
+        try:
+            test_action_plan = ActionExecutionInfoList([ActionExecutionInfo(test_action)]) # NEED to edit this 
+            test_action_outcome = planExecutor(test_action_plan) 
+        except rospy.ServiceException, e:
+            print("Service call failed: %s"%e)
+            moveToStartProxy()
+            return outcome, truncated_plan, action_list
 
     try:
         initStateInfo = scenarioData()
@@ -228,6 +241,9 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclus
     except rospy.ServiceException, e:
         print("Service call failed: %s"%e)
         moveToStartProxy()
+
+    if exploration_mode == 'defocused':
+        action_list = test_action
 
     return outcome, truncated_plan, action_list
 

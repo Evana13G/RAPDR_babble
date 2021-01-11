@@ -145,7 +145,7 @@ def scenario_goal(req):
         goal = ['(not (at cover '+ poseStampedToString(coverLoc) + '))']
     elif scenario == 'discover_pour':
         goal = ['(not (touching cover cup))']
-    elif scenario == 'cook':
+    elif scenario in ['cook', 'cook_defocused']:
         goal = ['(cooking cup)']
     else:
         goal = []
@@ -157,27 +157,26 @@ def scenario_settings(req):
     if scenario == 'discover_strike':
         orig_scenario = 'discover_strike'
         novel_scenario = 'HH'
-        T = 3
-        additional_domain_locs = []
+        T = 2
     elif scenario == 'discover_pour':
         orig_scenario = 'discover_pour'
         novel_scenario = 'high_friction'
-        T = 5
-        additional_domain_locs = []
+        T = 3
     elif scenario == 'cook':
         orig_scenario = 'cook'
         novel_scenario = 'cook_low_friction'
-        T = 7
-        additional_domain_locs = []
+        T = 3
+    elif scenario == 'cook_defocused':
+        orig_scenario = 'cook'
+        novel_scenario = 'cook_defocused'
+        T = 3
     else:
         orig_scenario = ''
         novel_scenario = ''
         T = 0
-        additional_domain_locs = []
     return GetScenarioSettingsSrvResponse(orig_scenario, 
                                           novel_scenario, 
-                                          T, 
-                                          additional_domain_locs)
+                                          T)
 
 ################################################################################
 

@@ -66,7 +66,7 @@ class KnowledgeBase(object):
         push.addArg(Variable('?o', 'obj'))
         push.addPreCond(StaticPredicate('at', ['?o', '?loc0']))
         push.addEffect(StaticPredicate('not', [StaticPredicate('at', ['?o', '?loc0'])]))
-        push_p1 = Parameter('rate', 7.0, 3.0, 150.0) # Discover Strike
+        push_p1 = Parameter('rate', 5.0, 3.0, 150.0) # Discover Strike
         # push_p1 = Parameter('rate', 7.0, 3.0, 50.0) # Cook
         push_p2 = Parameter('movementmagnitude', 0.4, 0.1, 0.6)
         push_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top'])
@@ -88,43 +88,8 @@ class KnowledgeBase(object):
         shake.addParam(shake_p2)
         shake.addParam(shake_p3)
         shake.setExecutionArgNames(['gripper', 'objectName'])
-
         #####################################################################################################
         #####################################################################################################
-        ###
-        ###
-        ### It seems like it cant handle plans which require 
-        ### actions that have both 2 type obj arguments, and 
-        ### 1 obj type argument
-        ###
-        ### So cover_obj(?g, ?o1, ?o2) works alone just for covering
-        ### an obj, but using that rep with the full 
-        ### [cover_obj, place_on_burner, cook, check_food] doesnt work
-        ### unless cover_obj takes just 1 obj type argument
-        ###
-        ###
-        ### It also appears that it has to be perfect chaining. 
-        ### For example: 
-        ###
-        ###   ---------------------------------------------------
-        ###       ACTION:: PRECONDS -> EFFECTS
-        ###   ---------------------------------------------------
-        ###       cover_obj:: None -> covered(?o)
-        ###       place_on_burner:: covered(?o) -> on_burner(?o, ?b)
-        ###       cook:: on_burner(?o, ?b) -> cooking(?o)
-        ###
-        ###    ^ This sequence WORKS, BUT...
-        ###
-        ###   ---------------------------------------------------
-        ###       ACTION:: PRECONDS -> EFFECTS
-        ###   ---------------------------------------------------
-        ###       cover_obj:: None -> covered(?o)
-        ###       place_on_burner:: None -> on_burner(?o, ?b)
-        ###       cook:: on_burner(?o, ?b), covered(?o) -> cooking(?o)
-        ###
-        ###    ^ This sequence DOES NOT WORK
-        ###
-        ###
 
         # UNCOVER OBJECT
         uncover_obj = Action('uncover_obj', [], [], [], []) # All default, add after 
@@ -133,7 +98,6 @@ class KnowledgeBase(object):
         uncover_obj.addArg(Variable('?loc1', 'cartesian'))
         uncover_obj.addArg(Variable('?o2', 'obj'))
         uncover_obj.addPreCond(StaticPredicate('covered', ['?o2']))
-        # uncover_obj.addPreCond(StaticPredicate('touching', ['?o1', '?o2']))
         uncover_obj.addPreCond(StaticPredicate('at', ['?o2', '?loc1']))
         uncover_obj.addPreCond(StaticPredicate('not', [StaticPredicate('at', ['?o1', '?loc1'])]))
         uncover_obj.addEffect(StaticPredicate('not', [StaticPredicate('covered', ['?o2'])]))
@@ -169,8 +133,6 @@ class KnowledgeBase(object):
         cook.addArg(Variable('?b', 'burner'))
         cook.addPreCond(StaticPredicate('on_burner', ['?o', '?b']))
         cook.addPreCond(StaticPredicate('covered', ['?o']))
-        # cook.addPreCond(StaticPredicate('prepped', ['?o']))
-        # cook.addPreCond(StaticPredicate('powered_on', ['?b']))
         cook.addEffect(StaticPredicate('cooking', ['?o']))
         cook.setExecutionArgNames(['gripper', 'objectName1', 'objectName2'])
 
@@ -187,10 +149,7 @@ class KnowledgeBase(object):
         prep_food.addArg(Variable('?g', 'gripper'))
         prep_food.addArg(Variable('?o', 'obj'))
         prep_food.addPreCond(StaticPredicate('not', [StaticPredicate('covered', ['?o'])]))
-        # prep_food.addPreCond(StaticPredicate('covered', ['?o']))
-
         prep_food.addPreCond(StaticPredicate('shaken', ['?o']))
-        # prep_food.addPreCond(StaticPredicate('ingredients_added', ['?o']))
         prep_food.addEffect(StaticPredicate('prepped', ['?o']))
         prep_food.setExecutionArgNames(['gripper', 'objectName'])
 

@@ -123,6 +123,10 @@ class ImageConverter:
             return self.green_pixels > 0
         elif (obj == 'cup'):
             return self.blue_pixels > 0
+        elif (obj == 'burner1'):
+            return self.red_pixels > 0
+        # elif (obj == 'burner1'):
+        #     return self.red_pixels > 0
         else:
             return False
 
