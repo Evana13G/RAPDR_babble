@@ -167,13 +167,13 @@ def updatePhysicalStateBasedPredicates():
     if is_touching(RightGripperPose, CoverPose, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'cover'], locationInformation=None)) 
 
-    if is_pressed(LeftGripperPose, LeftButtonPose, 0.1, [0.07, None]):
+    if is_pressed(LeftGripperPose, LeftButtonPose, 0.08, [0.07, None]):
         left_button_pressed = True
-    if is_pressed(RightGripperPose, LeftButtonPose, 0.1, [0.07, None]):
+    if is_pressed(RightGripperPose, LeftButtonPose, 0.08, [0.07, None]):
         left_button_pressed = True
-    if is_pressed(LeftGripperPose, RightButtonPose, 0.1, [0.07, None]):
+    if is_pressed(LeftGripperPose, RightButtonPose, 0.08, [0.07, None]):
         right_button_pressed = True
-    if is_pressed(RightGripperPose, RightButtonPose, 0.1, [0.07, None]):
+    if is_pressed(RightGripperPose, RightButtonPose, 0.08, [0.07, None]):
         right_button_pressed = True
 
 

@@ -5,6 +5,7 @@ import math
 import numpy as np
 from datetime import datetime
 import csv
+import copy 
 
 def goalAccomplished(goalList, currentState):
     numGoalsAccomplished = 0
@@ -106,7 +107,7 @@ def generateAllCombos(T, plan, exploration_mode='focused'):
         for a in parameterizable_selections:
             other_obj_entities = [('left_button', '0.5,0.2,-0.1'), 
                                   ('right_button', '0.5,-0.3,-0.1')]
-                                  
+
             while len(other_obj_entities) > 0:
                 i = random.randint(0, len(other_obj_entities) - 1)
                 if a.actionName == 'push':
