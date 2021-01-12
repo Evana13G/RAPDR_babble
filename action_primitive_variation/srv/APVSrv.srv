@@ -5,6 +5,6 @@ int64 T
 string exploration_mode
 string environment
 ---
-string[] novel_action_names
+NovelAction[] novel_actions
 float64 exploration_time
 float64[] variation_times

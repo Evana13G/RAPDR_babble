@@ -44,7 +44,6 @@ def extract_relevant_effects(preds, args, sole_arg=True):
     return relevant
 
 
-
 def novel_effect(req):
     actionName = req.actionName
     args = req.args
@@ -123,6 +122,7 @@ def main():
 
     rospy.Service("check_effects_srv", CheckEffectsSrv, check_pddl_effects)
     rospy.Service("novel_effect_srv", NovelEffectsSrv, novel_effect)
+    # rospy.Service("loosely_novel_effect_srv", NovelEffectsSrv, loosely_novel_effect)
 
     rospy.spin()
     

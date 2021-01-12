@@ -81,7 +81,7 @@ def add_action_to_KB(req):
     param_names = req.param_names
     param_assignments = req.param_assignments
     new_effects = req.new_effects
-    
+
     assert(len(param_names) == len(param_assignments))
     new_action = copy.deepcopy(KB.getAction(req.orig_action_name))
     new_action.setName(new_name)
@@ -91,7 +91,12 @@ def add_action_to_KB(req):
     for i in range(len(new_effects)):
         effect = new_effects[i]
         operator = effect[1:].split()[0] if 'not' not in effect else effect[6:].split()[0]
-        instatiated_pred_args = effect.replace(operator, '')[:-1].split() if 'not' not in effect else  effect.replace(('(not (' + operator), '')[:-2].split()
+
+        if 'not' in effect:
+            instatiated_pred_args = effect.replace(('(not (' + operator), '')[:-2].split()
+        else:
+            instatiated_pred_args = effect.replace('(' + operator, '')[:-1].split() 
+
         static_pred_args, new_args = parse_and_map_predicate_args(instatiated_pred_args, args, pddl_args)
         pred = StaticPredicate(operator, static_pred_args) if 'not' not in effect else StaticPredicate('not', [StaticPredicate(operator, static_pred_args)])
 

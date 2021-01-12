@@ -70,10 +70,12 @@ def run_experiments(req):
     experimentName = req.experiment_name
     num_discover_strike_runs = req.num_discover_strike_runs
     num_cook_runs = req.num_cook_runs
+    num_cook_defocused_runs = req.num_cook_defocused_runs
 
     if req.demo_mode == True:
         num_discover_strike_runs = 1
         num_cook_runs = 1
+        num_cook_defocused_runs = 1
         global demo_mode
         demo_mode = True
 
@@ -84,9 +86,11 @@ def run_experiments(req):
 
         discover_strike_results = run_experiment(experimentName, experiment_path, "discover_strike", num_discover_strike_runs)
         cook_results = run_experiment(experimentName, experiment_path, "cook", num_cook_runs)
+        cook_defocused_results = run_experiment(experimentName, experiment_path, "cook_defocused", num_cook_defocused_runs)
 
         for result in discover_strike_results: writeResult(experiment_aggregate_file, result)
         for result in cook_results: writeResult(experiment_aggregate_file, result)
+        for result in cook_defocused_results: writeResult(experiment_aggregate_file, result)
 
         return RunExperimentSrvResponse(True)
 

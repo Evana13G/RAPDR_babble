@@ -66,7 +66,7 @@ class KnowledgeBase(object):
         push.addArg(Variable('?o', 'obj'))
         push.addPreCond(StaticPredicate('at', ['?o', '?loc0']))
         push.addEffect(StaticPredicate('not', [StaticPredicate('at', ['?o', '?loc0'])]))
-        push_p1 = Parameter('rate', 5.0, 3.0, 150.0) # Discover Strike
+        push_p1 = Parameter('rate', 7.0, 3.0, 150.0) # Discover Strike
         # push_p1 = Parameter('rate', 7.0, 3.0, 50.0) # Cook
         push_p2 = Parameter('movementmagnitude', 0.4, 0.1, 0.6)
         push_p3 = Parameter('orientation', 'left', None, None, ['left', 'right', 'top'])

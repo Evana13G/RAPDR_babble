@@ -71,7 +71,7 @@ def handle_trial(req):
         success_plan = None
 
         new_actions = []
-        failed = []
+        failed_action_names = []
         test_action = None
 
         while(goalAccomplished(goal, currentState.init) == False):
@@ -82,6 +82,7 @@ def handle_trial(req):
             # Timing Sequence
             attempt_time = 0.0
 
+            # print(test_action)
             outcome, truncated_plan, success_plan = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions, exploration_mode, test_action)
 
             execution_times.append(outcome.execution_time)
@@ -97,12 +98,12 @@ def handle_trial(req):
             ### Cleanup from attempt
             momentOfFailurePreds = scenarioData().predicates
             new_actions_executed = [act.actionName for act in truncated_plan if ':' in act.actionName]
-            failed.extend(new_actions_executed)
-            failed = list(set(failed))
+            failed_action_names.extend(new_actions_executed)
+            failed_action_names = list(set(failed_action_names))
 
             temp = []
             for a in new_actions:
-                if a not in failed: 
+                if a.actionName not in failed_action_names: 
                     temp.append(a)
             new_actions = temp
 
@@ -117,12 +118,11 @@ def handle_trial(req):
                     print("#### -- None of the candidate actions worked! ")
                     print('#### ------------------------------------------ ')
                     break
-                else:
-                    exploration_mode = 'defocused'
-                # if attempt > 0: 
+                # else:
                 #     exploration_mode = 'defocused'
+                if attempt > 0: 
+                    exploration_mode = 'defocused'
                 APVtrials = generateAllCombos(T, truncated_plan, exploration_mode)  
-                print("APV Trials: " + str(APVtrials))
                 print("#### -- APV mode: " + str(len(APVtrials)) + " total combo(s) found")
 
             #####################################################################################
@@ -143,7 +143,8 @@ def handle_trial(req):
 
                 APVresults = APVproxy(*comboToExecute)
                 
-                new_actions = APVresults.novel_action_names
+                # new_action_names = APVresults.novel_action_names
+                new_actions = APVresults.novel_actions
                 exploration_time = APVresults.exploration_time
                 variation_times = APVresults.variation_times
 
@@ -163,13 +164,12 @@ def handle_trial(req):
             if new_actions != []:
                 test_action = new_actions.pop()
 
-            action_exclusions.extend(failed)
+            action_exclusions.extend(failed_action_names)
             attempt += 1
             #####################################################################################
             trial_times.append(attempt_time)
 
         total_experiment_time = sum(trial_times)
-
         return BrainSrvResponse(trial_times, total_experiment_time, rawActionList_toSuccessActionList(success_plan))
     
     except rospy.ServiceException, e:
@@ -181,13 +181,16 @@ def handle_trial(req):
 
 def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclusions=[], exploration_mode='focused', test_action=None):
     
-    # print('#### ------------------------------------------ ')
-    if (attempt != 'orig' and attempt != 0):
-        print("#### -- [ATTEMPT " + str(attempt)+ "] ") 
     filename = task_name + '_' + str(attempt)
     outcome = PlanExecutionOutcome(False, False, None, 0.0)  
     truncated_plan = []
     action_list = []
+
+    if exploration_mode == 'defocused' and test_action == None:
+        return outcome, truncated_plan, action_list
+
+    if (attempt != 'orig' and attempt != 0):
+        print("#### -- [ATTEMPT " + str(attempt)+ "] ") 
 
     try:
         envProxy('restart', env) if attempt != 'orig' else envProxy('no_action', env) 
@@ -197,11 +200,10 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclus
         return outcome, truncated_plan, action_list
 
     if exploration_mode == 'defocused':
-        if test_action == None:
-            return outcome, truncated_plan, action_list
         action_exclusions = []
         try:
-            test_action_plan = ActionExecutionInfoList([ActionExecutionInfo(test_action)]) # NEED to edit this 
+            print("#### ---- Defocused Action: " + str(test_action.actionName) + str(test_action.argVals)) 
+            test_action_plan = ActionExecutionInfoList([ActionExecutionInfo(test_action.actionName, test_action.argVals)]) # NEED to edit this 
             test_action_outcome = planExecutor(test_action_plan) 
         except rospy.ServiceException, e:
             print("Service call failed: %s"%e)
@@ -251,7 +253,7 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclus
         moveToStartProxy()
 
     if exploration_mode == 'defocused':
-        action_list = test_action
+        action_list = [test_action]
 
     return outcome, truncated_plan, action_list
 
