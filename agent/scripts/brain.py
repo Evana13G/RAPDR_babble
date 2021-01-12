@@ -118,9 +118,8 @@ def handle_trial(req):
                     print("#### -- None of the candidate actions worked! ")
                     print('#### ------------------------------------------ ')
                     break
-                # else:
-                #     exploration_mode = 'defocused'
-                if attempt > 0: 
+                # if attempt > 0: 
+                else:
                     exploration_mode = 'defocused'
                 APVtrials = generateAllCombos(T, truncated_plan, exploration_mode)  
                 print("#### -- APV mode: " + str(len(APVtrials)) + " total combo(s) found")
