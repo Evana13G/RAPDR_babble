@@ -97,7 +97,7 @@ def set_up_variations(req):
         exploration_time += variation_time
 
         newName = str(actionToVary) + '-' + str(paramToVary) + ':' + str(paramAssignment)
-
+ 
         if accomplishes_OG_effects == True: 
             if exploration_mode == 'focused':
                 if (novel == False): # Only add those which accomplish the same thing as the orig action
@@ -117,34 +117,6 @@ def set_up_variations(req):
     return APVSrvResponse(novel_actions, exploration_time, variation_times)
 
 ###################################################################################### 
-# def generateAllCombos(req):
-#     T = req.T
-#     plan = req.plan
-
-#     APVtrials = []
-#     selections = []
-#     mu = len(plan)
-#     sd = 3.0
-
-#     selection = -1.0
-#     while len(plan) > 0:
-#         selection = int(random.gauss(mu, sd))
-#         if (0 <= selection < mu):
-#             selections.append(plan[selection])
-#             del plan[selection]
-#             mu = len(plan) 
-
-#     for a in selections:
-#         formatted = []
-#         formatted.append(a.actionName)
-#         formatted.append(a.argVals)
-#         formatted.append('rate')
-#         formatted.append(T)
-#         APVtrials.append(formatted)
-
-#     # APVtrials.append(['push', ['left_gripper', 'cover'], 'rate', T]) 
-#     return APVtrials  
-######################################################################################
 
 
 def main():

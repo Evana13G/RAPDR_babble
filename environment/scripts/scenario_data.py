@@ -199,7 +199,7 @@ def updatePhysicalStateBasedPredicates():
         new_predicates.append(Predicate(operator="covered", objects=['cup'], locationInformation=None)) 
         covered_item.append('cup')
 
-    if left_button_pressed == True:
+    if right_button_pressed == True:
         new_predicates.append(Predicate(operator="pressed", objects=['left_button'], locationInformation=None)) 
         new_predicates.append(Predicate(operator="powered_on", objects=['burner1'], locationInformation=None)) 
         burner_on = True
