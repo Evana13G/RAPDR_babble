@@ -68,7 +68,7 @@ def handle_trial(req):
         execution_times = []
         exploration_times = []
         trial_times = []
-        success_plan = None
+        success_plan = []
 
         new_actions = []
         failed_action_names = []
