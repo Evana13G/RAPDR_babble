@@ -1,0 +1,2 @@
+exploration_times total_time success_plan
+"[60.196000000000026, 74.96100000000013, 15.014999999999873]" 150.17200000000003 [['push-rate:113.25',['left_gripper','0.5,0.0,-0.1','cover']]]

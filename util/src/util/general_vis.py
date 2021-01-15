@@ -3,6 +3,7 @@
 import rosbag
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+import numpy as np
 
 from util.file_io import * 
 
@@ -80,5 +81,32 @@ def generateJointImage(visData, visLabels, visTitle, indices):
 
     for new_artion in indices:
         plt.axvline(x=new_artion, color='k')
+
+    plt.show()
+
+
+
+
+def generate_RAPDR_babble_viz():
+    # Load a numpy record array from yahoo csv data with fields date, open, close,
+    # volume, adj_close from the mpl-data/example directory. The record array
+    # stores the date as an np.datetime64 with a day unit ('D') in the date column.
+    trial_data = [77.59876737,5.00294507,67.99704903,60.60885018,55.67428004,54.33326712,76.04294074,82.25771159,70.4953777,57.29577446, 53.96076964]
+
+    delta1 = np.diff(trial_data.adj_close) / trial_data.adj_close[:-1]
+
+    # Marker size in units of points^2
+    volume = (15 * trial_data.volume[:-2] / trial_data.volume[0])**2
+    close = 0.003 * trial_data.close[:-2] / 0.003 * trial_data.open[:-2]
+
+    fig, ax = plt.subplots()
+    ax.scatter(delta1[:-1], delta1[1:], c=close, s=volume, alpha=0.5)
+
+    ax.set_xlabel(r'$\Delta_i$', fontsize=15)
+    ax.set_ylabel(r'$\Delta_{i+1}$', fontsize=15)
+    ax.set_title('Volume and percent change')
+
+    ax.grid(True)
+    fig.tight_layout()
 
     plt.show()
