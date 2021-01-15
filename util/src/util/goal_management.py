@@ -101,6 +101,7 @@ def generateAllCombos(T, plan, exploration_mode='focused'):
             mu = len(plan) 
 
     parameterizable_selections = [a for a in selections if a.actionName not in ['uncover_obj', 'cover_obj', 'prep_food', 'cook', 'place_on_burner']]
+    parameterizable_selections = [a for a in parameterizable_selections if ':' not in a.actionName]
     expanded_parameterizables = []
 
     if exploration_mode == 'defocused':

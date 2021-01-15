@@ -85,10 +85,6 @@ def set_up_variations(req):
     actionInfo = actionInfoProxy(actionToVary).actionInfo
     argNames = actionInfo.executableArgNames
 
-    print("DEBUGGING APV")
-    print(actionToVary)
-    print(argNames)
-    print(args)
     assert(len(argNames) == len(args))
 
     paramVals = process_intervals(actionInfo, paramToVary, T)
