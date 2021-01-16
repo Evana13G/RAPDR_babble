@@ -4,6 +4,7 @@ import rosbag
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import numpy as np
+import matplotlib.cbook as cbook
 
 from util.file_io import * 
 
@@ -87,20 +88,24 @@ def generateJointImage(visData, visLabels, visTitle, indices):
 
 
 
-def generate_RAPDR_babble_viz():
-    # Load a numpy record array from yahoo csv data with fields date, open, close,
-    # volume, adj_close from the mpl-data/example directory. The record array
-    # stores the date as an np.datetime64 with a day unit ('D') in the date column.
-    trial_data = [77.59876737,5.00294507,67.99704903,60.60885018,55.67428004,54.33326712,76.04294074,82.25771159,70.4953777,57.29577446, 53.96076964]
+def generate_RAPDR_babble_viz(filename):
 
-    delta1 = np.diff(trial_data.adj_close) / trial_data.adj_close[:-1]
+    
+    total_times = np.array([1582.93,2963.549,2013.145,2825.344,1658.51,1862.413,3406.727,1779.954,1513.791,1650.813,1828.624])
+    num_trails = np.array([11,20,14,18,11,13,20,12,10,11,13])
+    avg_trial_times = np.array([143.903,148.178,143.8,156.964,150.774,143.263,170.336,148.33,151.379,150.074,140.663])
+    success_actions = ['shake-movementmagnitude:5.0','shake-rate:10.5','shake-rate:10.5','shake-rate:20.0','shake-orientation:top','shake-orientation:top','push-orientation:top','shake-rate:20.0','shake-movementmagnitude:5.0','shake-rate:20.0','shake-orientation:top']
+    std_devs = [77.599,65.003,67.997,60.609,55.674,54.333,76.043,82.258,70.495,57.296,53.961]
 
-    # Marker size in units of points^2
-    volume = (15 * trial_data.volume[:-2] / trial_data.volume[0])**2
-    close = 0.003 * trial_data.close[:-2] / 0.003 * trial_data.open[:-2]
+    colors = ['r','g','g','b','y','y','w','b','r','b','w']
+    color_labels = [('r', 'shake-movementmagnitude:5.0'), 
+                    ('g', 'shake-rate:10.5'),
+                    ('b', 'shake-rate:20.0'),
+                    ('y', 'shake-orientation:top'),
+                    ('w', 'push-orientation:top')]
 
     fig, ax = plt.subplots()
-    ax.scatter(delta1[:-1], delta1[1:], c=close, s=volume, alpha=0.5)
+    ax.scatter(num_trails,avg_trial_times, c=colors, s=std_devs, alpha=0.5)
 
     ax.set_xlabel(r'$\Delta_i$', fontsize=15)
     ax.set_ylabel(r'$\Delta_{i+1}$', fontsize=15)
@@ -110,3 +115,8 @@ def generate_RAPDR_babble_viz():
     fig.tight_layout()
 
     plt.show()
+
+
+generate_RAPDR_babble_viz()
+
+

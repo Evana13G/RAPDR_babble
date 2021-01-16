@@ -163,7 +163,7 @@ def scenario_settings(req):
     if scenario == 'discover_strike':
         orig_scenario = 'discover_strike'
         novel_scenario = 'HH'
-        T = 5
+        T = 7
     elif scenario == 'discover_pour':
         orig_scenario = 'discover_pour'
         novel_scenario = 'high_friction'

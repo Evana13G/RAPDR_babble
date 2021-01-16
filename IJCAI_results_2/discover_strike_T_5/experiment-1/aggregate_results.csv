@@ -18,3 +18,4 @@ discover_strike run_15 70.83399999999983 1 70.83399999999983 ['push-orientation:
 discover_strike run_16 89.95100000000002 1 89.95100000000002 ['push-rate:150.0']
 discover_strike run_17 105.00099999999884 2 52.50049999999942 ['push-rate:150.0']
 discover_strike run_18 89.73999999999887 1 89.73999999999887 ['push-movementmagnitude:0.6']
+discover_strike run_19 89.94800000000032 1 89.94800000000032 ['push-rate:150.0']
