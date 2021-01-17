@@ -1,2 +1,0 @@
-scenario run_name total_time num_trails avg_trial_time success_actions
-cook_defocused run_0 1828.623999999997 13 140.6633846153844 ['shake-orientation:top']

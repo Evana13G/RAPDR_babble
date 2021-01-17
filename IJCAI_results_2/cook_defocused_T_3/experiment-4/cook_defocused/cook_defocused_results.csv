@@ -1,6 +1,0 @@
-scenario run_name total_time num_trails avg_trial_time success_actions
-cook_defocused run_0 1862.4129999999986 13 143.26253846153836 ['shake-orientation:top']
-cook_defocused run_1 3406.727000000002 20 170.3363500000001 ['push-orientation:top']
-cook_defocused run_2 1779.9540000000015 12 148.32950000000014 ['shake-rate:20.0']
-cook_defocused run_3 0.0 0 0.0 []
-cook_defocused run_4 1513.7909999999956 10 151.37909999999957 ['shake-movementmagnitude:5.0']

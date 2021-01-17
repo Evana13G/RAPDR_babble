@@ -1,2 +1,0 @@
-scenario run_name total_time num_trails avg_trial_time success_actions
-cook_defocused run_0 1650.8130000000006 11 150.07390909090915 ['shake-rate:20.0']
