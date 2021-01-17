@@ -5,7 +5,11 @@ project(action_primitive_variation)
 find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs geometry_msgs genmsg message_generation)
 
 ## Declare ROS messages and services
-add_message_files(FILES)
+
+add_message_files(
+  FILES
+  NovelAction.msg
+)
 
 add_service_files(
 FILES

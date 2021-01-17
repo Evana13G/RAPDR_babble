@@ -30,6 +30,8 @@ from knowledge_base.action import Action
 from agent.msg import SuccessAction
 
 def rawActionList_toSuccessActionList(action_list):
+    if len(action_list) == 0:
+        return []
     new_list = [SuccessAction(item.actionName, item.argVals) for item in action_list]
     return new_list
 

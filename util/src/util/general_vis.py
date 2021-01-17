@@ -3,6 +3,8 @@
 import rosbag
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+import numpy as np
+import matplotlib.cbook as cbook
 
 from util.file_io import * 
 
@@ -82,3 +84,39 @@ def generateJointImage(visData, visLabels, visTitle, indices):
         plt.axvline(x=new_artion, color='k')
 
     plt.show()
+
+
+
+
+def generate_RAPDR_babble_viz(filename):
+
+    
+    total_times = np.array([1582.93,2963.549,2013.145,2825.344,1658.51,1862.413,3406.727,1779.954,1513.791,1650.813,1828.624])
+    num_trails = np.array([11,20,14,18,11,13,20,12,10,11,13])
+    avg_trial_times = np.array([143.903,148.178,143.8,156.964,150.774,143.263,170.336,148.33,151.379,150.074,140.663])
+    success_actions = ['shake-movementmagnitude:5.0','shake-rate:10.5','shake-rate:10.5','shake-rate:20.0','shake-orientation:top','shake-orientation:top','push-orientation:top','shake-rate:20.0','shake-movementmagnitude:5.0','shake-rate:20.0','shake-orientation:top']
+    std_devs = [77.599,65.003,67.997,60.609,55.674,54.333,76.043,82.258,70.495,57.296,53.961]
+
+    colors = ['r','g','g','b','y','y','w','b','r','b','w']
+    color_labels = [('r', 'shake-movementmagnitude:5.0'), 
+                    ('g', 'shake-rate:10.5'),
+                    ('b', 'shake-rate:20.0'),
+                    ('y', 'shake-orientation:top'),
+                    ('w', 'push-orientation:top')]
+
+    fig, ax = plt.subplots()
+    ax.scatter(num_trails,avg_trial_times, c=colors, s=std_devs, alpha=0.5)
+
+    ax.set_xlabel(r'$\Delta_i$', fontsize=15)
+    ax.set_ylabel(r'$\Delta_{i+1}$', fontsize=15)
+    ax.set_title('Volume and percent change')
+
+    ax.grid(True)
+    fig.tight_layout()
+
+    plt.show()
+
+
+generate_RAPDR_babble_viz()
+
+

@@ -29,15 +29,21 @@ getObjLoc = rospy.ServiceProxy('object_location_srv', ObjectLocationSrv)
 ################################################################################
 #### LOCAL INFORMATION #########################################################
 offsets = {'cover' : {'left': {'x' : 0.0, 'y' : -0.13, 'z' : 0.0},
+                     'right': {'x' : 0.0, 'y' : 0.13, 'z' : 0.0}, 
+                     'top': {'x' : 0.0, 'y' : 0.0, 'z' : 0.0}}, 
+
+           'cup' : {'left': {'x' : 0.0, 'y' : -0.13, 'z' : 0.0},
                     'right': {'x' : 0.0, 'y' : 0.13, 'z' : 0.0}, 
-                    'top': {'x' : 0.0, 'y' : 0.0, 'z' : 0.0}}, 
-                    # 'front': {'x' : -0.1, 'y' : 0.0, 'z' : 0.0}, 
-                    # 'back': {'x' : 0.1, 'y' : 0.0, 'z' : 0.0}}, 
-           'cup' :  {'left': {'x' : 0.0, 'y' : -0.13, 'z' : 0.0},
-                    'right': {'x' : 0.0, 'y' : 0.13, 'z' : 0.0}, 
-                    'top': {'x' : 0.0, 'y' : 0.0, 'z' : 0.0}}} 
-                    # 'front': {'x' : -0.1, 'y' : 0.0, 'z' : 0.0}, 
-                    # 'back': {'x' : 0.1, 'y' : 0.0, 'z' : 0.0}},}
+                    'top': {'x' : 0.0, 'y' : 0.0, 'z' : 0.0}},
+
+           'left_button' : {'left': {'x' : 0.0, 'y' : -0.12, 'z' : 0.0},
+                            'right': {'x' : 0.0, 'y' : 0.12, 'z' : 0.0}, 
+                            'top': {'x' : 0.0, 'y' : 0.0, 'z' : 0.0}},
+
+           'right_button' : {'left': {'x' : 0.0, 'y' : -0.12, 'z' : 0.0},
+                             'right': {'x' : 0.0, 'y' : 0.12, 'z' : 0.0}, 
+                             'top': {'x' : 0.0, 'y' : 0.0, 'z' : 0.0}}} 
+
 
 moveMagHelper = {'left' : {'x' : 0.0, 'y' : 1.0, 'z' : 0.0},
                  'right': {'x' : 0.0, 'y' : -0.7, 'z' : 0.0}, 
@@ -145,7 +151,7 @@ def scenario_goal(req):
         goal = ['(not (at cover '+ poseStampedToString(coverLoc) + '))']
     elif scenario == 'discover_pour':
         goal = ['(not (touching cover cup))']
-    elif scenario == 'cook':
+    elif scenario in ['cook', 'cook_defocused']:
         goal = ['(cooking cup)']
     else:
         goal = []
@@ -157,27 +163,26 @@ def scenario_settings(req):
     if scenario == 'discover_strike':
         orig_scenario = 'discover_strike'
         novel_scenario = 'HH'
-        T = 3
-        additional_domain_locs = []
+        T = 7
     elif scenario == 'discover_pour':
         orig_scenario = 'discover_pour'
         novel_scenario = 'high_friction'
-        T = 5
-        additional_domain_locs = []
+        T = 3
     elif scenario == 'cook':
         orig_scenario = 'cook'
         novel_scenario = 'cook_low_friction'
-        T = 7
-        additional_domain_locs = []
+        T = 3
+    elif scenario == 'cook_defocused':
+        orig_scenario = 'cook'
+        novel_scenario = 'cook_defocused'
+        T = 3
     else:
         orig_scenario = ''
         novel_scenario = ''
         T = 0
-        additional_domain_locs = []
     return GetScenarioSettingsSrvResponse(orig_scenario, 
                                           novel_scenario, 
-                                          T, 
-                                          additional_domain_locs)
+                                          T)
 
 ################################################################################
 

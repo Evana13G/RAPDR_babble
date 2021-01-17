@@ -5,22 +5,21 @@
       <pose frame=''>0 0 0 0 -0 0</pose>
       <inertial>
         <pose frame=''>0 0 0 0 -0 0</pose>
-        <mass>1.0</mass>
-        <inertia>
+        <mass>10.0</mass>
+<!--         <inertia>
           <ixx>0</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
           <iyy>0</iyy>
           <iyz>0</iyz>
           <izz>0</izz>
-        </inertia>
+        </inertia> -->
       </inertial>
       <collision name='base_link_collision'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.1 0.1 0.0001</size>
-            <!-- <size>0.001 0.001 0.001</size> -->
+            <size>0.03 0.03 0.005</size>
           </box>
         </geometry>
         <surface>
@@ -36,12 +35,12 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.1 0.1 0.0001</size>
+            <size>0.03 0.03 0.005</size>
           </box>
         </geometry>
         <material>
           <script>
-            <name>Gazebo/Red</name>
+            <name>Gazebo/White</name>
             <uri>file://media/materials/scripts/gazebo.material</uri>
           </script>
         </material>

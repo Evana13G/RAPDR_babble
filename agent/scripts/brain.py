@@ -68,62 +68,68 @@ def handle_trial(req):
         execution_times = []
         exploration_times = []
         trial_times = []
-        success_plan = None
+        success_plan = []
 
         new_actions = []
-        failed = []
+        failed_action_names = []
+        test_action = None
+        APVgenerationAttempts = 0
 
         while(goalAccomplished(goal, currentState.init) == False):
 
             #####################################################################################
-            ## Attempt
+            ## Execution Attempt
             ##
             # Timing Sequence
             attempt_time = 0.0
-            outcome, truncated_plan, success_plan = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions)
+
+            outcome, truncated_plan, success_plan = single_attempt_execution(task, goal, novel_env, attempt, action_exclusions, exploration_mode, test_action)
+
             execution_times.append(outcome.execution_time)
             attempt_time += outcome.execution_time
 
             if (outcome.goal_complete == True): break 
             currentState = scenarioData() # post trial scenario, set it now. This is what you want evaluated
+            momentOfFailurePreds = scenarioData().predicates
             #####################################################################################
 
             #####################################################################################
             ## Exploration
-            ##
-            ### Cleanup from attempt
-            momentOfFailurePreds = scenarioData().predicates
-            new_actions_executed = [act.actionName for act in truncated_plan if ':' in act.actionName]
-            failed.extend(new_actions_executed)
-            failed = list(set(failed))
 
-            temp = []
-            for a in new_actions:
-                if a not in failed: 
-                    temp.append(a)
-            new_actions = temp
-            
-            # init set or reset after exhausting. If its a reset, flip the exploration mode
+            ### Cleanup from attempt
+            ### This will not effect defocused execution
+            new_actions_executed = [act.actionName for act in truncated_plan if ':' in act.actionName]
+            failed_action_names.extend(new_actions_executed)
+            failed_action_names = list(set(failed_action_names))
+
+            new_actions = [a for a in new_actions if a.actionName not in failed_action_names]
+
             #####################################################################################
             ###### Generate New APV Combos list
-            ###### Will eventually be for switching into defocused mode 
-            if APVtrials == []:
-                if exploration_mode == 'defocused':
+            ### init set or reset after exhausting. If its a reset, flip the exploration mode
+            if APVtrials == [] and new_actions == []:
+                if exploration_mode == 'defocused' and APVgenerationAttempts >= 3:
                     print("#### -- APV mode: COMPLETE")
                     print('#### ------------------------------------------ ')
                     print("#### -- None of the candidate actions worked! ")
                     print('#### ------------------------------------------ ')
                     break
 
-                if attempt > 0: 
+                if attempt > 1: 
                     exploration_mode = 'defocused'
+                
+
                 APVtrials = generateAllCombos(T, truncated_plan, exploration_mode)  
-                print("#### -- APV mode: " + str(len(APVtrials)) + " total combo(s) found")
+                APVgenerationAttempts += 1
+                if APVtrials == []:
+                    action_exclusions = []
+
+                print("#### -- APV mode: [" + str(exploration_mode) + " mode] " + str(len(APVtrials)) + " total combo(s) found")
 
             #####################################################################################
             ###### If there are no new actions to try
             ###### go into APV mode
-            if new_actions == []:
+            if new_actions == [] and APVtrials != []:
                 print("#### -- APV mode: START ")
                 comboChoice = 0
                 comboToExecute = APVtrials[comboChoice]
@@ -138,7 +144,8 @@ def handle_trial(req):
 
                 APVresults = APVproxy(*comboToExecute)
                 
-                new_actions = APVresults.novel_action_names
+                # new_action_names = APVresults.novel_action_names
+                new_actions = APVresults.novel_actions
                 exploration_time = APVresults.exploration_time
                 variation_times = APVresults.variation_times
 
@@ -154,13 +161,16 @@ def handle_trial(req):
 
                 print("#### -- APV mode: COMPLETE")
                 print('#### ------------------------------------------ ')
-            action_exclusions.extend(failed)
+
+            if new_actions != [] and exploration_mode == 'defocused':
+                test_action = new_actions.pop()
+
+            action_exclusions.extend(failed_action_names)
             attempt += 1
             #####################################################################################
             trial_times.append(attempt_time)
 
         total_experiment_time = sum(trial_times)
-
         return BrainSrvResponse(trial_times, total_experiment_time, rawActionList_toSuccessActionList(success_plan))
     
     except rospy.ServiceException, e:
@@ -170,22 +180,38 @@ def handle_trial(req):
 #############################################################################
 #############################################################################
 
-def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclusions=[]):
+def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclusions=[], exploration_mode='focused', test_action=None):
     
-    # print('#### ------------------------------------------ ')
-    if (attempt != 'orig' and attempt != 0):
-        print("#### -- [ATTEMPT " + str(attempt)+ "] ") 
     filename = task_name + '_' + str(attempt)
     outcome = PlanExecutionOutcome(False, False, None, 0.0)  
     truncated_plan = []
     action_list = []
+    action_exclusions = list(set(action_exclusions))
+
+    # if exploration_mode == 'defocused' and test_action == None:
+    #     return outcome, truncated_plan, action_list
+
+    if (attempt != 'orig' and attempt != 0):
+        print("#### -- ATTEMPT " + str(attempt)+ " [" + str(exploration_mode) + " mode]") 
 
     try:
         envProxy('restart', env) if attempt != 'orig' else envProxy('no_action', env) 
         rospy.sleep(1)
     except rospy.ServiceException, e:
         print("Reset Environment Service call failed: %s"%e)
-        return outcome
+        return outcome, truncated_plan, action_list
+
+    if exploration_mode == 'defocused':
+        action_exclusions = []
+        if test_action != None:
+            try:
+                print("#### ---- Defocused Action: " + str(test_action.actionName) + str(test_action.argVals)) 
+                test_action_plan = ActionExecutionInfoList([ActionExecutionInfo(test_action.actionName, test_action.argVals)]) # NEED to edit this 
+                test_action_outcome = planExecutor(test_action_plan) 
+            except rospy.ServiceException, e:
+                print("Service call failed: %s"%e)
+                return outcome, truncated_plan, action_list
+        moveToStartProxy()
 
     try:
         initStateInfo = scenarioData()
@@ -228,6 +254,9 @@ def single_attempt_execution(task_name, goal, env, attempt='orig', action_exclus
     except rospy.ServiceException, e:
         print("Service call failed: %s"%e)
         moveToStartProxy()
+
+    if exploration_mode == 'defocused':
+        action_list = [test_action]
 
     return outcome, truncated_plan, action_list
 

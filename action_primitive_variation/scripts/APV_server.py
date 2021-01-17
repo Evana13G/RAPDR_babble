@@ -4,6 +4,7 @@ import rospy
 import random
 
 from action_primitive_variation.srv import *
+from action_primitive_variation.msg import *
 from pddl.srv import *
 from agent.srv import * 
 from environment.srv import *
@@ -87,7 +88,7 @@ def set_up_variations(req):
     assert(len(argNames) == len(args))
 
     paramVals = process_intervals(actionInfo, paramToVary, T)
-    added_actions = []
+    novel_actions = []
 
     for paramAssignment in paramVals:
 
@@ -96,56 +97,26 @@ def set_up_variations(req):
         exploration_time += variation_time
 
         newName = str(actionToVary) + '-' + str(paramToVary) + ':' + str(paramAssignment)
-        # newName = str(actionToVary) + '-' + str(paramToVary) + ':' + str(paramAssignment).split('.')[0]
-        # newName = str(actionToVary) + '-' + str(paramToVary) + ':' + str(paramAssignment).replace('.', '*')[0]
-        
+ 
         if accomplishes_OG_effects == True: 
-
             if exploration_mode == 'focused':
                 if (novel == False): # Only add those which accomplish the same thing as the orig action
                     addActionToKB(actionToVary, newName, args, [paramToVary], [str(paramAssignment)], new_effects)
-                    added_actions.append(newName)
+                    novel_actions.append(NovelAction(newName, args))
 
-            elif exploration_mode == 'defocused':
-                if (novel == True): # Add any actions which both: accomplish the same thing as the orig action, AND something novel
-                    addActionToKB(actionToVary, newName, args, [paramToVary], [str(paramAssignment)], new_effects)
-                    added_actions.append(newName)
-            else: # If nothing specified, add it whether it is novel or not... this condition cant be reached in our research case
+        elif exploration_mode == 'defocused':
+            if (novel == True): # Add any actions which both: accomplish the same thing as the orig action, AND something novel
                 addActionToKB(actionToVary, newName, args, [paramToVary], [str(paramAssignment)], new_effects)
-                added_actions.append(newName)
+                novel_actions.append(NovelAction(newName, args))
+            # else: # If nothing specified, add it whether it is novel or not... this condition cant be reached in our research case
+            #     addActionToKB(actionToVary, newName, args, [paramToVary], [str(paramAssignment)], new_effects)
+            #     added_actions.append(newName)
+
     print('#### ---- ')
-    print('#### ---- Newly added actions: ' + str(added_actions))
-    return APVSrvResponse(added_actions, exploration_time, variation_times)
+    print('#### ---- Newly added actions: ' + str([a.actionName for a in novel_actions]))
+    return APVSrvResponse(novel_actions, exploration_time, variation_times)
 
 ###################################################################################### 
-# def generateAllCombos(req):
-#     T = req.T
-#     plan = req.plan
-
-#     APVtrials = []
-#     selections = []
-#     mu = len(plan)
-#     sd = 3.0
-
-#     selection = -1.0
-#     while len(plan) > 0:
-#         selection = int(random.gauss(mu, sd))
-#         if (0 <= selection < mu):
-#             selections.append(plan[selection])
-#             del plan[selection]
-#             mu = len(plan) 
-
-#     for a in selections:
-#         formatted = []
-#         formatted.append(a.actionName)
-#         formatted.append(a.argVals)
-#         formatted.append('rate')
-#         formatted.append(T)
-#         APVtrials.append(formatted)
-
-#     # APVtrials.append(['push', ['left_gripper', 'cover'], 'rate', T]) 
-#     return APVtrials  
-######################################################################################
 
 
 def main():

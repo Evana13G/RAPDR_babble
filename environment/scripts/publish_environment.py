@@ -50,7 +50,9 @@ pub_breakable_obj_pose = rospy.Publisher('breakable_obj_pose', PoseStamped, queu
 pub_cup_pose = rospy.Publisher('cup_pose', PoseStamped, queue_size = 10)
 pub_cover_pose = rospy.Publisher('cover_pose', PoseStamped, queue_size = 10)
 pub_burner_pose = rospy.Publisher('burner1_pose', PoseStamped, queue_size = 10)
-        
+pub_left_button_pose = rospy.Publisher('left_button_pose', PoseStamped, queue_size = 10)
+pub_right_button_pose = rospy.Publisher('right_button_pose', PoseStamped, queue_size = 10)
+
 def poseFromPoint(poseVar):
     newPose = poseVar.pose
     newPose.position.z -= 0.93
@@ -118,6 +120,25 @@ def publish(environment='default'):
     except rospy.ServiceException, e:
         rospy.logerr("get_model_state for block service call failed: {0}".format(e))
 
+    try:
+        resp_left_button_ms = getModelState("left_button", "");
+        pose_left_button = resp_left_button_ms.pose
+        header_left_button = resp_left_button_ms.header
+        header_left_button.frame_id = frameid_var
+        poseStamped_left_button = PoseStamped(header=header_left_button, pose=pose_left_button)
+        pub_left_button_pose.publish(poseFromPoint(poseStamped_left_button))
+    except rospy.ServiceException, e:
+        rospy.logerr("get_model_state for block service call failed: {0}".format(e))
+
+    try:
+        resp_right_button_ms = getModelState("right_button", "");
+        pose_right_button = resp_right_button_ms.pose
+        header_right_button = resp_right_button_ms.header
+        header_right_button.frame_id = frameid_var
+        poseStamped_right_button = PoseStamped(header=header_right_button, pose=pose_right_button)
+        pub_right_button_pose.publish(poseFromPoint(poseStamped_right_button))
+    except rospy.ServiceException, e:
+        rospy.logerr("get_model_state for block service call failed: {0}".format(e))
 
  ######################################################################################
  ####### START: Gripper pose processing

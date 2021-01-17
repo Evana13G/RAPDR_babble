@@ -5,6 +5,7 @@ import math
 import numpy as np
 from datetime import datetime
 import csv
+import copy 
 
 def goalAccomplished(goalList, currentState):
     numGoalsAccomplished = 0
@@ -87,7 +88,10 @@ def generateAllCombos(T, plan, exploration_mode='focused'):
     selections = []
     mu = len(plan)
     sd = 3.0
-    
+
+    # other_obj_entities = ['button1', 'button2']
+    # other_obj_entitiy_locs = ['0.0,0.0,0.0', '0.0,0.0,0.0'] #Hack, Lord save me I need to meet this deadline
+
     selection = -1.0
     while len(plan) > 0:
         selection = int(random.gauss(mu, sd))
@@ -96,21 +100,43 @@ def generateAllCombos(T, plan, exploration_mode='focused'):
             del plan[selection]
             mu = len(plan) 
 
-    for a in selections:
-        if a.actionName not in ['uncover_obj', 'cover_obj', 'prep_food', 'cook', 'place_on_burner']:
-            params = ['rate', 'orientation', 'movementmagnitude']
-            while len(params) > 0:
-                i = random.randint(0, len(params) - 1)
-                param = params[i]
-                formatted = []
-                formatted.append(a.actionName)
-                parsed_arg_vals = [x for x in a.argVals if '.' not in x] # Hack! Deadline in a week... send HALP
-                formatted.append(parsed_arg_vals)
-                formatted.append(param)
-                formatted.append(T)
-                formatted.append(exploration_mode)
-                APVtrials.append(formatted)
-                del params[i]
+    parameterizable_selections = [a for a in selections if a.actionName not in ['uncover_obj', 'cover_obj', 'prep_food', 'cook', 'place_on_burner']]
+    parameterizable_selections = [a for a in parameterizable_selections if ':' not in a.actionName]
+    expanded_parameterizables = []
+
+    if exploration_mode == 'defocused':
+        for a in parameterizable_selections:
+            other_obj_entities = [('left_button', '0.5,0.2,-0.1'), 
+                                  ('right_button', '0.5,-0.3,-0.1')]
+
+            while len(other_obj_entities) > 0:
+                i = random.randint(0, len(other_obj_entities)-1)
+                if a.actionName == 'push':
+                    new_args = copy.deepcopy(a.argVals)
+                    new_args[1] = other_obj_entities[i][1]
+                    new_args[2] = other_obj_entities[i][0]
+                else:
+                    new_args = copy.deepcopy(a.argVals)
+                    new_args[1] = other_obj_entities[i][0]
+                a.argVals = new_args
+                expanded_parameterizables.append(a)
+                del other_obj_entities[i]
+        parameterizable_selections = expanded_parameterizables
+
+    for a in parameterizable_selections:       
+        params = ['rate', 'orientation', 'movementmagnitude']
+        while len(params) > 0:
+            i = random.randint(0, len(params) - 1)
+            param = params[i]
+            formatted = []
+            formatted.append(a.actionName)
+            parsed_arg_vals = [x for x in a.argVals if '.' not in x] # Hack! Deadline in a week... send HALP
+            formatted.append(parsed_arg_vals)
+            formatted.append(param)
+            formatted.append(T)
+            formatted.append(exploration_mode)
+            APVtrials.append(formatted)
+            del params[i]
 
     return APVtrials  
 ############################################

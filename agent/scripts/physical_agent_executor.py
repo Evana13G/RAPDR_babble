@@ -128,10 +128,9 @@ def cover_obj(req):
 
     pa.cover_obj(**args)
 
-#### SHAKE #####################################################################
+#### STUB #####################################################################
 def stub_action(req):
     no_action = req
-
 
 ################################################################################
 ################################################################################
@@ -211,7 +210,6 @@ def pddl_action_executor(req):
     assert(len(argNames) == len(args))
     
     success_bool = action_executor(Action(actionName, argNames, paramNames, args, paramDefaults))
-    ## Check effects here?
     
     return PddlExecutorSrvResponse(success_bool)
 
@@ -238,7 +236,6 @@ def main():
     pa = PhysicalAgent()
 
     rospy.Service("move_to_start_srv", MoveToStartSrv, move_to_start)
-    
     rospy.Service("pddl_action_executor_srv", PddlExecutorSrv, pddl_action_executor)
     rospy.Service("raw_action_executor_srv", RawActionExecutorSrv, raw_action_executor)
     rospy.Service("param_action_executor_srv", ParamActionExecutorSrv, param_action_executor)

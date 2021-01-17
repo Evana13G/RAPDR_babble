@@ -16,6 +16,8 @@ from geometry_msgs.msg import (
     
 )
 
+from std_msgs.msg import Bool
+
 import baxter_interface
 
 from environment.srv import *
@@ -33,10 +35,16 @@ LeftGripperPose = None
 RightGripperPose = None
 TablePose = None
 BurnerPose = None
+RightButtonPose = None
+LeftButtonPose = None
 # Breakable_Obj_Pose = None
 
 cover_pressed = False
 cup_pressed = False
+require_burner_on = False
+left_button_pressed = False
+right_button_pressed = False
+
 
 predicates_list = []
 
@@ -75,11 +83,25 @@ def setPoseBurner(data):
     BurnerPose = data
     updatePredicates("burner1", data)
 
+def setPoseLeftButton(data):
+    global LeftButtonPose
+    LeftButtonPose = data
+    updatePredicates("left_button", data)
+
+def setPoseRightButton(data):
+    global RightButtonPose
+    RightButtonPose = data
+    updatePredicates("right_button", data)
+
 # def setPoseBreakable_Obj(data):
 #     global Breakable_Obj_Pose
 #     Breakable_Obj_Pose = data
 #     updatePredicates("breakable_obj", data)
-    
+
+def set_require_burner_on(data):
+    global require_burner_on
+    require_burner_on = data
+
 def translate(objPose, z_amt=-1.0):
     objPose.pose.position.z += z_amt
 
@@ -110,47 +132,20 @@ def updateVisionBasedPredicates():
 
     # Need to update the image converter to deal with more objects and to be more sophisticated. 
     # For the image recognition part, every object MUST have a different color to identify it  
-    ##
-    ## SHOULD update and do burner and breakable object
-    ##
-    
-    # if (imageConverter.is_visible('breakable_obj') == True):
-    #     new_predicates.append(Predicate(operator="is_visible", objects=["breakable_obj"], locationInformation=None)) 
-
-    # if (imageConverter.getObjectPixelCount('cup') > 0):
     if (imageConverter.is_visible('cup') == True):
         new_predicates.append(Predicate(operator="is_visible", objects=["cup"], locationInformation=None)) 
-    # if (imageConverter.getObjectPixelCount('cover') > 0):
-    if (imageConverter.is_visible('cover') == True):
-        new_predicates.append(Predicate(operator="is_visible", objects=["cover"], locationInformation=None)) 
-    
-    predicates_list = new_predicates
-
-def updateVisionBasedPredicates():
-    global predicates_list
-    new_predicates = []
-    for pred in predicates_list:
-        if not (pred.operator == "is_visible"):
-            new_predicates.append(pred)
-
-    # Need to update the image converter to deal with more objects and to be more sophisticated. 
-    # For the image recognition part, every object MUST have a different color to identify it  
-    
-    # if (imageConverter.getObjectPixelCount('cup') > 0):
-    if (imageConverter.is_visible('cup') == True):
-        new_predicates.append(Predicate(operator="is_visible", objects=["cup"], locationInformation=None)) 
-    # if (imageConverter.getObjectPixelCount('cover') > 0):
     if (imageConverter.is_visible('cover') == True):
         new_predicates.append(Predicate(operator="is_visible", objects=["cover"], locationInformation=None)) 
     
     predicates_list = new_predicates
 
 def updatePhysicalStateBasedPredicates():
-    physical_operators = ['pressed', 'obtained', 'touching', 'on', 'on_burner', 'covered', 'cooking'] #grasped?
+    physical_operators = ['pressed', 'obtained', 'touching', 'on', 'on_burner', 'covered', 'cooking', 'powered_on'] #grasped?
 
     # Physical state choices
     global predicates_list
-    global cover_pressed
+    global left_button_pressed
+    global right_button_pressed
 
     new_predicates = []
     for pred in predicates_list:
@@ -172,13 +167,19 @@ def updatePhysicalStateBasedPredicates():
     if is_touching(RightGripperPose, CoverPose, 0.1):
         new_predicates.append(Predicate(operator="touching", objects=['right_gripper', 'cover'], locationInformation=None)) 
 
-    if is_pressed(LeftGripperPose, CoverPose, 0.08, [0.01, None]):
-        cover_pressed = True
-    if is_pressed(RightGripperPose, CoverPose, 0.08, [0.01, None]):
-        cover_pressed = True
+    if is_pressed(LeftGripperPose, LeftButtonPose, 0.08, [0.07, None]):
+        left_button_pressed = True
+    if is_pressed(RightGripperPose, LeftButtonPose, 0.08, [0.07, None]):
+        left_button_pressed = True
+    if is_pressed(LeftGripperPose, RightButtonPose, 0.08, [0.07, None]):
+        right_button_pressed = True
+    if is_pressed(RightGripperPose, RightButtonPose, 0.08, [0.07, None]):
+        right_button_pressed = True
+
 
     item_on_burner = []
     covered_item = []
+    burner_on = False
 
     if is_touching(CoverPose, BurnerPose, 0.1, 0.06):
         new_predicates.append(Predicate(operator="touching", objects=['cover', 'burner1'], locationInformation=None)) 
@@ -198,13 +199,21 @@ def updatePhysicalStateBasedPredicates():
         new_predicates.append(Predicate(operator="covered", objects=['cup'], locationInformation=None)) 
         covered_item.append('cup')
 
-    if cover_pressed == True:
-        new_predicates.append(Predicate(operator="pressed", objects=['cover'], locationInformation=None)) 
+    if right_button_pressed == True:
+        new_predicates.append(Predicate(operator="pressed", objects=['left_button'], locationInformation=None)) 
+        new_predicates.append(Predicate(operator="powered_on", objects=['burner1'], locationInformation=None)) 
+        burner_on = True
+
+    if right_button_pressed == True:
+        new_predicates.append(Predicate(operator="pressed", objects=['right_button'], locationInformation=None)) 
 
     if item_on_burner is not []:
         for item in item_on_burner:
             if (item in covered_item) == True:
-                new_predicates.append(Predicate(operator="cooking", objects=[item], locationInformation=None)) 
+                if require_burner_on == False:
+                    new_predicates.append(Predicate(operator="cooking", objects=[item], locationInformation=None)) 
+                elif burner_on == True:
+                    new_predicates.append(Predicate(operator="cooking", objects=[item], locationInformation=None)) 
 
     predicates_list = new_predicates
 
@@ -224,13 +233,17 @@ def getObjectLocation(data):
         'left_gripper': LeftGripperPose,
         'right_gripper': RightGripperPose, 
         'table': TablePose,
-        'burner1': BurnerPose
+        'burner1': BurnerPose,
+        'left_button': LeftButtonPose,
+        'right_button': RightButtonPose
     }
     return obj_choices.get(obj)
 
 def reset(req):
-    global cover_pressed
-    cover_pressed = False
+    global left_button_pressed
+    global right_button_pressed
+    left_button_pressed = False
+    right_button_pressed = False
     return True
 
 def main():
@@ -244,7 +257,10 @@ def main():
     rospy.Subscriber("burner1_pose", PoseStamped, setPoseBurner)
     rospy.Subscriber("cup_pose", PoseStamped, setPoseCup)
     rospy.Subscriber("cover_pose", PoseStamped, setPoseCover)
-    
+    rospy.Subscriber("left_button_pose", PoseStamped, setPoseLeftButton)
+    rospy.Subscriber("right_button_pose", PoseStamped, setPoseRightButton)
+    rospy.Subscriber("require_burner_on", Bool, set_require_burner_on)
+
     rospy.Service("scenario_data_srv", ScenarioDataSrv, getPredicates)
     rospy.Service("object_location_srv", ObjectLocationSrv, getObjectLocation)
     rospy.Service("reset_env_preds", EmptySrvReq, reset)

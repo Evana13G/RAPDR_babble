@@ -39,6 +39,8 @@ from agent.srv import MoveToStartSrv
 environment = 'default'
 
 pub_all = rospy.Publisher('models_loaded', Bool, queue_size=10)
+require_burner_on = rospy.Publisher('require_burner_on', Bool, queue_size = 10)
+
 moveToStartProxy = rospy.ServiceProxy('move_to_start_srv', MoveToStartSrv)
 resetPreds = rospy.ServiceProxy('reset_env_preds', EmptySrvReq)
 
@@ -46,14 +48,12 @@ resetPreds = rospy.ServiceProxy('reset_env_preds', EmptySrvReq)
 def load_gazebo_models(env='default'):
 
     table_pose=Pose(position=Point(x=0.78, y=0.0, z=0.0))
-    block_pose=Pose(position=Point(x=0.8, y=0.0185, z=0.8))
-    right_button_pose=Pose(position=Point(x=0.525, y=-0.2715, z=0.8))
-    left_button_pose=Pose(position=Point(x=0.525, y=0.1515, z=0.8))
-    block_reference_frame="world"
+    right_button_pose=Pose(position=Point(x=0.6, y=-0.2715, z=0.775))
+    left_button_pose=Pose(position=Point(x=0.6, y=0.1515, z=0.775))
     breakable_obj_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
     cup_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
     cover_pose=Pose(position=Point(x=0.5, y=0.0, z=0.9))
-    burner_pose=Pose(position=Point(x=0.5, y=-0.11, z=0.8))
+    burner_pose=Pose(position=Point(x=0.5, y=-0.11, z=0.775))
 
     reference_frame="world"
 
@@ -66,9 +66,11 @@ def load_gazebo_models(env='default'):
     cup_xml = ''
     cover_xml = ''
     burner_xml = ''
+    button_xml = ''
 
     moveToStartProxy('both')
-
+    require_burner_on.publish(False)
+    
     with open (model_path + "cafe_table/model.sdf", "r") as table_file:
         table_xml=table_file.read().replace('\n', '')
 
@@ -91,13 +93,15 @@ def load_gazebo_models(env='default'):
 
     ###############################
     ########     COOK      ########
-    elif env == 'cook':
+    elif env in ['cook', 'cook_defocused']:
         with open (model_path + "cup_with_cover/cup_model.sdf", "r") as cup_file:
             cup_xml=cup_file.read().replace('\n', '')
         with open (model_path + "cup_with_cover/cover_model_high_friction.sdf", "r") as cover_file:
             cover_xml=cover_file.read().replace('\n', '')
         with open (model_path + "cook/burner_model.sdf", "r") as burner_file:
             burner_xml=burner_file.read().replace('\n', '')
+        with open (model_path + "cook/button_model.sdf", "r") as button_file:
+            button_xml=button_file.read().replace('\n', '')
 
     ###############################
     #### COOK LOW FRICTION ########
@@ -148,6 +152,19 @@ def load_gazebo_models(env='default'):
         except rospy.ServiceException, e:
             rospy.logerr("Spawn URDF service call failed: {0}".format(e))
     
+    elif env in ['cook_defocused']:
+        try: 
+            spawn_sdf("burner1", burner_xml, "/", burner_pose, reference_frame)
+            spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
+            rospy.sleep(0.5)
+            spawn_sdf("cover", cover_xml, "/", cover_pose, reference_frame)
+            spawn_sdf("right_button", button_xml, "/", right_button_pose, reference_frame)
+            spawn_sdf("left_button", button_xml, "/", left_button_pose, reference_frame)
+            require_burner_on.publish(True)
+        except rospy.ServiceException, e:
+            rospy.logerr("Spawn URDF service call failed: {0}".format(e))
+    
+
     elif env in ['discover_strike', 'discover_pour', 'HH']:
         try:
             spawn_sdf("cup", cup_xml, "/", cup_pose, reference_frame)
@@ -188,6 +205,10 @@ def delete_gazebo_models():
         delete_model("cup")
         rospy.sleep(1)
         delete_model("burner1")
+        rospy.sleep(1)
+        delete_model("left_button")
+        rospy.sleep(1)
+        delete_model("right_button")
         rospy.sleep(1)
         # delete_model("breakable_obj")
         # rospy.sleep(1)
