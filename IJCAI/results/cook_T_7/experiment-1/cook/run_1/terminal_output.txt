@@ -1,0 +1,126 @@
+################################################
+#### ------------------------------------------ 
+#### Goal: ['(cooking cup)']
+#### ------------------------------------------ 
+#### -- Novel Scenario: 
+#### ---- push
+#### ---- uncover_obj
+#### ---- shake
+#### ---- prep_food
+#### ---- place_on_burner
+#### ---- cover_obj
+#### ---- cook
+#### ---- 
+[ERROR] [1610172422.196134, 2323.153000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172422.196502, 2323.153000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610172422.219185, 2323.170000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172422.219735, 2323.170000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610172423.277910, 2324.185000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172423.278214, 2324.185000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+#### ---- Plan execution: True
+#### ---- Goal Accomplished: False
+#### ------------------------------------------ 
+#### -- APV mode: 6 total combo(s) found
+#### -- APV mode: START 
+#### ---- push, [orientation]: right
+#### ---- push, [orientation]: top
+#### ---- push, [orientation]: left
+#### ---- 
+#### ---- Newly added actions: ['push-orientation:right', 'push-orientation:top', 'push-orientation:left']
+#### -- APV mode: COMPLETE
+#### ------------------------------------------ 
+#### -- [ATTEMPT 1] 
+#### ---- push-orientation:right
+#### ---- uncover_obj
+#### ---- shake
+#### ---- prep_food
+#### ---- place_on_burner
+#### ---- cover_obj
+#### ---- cook
+#### ---- 
+[ERROR] [1610172570.604226, 2463.333000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172570.604703, 2463.333000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610172570.630592, 2463.358000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172570.630958, 2463.358000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610172571.705906, 2464.376000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172571.706307, 2464.376000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610172573.730180, 2466.288000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172573.730594, 2466.288000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610172574.791857, 2467.309000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172574.792196, 2467.309000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610172575.878723, 2468.351000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172575.879023, 2468.351000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610172575.900315, 2468.369000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172575.900712, 2468.369000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610172576.983100, 2469.394000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172576.983449, 2469.394000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610172604.065747, 2495.045000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172604.066089, 2495.045000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610172604.085230, 2495.065000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172604.086460, 2495.066000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610172605.173755, 2496.084000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172605.174187, 2496.084000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+#### ---- Plan execution: True
+#### ---- Goal Accomplished: False
+#### ------------------------------------------ 
+#### -- [ATTEMPT 2] 
+#### ---- push-orientation:top
+#### ---- uncover_obj
+#### ---- shake
+#### ---- prep_food
+#### ---- place_on_burner
+#### ---- cover_obj
+#### ---- cook
+#### ---- 
+[ERROR] [1610172732.248524, 2615.259000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172732.248835, 2615.259000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610172732.267994, 2615.279000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172732.268422, 2615.279000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610172733.344237, 2616.296000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172733.344535, 2616.296000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+#### ---- Plan execution: True
+#### ---- Goal Accomplished: False
+#### ------------------------------------------ 
+#### -- [ATTEMPT 3] 
+#### ---- push-orientation:left
+#### ---- uncover_obj
+#### ---- shake
+#### ---- prep_food
+#### ---- place_on_burner
+#### ---- cover_obj
+#### ---- cook
+#### ---- 
+[ERROR] [1610172854.229154, 2725.163000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172854.229648, 2725.164000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610172854.258227, 2725.192000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172854.258776, 2725.193000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610172855.367605, 2726.211000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610172855.368010, 2726.211000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+#### ---- Plan execution: True
+#### ---- Goal Accomplished: False
+#### ------------------------------------------ 
+#### -- APV mode: START 
+#### ---- push, [rate]: 3.0
+#### ---- push, [rate]: 27.5
+#### ---- push, [rate]: 52.0
+#### ---- push, [rate]: 76.5
+#### ---- push, [rate]: 101.0
+#### ---- push, [rate]: 125.5
+#### ---- push, [rate]: 150.0
+#### ---- 
+#### ---- Newly added actions: ['push-rate:27.5', 'push-rate:52.0', 'push-rate:76.5']
+#### -- APV mode: COMPLETE
+#### ------------------------------------------ 
+#### -- [ATTEMPT 4] 
+#### ---- push-rate:27.5
+#### ---- uncover_obj
+#### ---- shake
+#### ---- prep_food
+#### ---- place_on_burner
+#### ---- cover_obj
+#### ---- cook
+#### ---- 
+#### ---- Plan execution: True
+#### ---- Goal Accomplished: True
+#### ------------------------------------------ 
+################################################

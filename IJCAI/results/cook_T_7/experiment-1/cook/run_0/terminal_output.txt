@@ -1,0 +1,164 @@
+########################################################
+########################################################
+##                                                    ##
+##   Action Primitive Discovery in Robotic Agents     ##
+##         through Action Parameter Variation         ##
+##                                                    ##
+## -- a proof of concept model for knowledge          ##
+##    acquisition in intelligent agents, 2021         ##
+##                                                    ##
+########################################################
+########################################################
+
+################################################
+#### ------------------------------------------ 
+#### Goal: ['(cooking cup)']
+#### ------------------------------------------ 
+#### -- Novel Scenario: 
+#### ---- push
+#### ---- uncover_obj
+#### ---- shake
+#### ---- prep_food
+#### ---- place_on_burner
+#### ---- cover_obj
+#### ---- cook
+#### ---- 
+[ERROR] [1610170152.269734, 184.915000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610170152.270675, 184.915000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610170152.286384, 184.931000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610170152.286823, 184.932000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610170153.342011, 185.953000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610170153.342333, 185.953000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+#### ---- Plan execution: True
+#### ---- Goal Accomplished: False
+#### ------------------------------------------ 
+#### -- APV mode: 6 total combo(s) found
+#### -- APV mode: START 
+#### ---- shake, [orientation]: left
+#### ---- shake, [orientation]: right
+#### ---- shake, [orientation]: top
+#### ---- 
+#### ---- Newly added actions: []
+#### -- APV mode: COMPLETE
+#### ------------------------------------------ 
+#### -- [ATTEMPT 1] 
+#### ---- No Plan Found 
+#### -- APV mode: START 
+#### ---- shake, [movementmagnitude]: 0.01
+#### ---- shake, [movementmagnitude]: 0.841666666667
+#### ---- shake, [movementmagnitude]: 1.67333333333
+#### ---- shake, [movementmagnitude]: 2.505
+#### ---- shake, [movementmagnitude]: 3.33666666667
+#### ---- shake, [movementmagnitude]: 4.16833333333
+#### ---- shake, [movementmagnitude]: 5.0
+#### ---- 
+#### ---- Newly added actions: []
+#### -- APV mode: COMPLETE
+#### ------------------------------------------ 
+#### -- [ATTEMPT 2] 
+#### ---- No Plan Found 
+#### -- APV mode: START 
+#### ---- shake, [rate]: 1.0
+#### ---- shake, [rate]: 4.16666666667
+#### ---- shake, [rate]: 7.33333333333
+#### ---- shake, [rate]: 10.5
+#### ---- shake, [rate]: 13.6666666667
+#### ---- shake, [rate]: 16.8333333333
+#### ---- shake, [rate]: 20.0
+#### ---- 
+#### ---- Newly added actions: []
+#### -- APV mode: COMPLETE
+#### ------------------------------------------ 
+#### -- [ATTEMPT 3] 
+#### ---- No Plan Found 
+#### -- APV mode: START 
+#### ---- push, [movementmagnitude]: 0.1
+#### ---- push, [movementmagnitude]: 0.183333333333
+#### ---- push, [movementmagnitude]: 0.266666666667
+#### ---- push, [movementmagnitude]: 0.35
+#### ---- push, [movementmagnitude]: 0.433333333333
+#### ---- push, [movementmagnitude]: 0.516666666667
+#### ---- push, [movementmagnitude]: 0.6
+#### ---- 
+#### ---- Newly added actions: ['push-movementmagnitude:0.183333333333', 'push-movementmagnitude:0.433333333333', 'push-movementmagnitude:0.6']
+#### -- APV mode: COMPLETE
+#### ------------------------------------------ 
+#### -- [ATTEMPT 4] 
+#### ---- push-movementmagnitude:0.183333333333
+#### ---- uncover_obj
+#### ---- shake
+#### ---- prep_food
+#### ---- place_on_burner
+#### ---- cover_obj
+#### ---- cook
+#### ---- 
+[ERROR] [1610171697.289943, 1639.901000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610171697.290285, 1639.901000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610171697.313461, 1639.919000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610171697.313874, 1639.920000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610171698.382510, 1640.935000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610171698.383649, 1640.936000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+#### ---- Plan execution: True
+#### ---- Goal Accomplished: False
+#### ------------------------------------------ 
+#### -- [ATTEMPT 5] 
+#### ---- push-movementmagnitude:0.433333333333
+#### ---- uncover_obj
+#### ---- shake
+#### ---- prep_food
+#### ---- place_on_burner
+#### ---- cover_obj
+#### ---- cook
+#### ---- 
+[ERROR] [1610171813.589622, 1749.986000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610171813.590020, 1749.987000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610171813.606191, 1750.003000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610171813.606637, 1750.003000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610171814.675768, 1751.016000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610171814.676234, 1751.016000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+#### ---- Plan execution: True
+#### ---- Goal Accomplished: False
+#### ------------------------------------------ 
+#### -- [ATTEMPT 6] 
+#### ---- push-movementmagnitude:0.6
+#### ---- uncover_obj
+#### ---- shake
+#### ---- prep_food
+#### ---- place_on_burner
+#### ---- cover_obj
+#### ---- cook
+#### ---- 
+[ERROR] [1610171954.350737, 1882.724000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610171954.351148, 1882.724000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610171954.368680, 1882.742000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610171954.368984, 1882.742000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+[ERROR] [1610171955.451928, 1883.763000]: INVALID POSE - No Valid Joint Solution Found.
+[ERROR] [1610171955.452236, 1883.763000]: No Joint Angles provided for move_to_joint_positions. Staying put.
+#### ---- Plan execution: True
+#### ---- Goal Accomplished: False
+#### ------------------------------------------ 
+#### -- APV mode: START 
+#### ---- push, [rate]: 3.0
+#### ---- push, [rate]: 27.5
+#### ---- push, [rate]: 52.0
+#### ---- push, [rate]: 76.5
+#### ---- push, [rate]: 101.0
+#### ---- push, [rate]: 125.5
+#### ---- push, [rate]: 150.0
+#### ---- 
+#### ---- Newly added actions: ['push-rate:27.5', 'push-rate:52.0', 'push-rate:76.5', 'push-rate:150.0']
+#### -- APV mode: COMPLETE
+#### ------------------------------------------ 
+#### -- [ATTEMPT 7] 
+#### ---- push-rate:27.5
+#### ---- uncover_obj
+#### ---- shake
+#### ---- prep_food
+#### ---- place_on_burner
+#### ---- cover_obj
+#### ---- cook
+#### ---- 
+#### ---- Plan execution: True
+#### ---- Goal Accomplished: True
+#### ------------------------------------------ 
+################################################

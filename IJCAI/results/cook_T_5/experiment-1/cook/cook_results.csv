@@ -1,0 +1,6 @@
+scenario run_name total_time num_trails avg_trial_time success_actions
+cook run_0 379.7909999999999 3 126.59699999999997 ['push-movementmagnitude:0.225']
+cook run_1 1101.4669999999996 6 183.57783333333327 ['push-rate:39.75']
+cook run_2 466.5300000000002 3 155.51000000000008 ['push-movementmagnitude:0.1']
+cook run_3 800.5519999999997 4 200.13799999999992 ['push-movementmagnitude:0.1']
+cook run_4 313.10699999999906 2 156.55349999999953 ['push-movementmagnitude:0.1']

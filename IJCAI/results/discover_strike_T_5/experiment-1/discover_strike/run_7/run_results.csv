@@ -1,0 +1,2 @@
+exploration_times total_time success_plan
+"[89.82200000000034, 15.02200000000039]" 104.84400000000073 [['push-movementmagnitude:0.6',['left_gripper','0.5,0.0,-0.1','cover']]]

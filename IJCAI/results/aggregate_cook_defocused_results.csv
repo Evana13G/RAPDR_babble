@@ -1,0 +1,16 @@
+scenario run_name T total_time num_trails avg_trial_time success_actions experiment std_dev
+cook_defocused run_0 3 1582.9309999999996 11 143.90281818181813 ['shake-movementmagnitude:5.0'] 1 65.79544638
+cook_defocused run_1 3 2963.549000000001 20 148.17745000000005 ['shake-rate:10.5'] 2 65.00294507
+cook_defocused run_2 3 2013.1450000000004 14 143.79607142857145 ['shake-rate:10.5'] 2 67.99704903
+cook_defocused run_3 3 2825.3439999999982 18 156.96355555555544 ['shake-rate:20.0'] 2 60.60885018
+cook_defocused run_4 3 1658.5100000000011 11 150.77363636363646 ['shake-orientation:top'] 3 55.67428004
+cook_defocused run_5 3 1862.4129999999986 13 143.26253846153836 ['shake-orientation:top'] 4 54.33326712
+cook_defocused run_6 3 3406.727000000002 20 170.3363500000001 ['push-orientation:top'] 4 :76.04294074
+cook_defocused run_7 3 1779.9540000000015 12 148.32950000000014 ['shake-rate:20.0'] 4 82.25771159
+cook_defocused run_8 3 1513.7909999999956 10 151.37909999999957 ['shake-movementmagnitude:5.0'] 4 70.4953777
+cook_defocused run_9 3 1650.8130000000006 11 150.07390909090915 ['shake-rate:20.0'] 5 57.29577446
+cook_defocused run_10 3 1828.623999999997 13 140.6633846153844 ['shake-orientation:top'] 6 53.96076964
+
+
+
+
