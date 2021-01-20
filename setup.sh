@@ -4,8 +4,6 @@
 #    a. Downloads PDDL-Parser (https://github.com/pucrs-automated-planning/pddl-parser) using the command  "git submodule update --init"
 #    b. Adds a blank file called ```__init__.py``` to the pddl_parser directory (See https://docs.python.org/3/tutorial/modules.html#packages 
 #       for explanatory details. TLDR; this file addition let's Python know that we want to consider it's encapsulating directory a package)
-#    c. Changes baxter source code as instructed at https://github.com/Evana13G/RAPDR_babble/wiki/Changing-the-Baxter-Source-Code
-
 
 # ensure that pddl_parser has been downloaded
 git submodule update --init > /dev/null

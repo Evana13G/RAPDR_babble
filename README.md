@@ -14,9 +14,7 @@ Setup each of the following, in order:
 4. Baxter Gazebo Simulation (http://sdk.rethinkrobotics.com/wiki/Simulator_Installation)
     a. Note, we are not using the `baxter.sh sim` script
 
-5. Clone the RAPDR project
-
-        git clone https://github.com/Evana13G/RAPDR_babble.git
+5. Unzip the RAPDR project
         
 6. Run the setup.sh script in RAPDR_babble (Only need to run once after installation)
 
@@ -65,20 +63,10 @@ Examples:
 
 For more instructions on writing/running test nodes, see below which will redirect to the developers wiki. 
 
-#### DEVELOPMENT Run instructions <br />
-[FOR DEVELOPMENT MODE] See https://github.com/Evana13G/RAPDR_babble/wiki/Developers-Instructions
 
 #### Other Info <br />
-The URDF models are inside the baxter_simulation package in a folder that I believe is called baxter_sim_examples/models. The URDF model for the table and the wall is called cafe_table. 
 
-1. For proof of concept scenario #1, we assume the following protocol:
-
-"left_gripper" - left gripper <br />
-"right_gripper" - right gripper <br />
-"cup" - cup <br />
-"cover" - cover <br />
-
-2. Many of the .py files might not be runnable. Navigate to their directories and run:
+1. Many of the .py files might not be runnable. Navigate to their directories and run:
 
         chmod +x [filename]
         

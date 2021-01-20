@@ -253,7 +253,6 @@ class PhysicalAgent(object):
             rospy.logerr("Service call failed: %s" % (e,))
             return 0
 
-    ####### ADDED by Amel 
     def _set_joint_velocity(self, limb='both'):
         velocities_l = {'left_w0' :  4.067311133343405e-050,
                         'left_w1' : 1.6401705346185865e-080,
