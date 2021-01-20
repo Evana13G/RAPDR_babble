@@ -1,0 +1,8 @@
+scenario run_name total_time num_trails avg_trial_time success_actions
+discover_strike run_0 70.816 1 70.816 ['push-orientation:right']
+discover_strike run_1 120.20199999999994 1 120.20199999999994 ['push-rate:76.5']
+discover_strike run_2 119.71800000000007 1 119.71800000000007 ['push-movementmagnitude:0.516666666667']
+discover_strike run_3 119.65199999999993 1 119.65199999999993 ['push-movementmagnitude:0.183333333333']
+discover_strike run_4 134.89499999999998 2 67.44749999999999 ['push-rate:150.0']
+discover_strike run_5 119.8240000000003 1 119.8240000000003 ['push-movementmagnitude:0.516666666667']
+discover_strike run_6 120.11300000000006 1 120.11300000000006 ['push-rate:125.5']

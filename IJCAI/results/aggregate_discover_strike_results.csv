@@ -55,6 +55,7 @@ discover_strike run_52 7 60.21799999999985 1 60.21799999999985 ['push-orientatio
 discover_strike run_53 7 134.88299999999936 2 67.44149999999968 ['push-rate:125.5'] 2 74.4208674
 discover_strike run_54 7 60.20100000000002 1 60.20100000000002 ['push-orientation:right'] 2 0
 discover_strike run_55 7 60.23199999999997 1 60.23199999999997 ['push-orientation:right'] 2 0
-
-
-
+discover_strike run_56 7 70.816 1 70.816 ['push-orientation:right'] 3 0
+discover_strike run_57 7 120.20199999999994 1 120.20199999999994 ['push-rate:76.5'] 3 0
+discover_strike run_58 7 119.71800000000007 1 119.71800000000007 ['push-movementmagnitude:0.516666666667'] 3 0
+discover_strike run_59 7 119.65199999999993 1 119.65199999999993 ['push-movementmagnitude:0.183333333333'] 3 0
